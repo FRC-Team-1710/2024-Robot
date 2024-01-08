@@ -41,7 +41,7 @@ public final class Constants {
 
     private static AprilTagFieldLayout errorWrapper() {
         try {
-            AprilTagFieldLayout attemptedKTagLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+            AprilTagFieldLayout attemptedKTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
             return attemptedKTagLayout;
         } catch (Exception e) {
             return null;
