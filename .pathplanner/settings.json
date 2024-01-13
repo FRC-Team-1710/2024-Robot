@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.838,
+  "robotLength": 0.838,
   "holonomicMode": true,
   "pathFolders": [],
   "autoFolders": [],
@@ -8,6 +8,5 @@
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
-  "maxModuleSpeed": 4.5,
-  "choreoProjectPath": "src\\main\\deploy\\CHOREO_TEST.chor"
+  "maxModuleSpeed": 4.5
 }

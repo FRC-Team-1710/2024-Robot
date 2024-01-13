@@ -103,12 +103,13 @@ public class SwerveSubsystem extends SubsystemBase {
         vision = new Vision();
     }
 
+    /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
     public BooleanSupplier checkRedAlliance() {
-        if (DriverStation.getAlliance().isPresent()) {
-            return () -> DriverStation.getAlliance().get().name().equals("RED");
-        } else {
-            return () -> false;
+        var alliance = DriverStation.getAlliance(); // Have to use var because of the optional container
+        if (alliance.isPresent()) {
+            return () -> alliance.get() == DriverStation.Alliance.Red;
         }
+        return () -> false;
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -129,7 +130,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-    /* Used by SwerveControllerCommand in Auto */
+    /** Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
