@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
+import frc.robot.Vision;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,11 +18,20 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -30,8 +40,19 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
+    private Vision vision;
+    private final SwerveDrivePoseEstimator poseEstimator;
+
+    private Field2d m_field = new Field2d();
+/* Doesn't work
+    StructPublisher<Pose2d> kinematicsPosePublisher = NetworkTableInstance.getDefault()
+    .getStructTopic("Kinematics Pose", Pose2d.struct).publish();
+    StructPublisher<Pose2d> fusedPosePublisher = NetworkTableInstance.getDefault()
+    .getStructTopic("Fused Pose", Pose2d.struct).publish();
+*/
+
     public SwerveSubsystem() {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -49,7 +70,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+                                                 // Constants class
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                         4.5, // Max module speed, in m/s
@@ -59,6 +81,21 @@ public class SwerveSubsystem extends SubsystemBase {
                 checkRedAlliance(),
                 this // Reference to this subsystem to set requirements
         );
+
+        // and how many or how frequently vision measurements are applied to the pose
+        // estimator.
+        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
+        Vector<N3> visionStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); // Vision Odometry
+
+        poseEstimator = new SwerveDrivePoseEstimator(
+                Constants.Swerve.swerveKinematics,
+                getGyroYaw(),
+                getModulePositions(),
+                new Pose2d(),
+                stateStdDevs,
+                visionStdDevs);
+
+        vision = new Vision();
     }
 
     /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
@@ -132,6 +169,10 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
+    public Pose2d getEstimatedPosition() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
     public Rotation2d getHeading() {
         return getPose().getRotation();
     }
@@ -156,6 +197,19 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
+    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+    }
+
+    /**
+     * See
+     * {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}.
+     */
+    public void addVisionMeasurement(
+            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    }
+
     @Override
     public void periodic() {
         swerveOdometry.update(getGyroYaw(), getModulePositions());
@@ -165,5 +219,29 @@ public class SwerveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         }
+
+        // Correct pose estimate with vision measurements
+        var visionEst = vision.getEstimatedGlobalPose();
+        poseEstimator.update(getGyroYaw(), getModulePositions());
+        visionEst.ifPresent(
+                est -> {
+                    var estPose = est.estimatedPose.toPose2d();
+                    // Change our trust in the measurement based on the tags we can see
+                    var estStdDevs = vision.getEstimationStdDevs(estPose);
+
+                    addVisionMeasurement(
+                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                });
+
+        if (visionEst.isPresent()) {
+            SmartDashboard.putString("Fused Pose", getEstimatedPosition().toString());
+        }
+
+        m_field.setRobotPose(getEstimatedPosition());
+/* Doesn't work
+        kinematicsPosePublisher.set(getPose());
+        fusedPosePublisher.set(getEstimatedPosition());
+*/
+        SmartDashboard.putData("field", m_field);
     }
 }

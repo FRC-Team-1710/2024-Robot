@@ -38,16 +38,16 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     // Starts recording to data log
-    DataLogManager.start();
+     DataLogManager.start();
 
     // Record both DS control and joystick data
-    DriverStation.startDataLog(DataLogManager.getLog());
+     DriverStation.startDataLog(DataLogManager.getLog());
 
     //Log data from all REV devices
-    URCL.start();
+     URCL.start();
 
     //Log data from all CTRE devices
-    //SignalLogger.start();
+    SignalLogger.start();
   }
 
   /**
