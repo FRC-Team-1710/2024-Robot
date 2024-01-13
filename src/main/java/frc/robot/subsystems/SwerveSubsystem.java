@@ -23,13 +23,17 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -44,11 +48,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private Field2d m_field = new Field2d();
 
+    StructPublisher<Pose2d> kinematicsPosePublisher = NetworkTableInstance.getDefault()
+    .getStructTopic("Kinematics Pose", Pose2d.struct).publish();
+    StructPublisher<Pose2d> fusedPosePublisher = NetworkTableInstance.getDefault()
+    .getStructTopic("Fused Pose", Pose2d.struct).publish();
+
     private static final double TRACKWIDTH = Units.inchesToMeters(23);
     private static final double WHEELBASE = Units.inchesToMeters(23);
 
     public SwerveSubsystem() {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -164,6 +173,10 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
+    public Pose2d getEstimatedPosition() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
     public Rotation2d getHeading() {
         return getPose().getRotation();
     }
@@ -231,10 +244,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 });
 
         if (visionEst.isPresent()) {
-            SmartDashboard.putString("obodom", getPose().toString());
+            SmartDashboard.putString("Fused Pose", getEstimatedPosition().toString());
         }
 
-        m_field.setRobotPose(getPose());
+        m_field.setRobotPose(getEstimatedPosition());
+
+        kinematicsPosePublisher.set(getPose());
+        fusedPosePublisher.set(getEstimatedPosition());
 
         SmartDashboard.putData("field", m_field);
     }
