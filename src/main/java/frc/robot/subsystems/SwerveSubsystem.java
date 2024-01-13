@@ -28,7 +28,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -51,8 +50,6 @@ public class SwerveSubsystem extends SubsystemBase {
     StructPublisher<Pose2d> fusedPosePublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
 */
-    private static final double TRACKWIDTH = Units.inchesToMeters(23);
-    private static final double WHEELBASE = Units.inchesToMeters(23);
 
     public SwerveSubsystem() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
@@ -91,7 +88,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Vector<N3> visionStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); // Vision Odometry
 
         poseEstimator = new SwerveDrivePoseEstimator(
-                kinematics,
+                Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
                 new Pose2d(),
@@ -212,12 +209,6 @@ public class SwerveSubsystem extends SubsystemBase {
             Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
         poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
-
-    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-            new Translation2d(TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-            new Translation2d(TRACKWIDTH / 2.0, -WHEELBASE / 2.0),
-            new Translation2d(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-            new Translation2d(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0));
 
     @Override
     public void periodic() {
