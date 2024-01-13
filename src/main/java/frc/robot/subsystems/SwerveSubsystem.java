@@ -23,7 +23,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -33,7 +32,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,12 +45,12 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private Field2d m_field = new Field2d();
-
+/* Doesn't work
     StructPublisher<Pose2d> kinematicsPosePublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Kinematics Pose", Pose2d.struct).publish();
     StructPublisher<Pose2d> fusedPosePublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
-
+*/
     private static final double TRACKWIDTH = Units.inchesToMeters(23);
     private static final double WHEELBASE = Units.inchesToMeters(23);
 
@@ -249,10 +247,10 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         m_field.setRobotPose(getEstimatedPosition());
-
+/* Doesn't work
         kinematicsPosePublisher.set(getPose());
         fusedPosePublisher.set(getEstimatedPosition());
-
+*/
         SmartDashboard.putData("field", m_field);
     }
 }
