@@ -35,6 +35,11 @@ public class TeleopSwerve extends Command {
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
+        /* Exponential Drive */
+        translationVal = Math.copySign(Math.pow(translationVal, 2), translationVal);
+        strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
+        rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);
+
         /* Drive */
         swerveSubsystem.drive(
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
