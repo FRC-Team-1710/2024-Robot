@@ -8,7 +8,12 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
+
+import javax.swing.text.html.Option;
+
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -218,20 +223,21 @@ public class SwerveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         }
 
-        // Correct pose estimate with vision measurements
-        var visionEst = vision.getEstimatedGlobalPose();
-        poseEstimator.update(getGyroYaw(), getModulePositions());
-        visionEst.ifPresent(
-                est -> {
-                    var estPose = est.estimatedPose.toPose2d();
-                    // Change our trust in the measurement based on the tags we can see
-                    var estStdDevs = vision.getEstimationStdDevs(estPose);
+        // Correct pose estimate with multiple vision measurements
+        Optional<EstimatedRobotPose> visionEst = vision.getEstimatedGlobalPose();
+        Optional <EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
+        if (OptionalEstimatedPoseFront.isPresent()) {
+            final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
+            poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+        }
 
-                    addVisionMeasurement(
-                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                    addVisionMeasurement(
-                            getEstimatedPosition(), 0, null);
-                });
+        Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
+        if (OptionalEstimatedPoseBack.isPresent()) {
+            final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
+            poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+        }
+
+        poseEstimator.update(getHeading(), getModulePositions());
 
         if (visionEst.isPresent()) {
             SmartDashboard.putString("Fused Pose", getEstimatedPosition().toString());

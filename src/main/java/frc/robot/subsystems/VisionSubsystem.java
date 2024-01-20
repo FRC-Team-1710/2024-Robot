@@ -45,8 +45,8 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera aprilTagCameraBack;
     private final PhotonCamera noteCamera;
 
-    private final PhotonPoseEstimator photonEstimatorFront;
-    private final PhotonPoseEstimator photonEstimatorBack;
+    public final PhotonPoseEstimator photonEstimatorFront;
+    public final PhotonPoseEstimator photonEstimatorBack;
 
     private double lastEstTimestamp = 0;
 
