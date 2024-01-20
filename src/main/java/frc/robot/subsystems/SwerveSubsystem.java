@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
-import frc.robot.Vision;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,7 +39,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
-    private Vision vision;
+    private VisionSubsystem vision;
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private Field2d m_field = new Field2d();
@@ -51,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase {
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
 */
 
-    public SwerveSubsystem() {
+    public SwerveSubsystem(VisionSubsystem vision) {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
@@ -94,7 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 stateStdDevs,
                 visionStdDevs);
 
-        vision = new Vision();
+        this.vision = vision;
     }
 
     /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
@@ -109,7 +108,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         double translationX = translation.getX();
         double translationY = translation.getY();
-        
+
         if (checkRedAlliance().getAsBoolean()){
             translationX *= -1;
             translationY *= -1;

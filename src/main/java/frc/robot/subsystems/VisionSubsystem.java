@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package frc.robot;
+package frc.robot.subsystems;
 
 import static frc.robot.Constants.Vision.*;
 
@@ -31,6 +31,8 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -38,20 +40,16 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-public class Vision {
+public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera camera;
     private final PhotonPoseEstimator photonEstimator;
     private double lastEstTimestamp = 0;
 
-    public Vision() {
+    public VisionSubsystem() {
         camera = new PhotonCamera(kCameraName);
 
         photonEstimator = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera, kRobotToCam);
-        photonEstimator.setPrimaryStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-        // ----- Simulation
-
+                kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, camera, kRobotToCam);
     }
 
     public PhotonPipelineResult getLatestResult() {
