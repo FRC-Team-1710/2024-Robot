@@ -39,23 +39,28 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 public class Vision {
-    private final PhotonCamera camera;
+    private final PhotonCamera camera1;
+    private final PhotonCamera camera2;
     private final PhotonPoseEstimator photonEstimator;
     private double lastEstTimestamp = 0;
 
     public Vision() {
-        camera = new PhotonCamera("ChristiansThirdEye");
-
+        camera1 = new PhotonCamera("ChristiansThirdEye");
+        camera2 = new PhotonCamera("OnionRing");
         photonEstimator = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera, kRobotToCam);
+                kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera1, kRobotToCam);
         photonEstimator.setPrimaryStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         // ----- Simulation
 
     }
 
-    public PhotonPipelineResult getLatestResult() {
-        return camera.getLatestResult();
+    public PhotonPipelineResult getLatestResultAT() { // Get the latest result for the April Tag camera
+        return camera1.getLatestResult();
+    }
+
+    public PhotonPipelineResult getLatestResultN() { // Get the latest result for the Note camera
+        return camera2.getLatestResult();
     }
 
     /**
@@ -69,7 +74,7 @@ public class Vision {
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         var visionEst = photonEstimator.update();
-        double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
+        double latestTimestamp = camera1.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         if (newResult)
             lastEstTimestamp = latestTimestamp;
@@ -87,7 +92,7 @@ public class Vision {
      */
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
         var estStdDevs = kSingleTagStdDevs;
-        var targets = getLatestResult().getTargets();
+        var targets = getLatestResultAT().getTargets();
         int numTags = 0;
         double avgDist = 0;
         for (var tgt : targets) {

@@ -4,47 +4,51 @@
 
 package frc.robot.subsystems;
 
-import java.util.Optional;
-import java.util.function.BooleanSupplier;
-
-import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Vision;
 
 public class LEDSubsystem extends SubsystemBase {
-  public DigitalOutput AllianceColor = new DigitalOutput(2);
-  public DigitalOutput FoundRing = new DigitalOutput(3);
-  public DigitalOutput Aimed = new DigitalOutput(4);
-  public DigitalOutput RingInIntake = new DigitalOutput(5);
-  public DigitalOutput RingOuttaked = new DigitalOutput(6);
+  public DigitalOutput AllianceColor = new DigitalOutput(2); // Alliance color
+  public DigitalOutput FoundNote = new DigitalOutput(3);     // Sends if the camera 'OnionRing' sees a note
+  public DigitalOutput Aimed = new DigitalOutput(4);         // Sends if the outtake is aimed
+  public DigitalOutput NoteInIntake = new DigitalOutput(5);  // Sends if the Note is in the intake/outtake
+  public DigitalOutput NoteOuttaked = new DigitalOutput(6);  // Sends if the Note has been outtaked
 
   SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  Vision vision = new Vision();
 
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {}
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    var results = vision.getLatestResultN();
+
+    if (results.hasTargets()) {
+      FoundNote(true);
+    } else {
+      FoundNote(false);
+    }
+  }
 
   public void setAllianceColor() {
     AllianceColor.set(swerveSubsystem.checkRedAlliance().getAsBoolean()); // True is Red, False is Blue
   }
 
-  public void FoundRing(boolean foundRing) {
-    FoundRing.set(foundRing);
+  public void FoundNote(boolean foundNote) {
+    FoundNote.set(foundNote);
   }
 
   public void Aimed(boolean aimed) {
     Aimed.set(aimed);
   }
 
-  public void RingInIntake(boolean ringInIntake) {
-    RingInIntake.set(ringInIntake);
+  public void NoteInIntake(boolean noteInIntake) {
+    NoteInIntake.set(noteInIntake);
   }
 
-  public void RingOuttaked(boolean ringOuttaked) {
-    RingOuttaked.set(ringOuttaked);
+  public void NoteOuttaked(boolean noteOuttaked) {
+    NoteOuttaked.set(noteOuttaked);
   }
 }
