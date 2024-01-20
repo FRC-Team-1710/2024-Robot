@@ -44,7 +44,7 @@ public class Vision {
     private double lastEstTimestamp = 0;
 
     public Vision() {
-        camera = new PhotonCamera("ChristiansThirdEye");
+        camera = new PhotonCamera(kCameraName);
 
         photonEstimator = new PhotonPoseEstimator(
                 kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera, kRobotToCam);
