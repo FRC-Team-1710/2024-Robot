@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
-import frc.robot.Vision;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,7 +39,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
-    private Vision vision;
+    private VisionSubsystem vision;
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private Field2d m_field = new Field2d();
@@ -51,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase {
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
 */
 
-    public SwerveSubsystem() {
+    public SwerveSubsystem(VisionSubsystem vision) {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
@@ -70,12 +69,11 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-                                                 // Constants class
+                new HolonomicPathFollowerConfig(
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                         4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        0.46, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 checkRedAlliance(),
@@ -95,7 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 stateStdDevs,
                 visionStdDevs);
 
-        vision = new Vision();
+        this.vision = vision;
     }
 
     /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
@@ -108,15 +106,23 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        double translationX = translation.getX();
+        double translationY = translation.getY();
+
+        if (checkRedAlliance().getAsBoolean()){
+            translationX *= -1;
+            translationY *= -1;
+        }
+
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        translation.getX(),
-                        translation.getY(),
+                        translationX,
+                        translationY,
                         rotation,
                         getHeading())
                         : new ChassisSpeeds(
-                                translation.getX(),
-                                translation.getY(),
+                                translationX,
+                                translationY,
                                 rotation));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
@@ -197,14 +203,6 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
-    }
-
-    /**
-     * See
-     * {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}.
-     */
     public void addVisionMeasurement(
             Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
         poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
@@ -231,6 +229,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
                     addVisionMeasurement(
                             est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                    addVisionMeasurement(
+                            getEstimatedPosition(), 0, null);
                 });
 
         if (visionEst.isPresent()) {

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package frc.robot;
+package frc.robot.subsystems;
 
 import static frc.robot.Constants.Vision.*;
 
@@ -31,6 +31,8 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -38,29 +40,43 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-public class Vision {
-    private final PhotonCamera camera1;
-    private final PhotonCamera camera2;
-    private final PhotonPoseEstimator photonEstimator;
+public class VisionSubsystem extends SubsystemBase {
+    private final PhotonCamera aprilTagCameraFront;
+    private final PhotonCamera aprilTagCameraBack;
+    private final PhotonCamera noteCamera;
+
+    private final PhotonPoseEstimator photonEstimatorFront;
+    private final PhotonPoseEstimator photonEstimatorBack;
+
     private double lastEstTimestamp = 0;
 
-    public Vision() {
-        camera1 = new PhotonCamera("ChristiansThirdEye");
-        camera2 = new PhotonCamera("OnionRing");
-        photonEstimator = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera1, kRobotToCam);
-        photonEstimator.setPrimaryStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    public VisionSubsystem() {
+        aprilTagCameraFront = new PhotonCamera(kAprilTagCameraFront);
+        aprilTagCameraBack = new PhotonCamera(kAprilTagCameraBack);
+        noteCamera = new PhotonCamera(kNoteCamera);
 
-        // ----- Simulation
-
+        photonEstimatorFront = new PhotonPoseEstimator(
+                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, kRobotToCamFront);
+        photonEstimatorBack = new PhotonPoseEstimator(
+                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, kRobotToCamBack);
+        photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    public PhotonPipelineResult getLatestResultAT() { // Get the latest result for the April Tag camera
-        return camera1.getLatestResult();
+    public PhotonPipelineResult getLatestResultATF() { // Get the latest result for the April Tag camera
+        return aprilTagCameraFront.getLatestResult();
+    }
+
+    public PhotonPipelineResult getLatestResultATB() {
+        return aprilTagCameraBack.getLatestResult();
     }
 
     public PhotonPipelineResult getLatestResultN() { // Get the latest result for the Note camera
-        return camera2.getLatestResult();
+        return noteCamera.getLatestResult();
+    }
+
+    public void update() {
+
     }
 
     /**
@@ -73,8 +89,8 @@ public class Vision {
      *         used for estimation.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        var visionEst = photonEstimator.update();
-        double latestTimestamp = camera1.getLatestResult().getTimestampSeconds();
+        var visionEst = photonEstimatorFront.update();
+        double latestTimestamp = aprilTagCameraFront.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         if (newResult)
             lastEstTimestamp = latestTimestamp;
@@ -92,11 +108,11 @@ public class Vision {
      */
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
         var estStdDevs = kSingleTagStdDevs;
-        var targets = getLatestResultAT().getTargets();
+        var targets = getLatestResultATF().getTargets();
         int numTags = 0;
         double avgDist = 0;
         for (var tgt : targets) {
-            var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+            var tagPose = photonEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
             if (tagPose.isEmpty())
                 continue;
             numTags++;

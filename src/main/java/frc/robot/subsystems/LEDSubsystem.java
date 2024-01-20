@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Vision;
 
 public class LEDSubsystem extends SubsystemBase {
   public DigitalOutput AllianceColor = new DigitalOutput(2); // Alliance color
@@ -15,11 +17,12 @@ public class LEDSubsystem extends SubsystemBase {
   public DigitalOutput NoteInIntake = new DigitalOutput(5);  // Sends if the Note is in the intake/outtake
   public DigitalOutput NoteOuttaked = new DigitalOutput(6);  // Sends if the Note has been outtaked
 
-  SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  Vision vision = new Vision();
+  VisionSubsystem vision;
 
   /** Creates a new LEDSubsystem. */
-  public LEDSubsystem() {}
+  public LEDSubsystem(VisionSubsystem m_VisionSubsystem) {
+    this.vision = m_VisionSubsystem;
+  }
 
   @Override
   public void periodic() {
@@ -32,8 +35,16 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  public BooleanSupplier checkRedAlliance() {
+        var alliance = DriverStation.getAlliance(); // Have to use var because of the optional container
+        if (alliance.isPresent()) {
+            return () -> alliance.get() == DriverStation.Alliance.Red;
+        }
+        return () -> false;
+    }
+
   public void setAllianceColor() {
-    AllianceColor.set(swerveSubsystem.checkRedAlliance().getAsBoolean()); // True is Red, False is Blue
+    AllianceColor.set(checkRedAlliance().getAsBoolean()); // True is Red, False is Blue
   }
 
   public void FoundNote(boolean foundNote) {
