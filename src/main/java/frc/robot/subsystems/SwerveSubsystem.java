@@ -2,13 +2,16 @@ package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
-
+import frc.robot.Robot;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
+
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -29,7 +32,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -98,18 +100,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
     /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
     public BooleanSupplier checkRedAlliance() {
-        var alliance = DriverStation.getAlliance(); // Have to use var because of the optional container
-        if (alliance.isPresent()) {
-            return () -> alliance.get() == DriverStation.Alliance.Red;
-        }
-        return () -> false;
+        return () -> Robot.getAlliance();
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         double translationX = translation.getX();
         double translationY = translation.getY();
 
-        if (checkRedAlliance().getAsBoolean()){
+        if (Robot.getAlliance()){
             translationX *= -1;
             translationY *= -1;
         }
@@ -203,16 +201,11 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
-    }
-
     /**
      * See
      * {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}.
      */
-    public void addVisionMeasurement(
-            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
         poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 
@@ -227,7 +220,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Correct pose estimate with vision measurements
-        var visionEst = vision.getEstimatedGlobalPose();
+        Optional<EstimatedRobotPose> visionEst = vision.getEstimatedGlobalPose();
         poseEstimator.update(getGyroYaw(), getModulePositions());
         visionEst.ifPresent(
                 est -> {
