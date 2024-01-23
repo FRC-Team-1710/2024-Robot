@@ -187,12 +187,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void zeroHeading() {
+        double degrees = Robot.getAlliance() ? Math.PI : 0;
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), new Rotation2d()));
+                new Pose2d(getPose().getTranslation(), new Rotation2d(degrees)));
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw().getValue());
+        return Rotation2d.fromDegrees(-gyro.getYaw().getValue());
     }
 
     public void resetModulesToAbsolute() {
@@ -221,7 +222,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // Correct pose estimate with vision measurements
         Optional<EstimatedRobotPose> visionEst = vision.getEstimatedGlobalPose();
-        poseEstimator.update(getGyroYaw(), getModulePositions());
+        poseEstimator.update(getHeading(), getModulePositions());
         visionEst.ifPresent(
                 est -> {
                     var estPose = est.estimatedPose.toPose2d();
@@ -242,5 +243,7 @@ public class SwerveSubsystem extends SubsystemBase {
         fusedPosePublisher.set(getEstimatedPosition());
 */
         SmartDashboard.putData("field", m_field);
+        SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
+        SmartDashboard.putNumber("Heading", getHeading().getDegrees());
     }
 }
