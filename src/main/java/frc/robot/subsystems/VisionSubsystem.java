@@ -41,19 +41,42 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 public class VisionSubsystem extends SubsystemBase {
-    private final PhotonCamera camera;
-    private final PhotonPoseEstimator photonEstimator;
+    private final PhotonCamera aprilTagCameraFront;
+    private final PhotonCamera aprilTagCameraBack;
+    private final PhotonCamera noteCamera;
+
+    public final PhotonPoseEstimator photonEstimatorFront;
+    public final PhotonPoseEstimator photonEstimatorBack;
+
     private double lastEstTimestamp = 0;
 
     public VisionSubsystem() {
-        camera = new PhotonCamera(kCameraName);
+        aprilTagCameraFront = new PhotonCamera(kAprilTagCameraFront);
+        aprilTagCameraBack = new PhotonCamera(kAprilTagCameraBack);
+        noteCamera = new PhotonCamera(kNoteCamera);
 
-        photonEstimator = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, camera, kRobotToCam);
+        photonEstimatorFront = new PhotonPoseEstimator(
+                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, kRobotToCamFront);
+        photonEstimatorBack = new PhotonPoseEstimator(
+                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, kRobotToCamBack);
+        photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    public PhotonPipelineResult getLatestResult() {
-        return camera.getLatestResult();
+    public PhotonPipelineResult getLatestResultATF() { // Get the latest result for the April Tag camera
+        return aprilTagCameraFront.getLatestResult();
+    }
+
+    public PhotonPipelineResult getLatestResultATB() {
+        return aprilTagCameraBack.getLatestResult();
+    }
+
+    public PhotonPipelineResult getLatestResultN() { // Get the latest result for the Note camera
+        return noteCamera.getLatestResult();
+    }
+
+    public void update() {
+
     }
 
     /**
@@ -65,8 +88,8 @@ public class VisionSubsystem extends SubsystemBase {
      *         used for estimation.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        var visionEst = photonEstimator.update();
-        double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
+        var visionEst = photonEstimatorFront.update();
+        double latestTimestamp = aprilTagCameraFront.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         if (newResult)
             lastEstTimestamp = latestTimestamp;
@@ -84,11 +107,11 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
         var estStdDevs = kSingleTagStdDevs;
-        var targets = getLatestResult().getTargets();
+        var targets = getLatestResultATF().getTargets();
         int numTags = 0;
         double avgDist = 0;
         for (var tgt : targets) {
-            var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+            var tagPose = photonEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
             if (tagPose.isEmpty())
                 continue;
             numTags++;
