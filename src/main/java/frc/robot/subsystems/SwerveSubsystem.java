@@ -35,12 +35,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
-    public SwerveDriveOdometry swerveOdometry;
+    //public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
-    private VisionSubsystem vision;
-    private final SwerveDrivePoseEstimator poseEstimator;
+    private final VisionSubsystem vision;
+    private final SwerveDrivePoseEstimator swerveOdomEstimator;
 
     private Field2d m_field = new Field2d();
 /* Doesn't work
@@ -62,7 +62,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-        swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
+        //swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
 
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
@@ -85,7 +85,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
         Vector<N3> visionStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); // Vision Odometry
 
-        poseEstimator = new SwerveDrivePoseEstimator(
+        swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
@@ -164,15 +164,17 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
+        //return swerveOdometry.getPoseMeters();
+        return swerveOdomEstimator.getEstimatedPosition();
     }
 
     public void setPose(Pose2d pose) {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        //swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
     public Pose2d getEstimatedPosition() {
-        return poseEstimator.getEstimatedPosition();
+        return swerveOdomEstimator.getEstimatedPosition();
     }
 
     public Rotation2d getHeading() {
@@ -180,14 +182,14 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setHeading(Rotation2d heading) {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), heading));
+        //swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
     }
 
     public void zeroHeading() {
-        double degrees = Robot.getAlliance() ? Math.PI : 0;
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), new Rotation2d(degrees)));
+        double radians = Robot.getAlliance() ? Math.PI : 0;
+        //swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
     }
 
     public Rotation2d getGyroYaw() {
@@ -205,12 +207,12 @@ public class SwerveSubsystem extends SubsystemBase {
      * {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}.
      */
     public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+        swerveOdomEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 
     @Override
     public void periodic() {
-        swerveOdometry.update(getGyroYaw(), getModulePositions());
+        //swerveOdometry.update(getGyroYaw(), getModulePositions());
 
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
@@ -219,24 +221,19 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Correct pose estimate with multiple vision measurements
-        Optional<EstimatedRobotPose> visionEst = vision.getEstimatedGlobalPose();
         Optional <EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
         if (OptionalEstimatedPoseFront.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
-            poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
         }
 
         Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
         if (OptionalEstimatedPoseBack.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
-            poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
         }
 
-        poseEstimator.update(getHeading(), getModulePositions());
-
-        if (visionEst.isPresent()) {
-            SmartDashboard.putString("Fused Pose", getEstimatedPosition().toString());
-        }
+        swerveOdomEstimator.update(getGyroYaw(), getModulePositions());
 
         m_field.setRobotPose(getEstimatedPosition());
 /* Doesn't work
@@ -244,6 +241,7 @@ public class SwerveSubsystem extends SubsystemBase {
         fusedPosePublisher.set(getEstimatedPosition());
 */
         SmartDashboard.putData("field", m_field);
+        SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
     }
