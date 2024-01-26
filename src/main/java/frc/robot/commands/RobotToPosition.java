@@ -19,7 +19,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotToPosition extends Command {
 
   // Constants such as camera and target height stored
-  final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(24);
+  final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(16.5);
   final double TARGET_HEIGHT_METERS = Units.inchesToMeters(1.5);
 
   // Angle between horizontal and the camera.
@@ -30,7 +30,6 @@ public class RobotToPosition extends Command {
 
   // PID Controller init
   PIDController forwardController, turnController;
-
   // Camera
   PhotonCamera camera = new PhotonCamera("OnionRing");
 

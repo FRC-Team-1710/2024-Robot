@@ -30,6 +30,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,10 +47,10 @@ public class SwerveSubsystem extends SubsystemBase {
     private Field2d m_field = new Field2d();
 /* Doesn't work
     StructPublisher<Pose2d> kinematicsPosePublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Kinematics Pose", Pose2d.struct).publish();
+    .getStructTopic("Kinematics Pose", Pose2d.struct).publish();*/
     StructPublisher<Pose2d> fusedPosePublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
-*/
+
 
     public SwerveSubsystem(VisionSubsystem vision) {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
@@ -82,8 +84,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // and how many or how frequently vision measurements are applied to the pose
         // estimator.
-        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
-        Vector<N3> visionStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); // Vision Odometry
+        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 0.1); // Encoder Odometry
+        Vector<N3> visionStdDevs = VecBuilder.fill(1, 1, 2); // Vision Odometry
 
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
@@ -237,9 +239,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
         m_field.setRobotPose(getEstimatedPosition());
 /* Doesn't work
-        kinematicsPosePublisher.set(getPose());
+        kinematicsPosePublisher.set(getPose());*/
         fusedPosePublisher.set(getEstimatedPosition());
-*/
+
         SmartDashboard.putData("field", m_field);
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
