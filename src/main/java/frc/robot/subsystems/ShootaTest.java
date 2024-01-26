@@ -25,7 +25,7 @@ import edu.wpi.first.math.controller.PIDController;
 
 public class ShootaTest extends SubsystemBase {
 
-  public CANSparkBase m_Wrist = new CANSparkMax(34, MotorType.kBrushless);
+  public CANSparkBase m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
   public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
   public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
   public CANSparkBase m_Intake = new CANSparkMax(5, MotorType.kBrushless); // leader
@@ -126,7 +126,13 @@ public class ShootaTest extends SubsystemBase {
   }
 
   public void PointShoot(double PointAngle, double launchVelocity) {
-
+  if (getAngle() > setpointp + 360) {
+      m_pidWrist.setPID(0, 0, 0);
+    } else {
+      m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
+    }
+    m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
+      m_pidShoota.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
   }
 
   public void sillyString(double speed) {

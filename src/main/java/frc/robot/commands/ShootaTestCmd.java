@@ -34,12 +34,41 @@ public class ShootaTestCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (A.getAsBoolean()) {
-      m_shootaTest.SetVelocityFromDashboard();
-    }
-    if (Y.getAsBoolean()) {
-      m_shootaTest.WristAngleSetFromSmartDashboard();
-    }
+    m_shootaTest.SetVelocityFromDashboard();
+    m_shootaTest.WristAngleSetFromSmartDashboard();
+
+    m_shootaTest.PointShoot(
+        FiringSolutions.getShooterAngle(
+            FiringSolutions.getShooterVelocityX(
+                m_SwerveSubsystem.getEstimatedPosition().getX(),
+                m_SwerveSubsystem.getEstimatedPosition().getY()),
+            FiringSolutions.getShooterVelocityZ(),
+            FiringSolutions.getRobotVelocityTowardsSpeaker(
+                m_SwerveSubsystem.getChassisSpeeds().vxMetersPerSecond,
+                m_SwerveSubsystem.getChassisSpeeds().vyMetersPerSecond,
+                FiringSolutions.getAngleToSpeaker(
+                    m_SwerveSubsystem.getEstimatedPosition().getX(),
+                    m_SwerveSubsystem.getEstimatedPosition().getY()),
+                m_SwerveSubsystem.getPose().getRotation().getRadians())),
+        FiringSolutions.getShooterVelocity(
+            FiringSolutions.getShooterVelocityX(
+                m_SwerveSubsystem.getEstimatedPosition().getX(),
+                m_SwerveSubsystem.getEstimatedPosition().getY()),
+            FiringSolutions.getShooterVelocityZ(),
+            FiringSolutions.getRobotVelocityTowardsSpeaker(
+                m_SwerveSubsystem.getChassisSpeeds().vxMetersPerSecond,
+                m_SwerveSubsystem.getChassisSpeeds().vyMetersPerSecond,
+                FiringSolutions.getAngleToSpeaker(
+                    m_SwerveSubsystem.getEstimatedPosition().getX(),
+                    m_SwerveSubsystem.getEstimatedPosition().getY()),
+                m_SwerveSubsystem.getPose().getRotation().getRadians()),
+            FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
+                m_SwerveSubsystem.getChassisSpeeds().vxMetersPerSecond,
+                m_SwerveSubsystem.getChassisSpeeds().vyMetersPerSecond,
+                FiringSolutions.getAngleToSpeaker(
+                    m_SwerveSubsystem.getEstimatedPosition().getX(),
+                    m_SwerveSubsystem.getEstimatedPosition().getY()),
+                m_SwerveSubsystem.getPose().getRotation().getRadians())));
   }
 
   // Called once the command ends or is interrupted.
