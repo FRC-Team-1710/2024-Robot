@@ -3,10 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-
 import frc.robot.Constants;
-
-import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -14,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 
 public class RobotToPosition extends Command {
@@ -30,19 +28,20 @@ public class RobotToPosition extends Command {
 
   // PID Controller init
   PIDController forwardController, turnController;
-  // Camera
-  PhotonCamera camera = new PhotonCamera("OnionRing");
 
+  // Subsystems
   public SwerveSubsystem swerveSubsystem;
+  public VisionSubsystem visionSubsystem;
 
-  public RobotToPosition(SwerveSubsystem swerveSubsystem) {
+  public RobotToPosition(SwerveSubsystem swerveSubsystem, VisionSubsystem visionSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
+    this.visionSubsystem = visionSubsystem;
 
-    // PID controllers
+    // PID Controllers
     forwardController = new PIDController(Constants.Swerve.driveKP, 0, Constants.Swerve.driveKD);
     turnController = new PIDController(Constants.Swerve.angleKP, 0, Constants.Swerve.angleKD);
 
-    addRequirements(swerveSubsystem);
+    addRequirements(swerveSubsystem, visionSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -52,7 +51,7 @@ public class RobotToPosition extends Command {
     Translation2d forwardSpeed;
     double rotationSpeed;
 
-    var result = camera.getLatestResult();
+    var result = visionSubsystem.getLatestResultN();
 
     if (result.hasTargets()) {
       // First calculate range
