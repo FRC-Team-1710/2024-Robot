@@ -5,11 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
-import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -18,9 +13,6 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix6.configs.*;
-import edu.wpi.first.math.*;
 import edu.wpi.first.math.controller.PIDController;
 
 public class ShootaTest extends SubsystemBase {
@@ -29,6 +21,7 @@ public class ShootaTest extends SubsystemBase {
   public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
   public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
   public CANSparkBase m_Intake = new CANSparkMax(5, MotorType.kBrushless); // leader
+  private static RelativeEncoder m_SpdEncoder;
   public static PIDController m_pidWrist; // create PIDController
   private static SparkPIDController m_pidShoota; // create PIDController
   private static SparkPIDController m_pidIntake; // create PIDController
@@ -46,7 +39,7 @@ public class ShootaTest extends SubsystemBase {
   /** Creates a new IntakeNWrist. */
 
   public ShootaTest() {
-
+    m_SpdEncoder = m_ShootaL.getEncoder();
     m_WristEncoder = new DutyCycleEncoder(1);
     m_Intake.restoreFactoryDefaults();
     m_ShootaL.restoreFactoryDefaults();
@@ -56,9 +49,9 @@ public class ShootaTest extends SubsystemBase {
     m_ShootaR.setInverted(true);
     m_pidShoota = m_ShootaL.getPIDController();
     // m_pidIntake = m_IntakeL.getPIDController();
-    int pidPosP = 0;
-    int pidPosI = 0;
-    int pidPosD = 0;
+    double pidPosP = .000001;
+    double pidPosI = 0;
+    double pidPosD = 0;
 
     double pidSpdP = .0000002;
     double pidSpdI = .0000004;
@@ -89,6 +82,9 @@ public class ShootaTest extends SubsystemBase {
     }
     SmartDashboard.putBoolean("ENCODER FAILURE", ENCFAIL);
   }
+public double getVelocity(){
+  return m_SpdEncoder.getVelocity();
+}
 
   public double getAngle() {
     getA = ((m_WristEncoder.get() * 120));

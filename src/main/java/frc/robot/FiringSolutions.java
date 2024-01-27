@@ -3,7 +3,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class FiringSolutions {
-    private static final double shooterHeight = 0.325;
+    private static final double shooterHeight = 0.355;
     private static final double noteFallAccel = 9.8;
     private static final double shooterTargetXBlue = 0.0;
     private static final double shooterTargetXRed = 16.54;
