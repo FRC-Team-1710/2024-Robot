@@ -25,7 +25,7 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
   private final ShootaTest m_Shoota = new ShootaTest();
-  private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem();
+ // private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem();
 
   /* Controllers */
   private final Joystick driver = new Joystick(0);
@@ -42,17 +42,26 @@ public class RobotContainer {
   private final JoystickButton AngleUP = new JoystickButton(mech, XboxController.Button.kY.value);
   private final JoystickButton AngleDown = new JoystickButton(mech, XboxController.Button.kA.value);
 
-  // private final JoystickButton DpadUP = new JoystickButton(driver,
-  // XboxController.povUp(event));
-  /* Subsystems */
-  // private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem();
+    /* Subsystems */
+    private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
+    private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
+    private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
 
   private final SendableChooser<Command> autoChooser;
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer() {
+        m_SwerveSubsystem.setDefaultCommand(
+            new TeleopSwerve(
+                m_SwerveSubsystem, 
+                () -> -driver.getRawAxis(translationAxis), 
+                () -> -driver.getRawAxis(strafeAxis), 
+                () -> -driver.getRawAxis(rotationAxis), 
+                () -> robotCentric.getAsBoolean()
+            )
+        );
+
+        m_LEDSubsystem.setAllianceColor();
 
     // Another option that allows you to specify the default auto by its name
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");

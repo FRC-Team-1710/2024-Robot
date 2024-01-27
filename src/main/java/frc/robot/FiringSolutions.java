@@ -1,6 +1,4 @@
 package frc.robot;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class FiringSolutions {
     private static final double shooterHeight = 0.355;
@@ -15,8 +13,8 @@ public final class FiringSolutions {
     private FiringSolutions(){
     }
 
-    public static void setAlliance(Alliance color){
-        if (color == Alliance.Red){
+    public static void setAlliance(boolean redAlliance){
+        if (redAlliance){
             shooterTargetX = shooterTargetXRed;
         } else {
             shooterTargetX = shooterTargetXBlue;
