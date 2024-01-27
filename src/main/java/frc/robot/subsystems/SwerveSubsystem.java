@@ -5,7 +5,6 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import java.util.Optional;
@@ -37,7 +36,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
-    //public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
@@ -45,10 +43,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
 
     private Field2d m_field = new Field2d();
-/* Doesn't work
-    StructPublisher<Pose2d> kinematicsPosePublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Kinematics Pose", Pose2d.struct).publish();*/
-    StructPublisher<Pose2d> fusedPosePublisher = NetworkTableInstance.getDefault()
+
+    StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
 
 
@@ -63,8 +59,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 new SwerveModule(2, Constants.Swerve.Mod2.constants),
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
-
-        //swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
 
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
@@ -166,12 +160,10 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        //return swerveOdometry.getPoseMeters();
         return swerveOdomEstimator.getEstimatedPosition();
     }
 
     public void setPose(Pose2d pose) {
-        //swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
         swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
@@ -184,13 +176,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setHeading(Rotation2d heading) {
-        //swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
         swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
     }
 
     public void zeroHeading() {
         double radians = Robot.getAlliance() ? Math.PI : 0;
-        //swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
         swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
     }
 
@@ -214,8 +204,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        //swerveOdometry.update(getGyroYaw(), getModulePositions());
-
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
@@ -238,9 +226,8 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdomEstimator.update(getGyroYaw(), getModulePositions());
 
         m_field.setRobotPose(getEstimatedPosition());
-/* Doesn't work
-        kinematicsPosePublisher.set(getPose());*/
-        fusedPosePublisher.set(getEstimatedPosition());
+
+        posePublisher.set(getPose());
 
         SmartDashboard.putData("field", m_field);
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
