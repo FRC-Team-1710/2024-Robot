@@ -32,7 +32,8 @@ public final class FiringSolutions {
 
     public static double getRobotVelocityTowardsSpeaker(double robotVelocityX, double robotVelocityY, double angleToSpeaker, double robotHeading){
         if (robotVelocityX == 0){
-            return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(-angleToSpeaker - robotHeading);
+            //return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(-angleToSpeaker - robotHeading);
+            return 0;
         } else {
             return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(Math.atan(robotVelocityY / robotVelocityX) - angleToSpeaker - robotHeading);
         }
@@ -40,7 +41,8 @@ public final class FiringSolutions {
 
     public static double getRobotVelocityPerpendicularToSpeaker(double robotVelocityX, double robotVelocityY, double angleToSpeaker, double robotHeading){
         if (robotVelocityX == 0){
-            return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(-angleToSpeaker - robotHeading);
+            //return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(-angleToSpeaker - robotHeading);
+            return 0;
         } else {
             return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(Math.atan(robotVelocityY / robotVelocityX) - angleToSpeaker - robotHeading);
         }
