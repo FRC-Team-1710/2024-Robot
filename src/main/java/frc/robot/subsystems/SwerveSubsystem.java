@@ -1,15 +1,16 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
-import frc.robot.Vision;
 import frc.robot.Constants;
-
+import frc.robot.Robot;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
+
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -30,28 +31,24 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
-    public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
-    private Vision vision;
-    private final SwerveDrivePoseEstimator poseEstimator;
+    private final VisionSubsystem vision;
+    private final SwerveDrivePoseEstimator swerveOdomEstimator;
 
     private Field2d m_field = new Field2d();
-/* Doesn't work
-    StructPublisher<Pose2d> kinematicsPosePublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Kinematics Pose", Pose2d.struct).publish();
-    StructPublisher<Pose2d> fusedPosePublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Fused Pose", Pose2d.struct).publish();
-*/
 
-    public SwerveSubsystem() {
+    StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
+    .getStructTopic("Fused Pose", Pose2d.struct).publish();
+
+
+    public SwerveSubsystem(VisionSubsystem vision) {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
@@ -63,19 +60,16 @@ public class SwerveSubsystem extends SubsystemBase {
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-        swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
-
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-                                                 // Constants class
+                new HolonomicPathFollowerConfig(
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                         4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        0.46, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 checkRedAlliance(),
@@ -84,10 +78,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // and how many or how frequently vision measurements are applied to the pose
         // estimator.
-        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
-        Vector<N3> visionStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); // Vision Odometry
+        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 0.1); // Encoder Odometry
+        Vector<N3> visionStdDevs = VecBuilder.fill(1, 1, 2); // Vision Odometry
 
-        poseEstimator = new SwerveDrivePoseEstimator(
+        swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
@@ -95,28 +89,32 @@ public class SwerveSubsystem extends SubsystemBase {
                 stateStdDevs,
                 visionStdDevs);
 
-        vision = new Vision();
+        this.vision = vision;
     }
 
     /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
     public BooleanSupplier checkRedAlliance() {
-        var alliance = DriverStation.getAlliance(); // Have to use var because of the optional container
-        if (alliance.isPresent()) {
-            return () -> alliance.get() == DriverStation.Alliance.Red;
-        }
-        return () -> false;
+        return () -> Robot.getAlliance();
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        double translationX = translation.getX();
+        double translationY = translation.getY();
+
+        if (Robot.getAlliance()){
+            translationX *= -1;
+            translationY *= -1;
+        }
+
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        translation.getX(),
-                        translation.getY(),
+                        translationX,
+                        translationY,
                         rotation,
                         getHeading())
                         : new ChassisSpeeds(
-                                translation.getX(),
-                                translation.getY(),
+                                translationX,
+                                translationY,
                                 rotation));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
@@ -162,15 +160,15 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
+        return swerveOdomEstimator.getEstimatedPosition();
     }
 
     public void setPose(Pose2d pose) {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
     public Pose2d getEstimatedPosition() {
-        return poseEstimator.getEstimatedPosition();
+        return swerveOdomEstimator.getEstimatedPosition();
     }
 
     public Rotation2d getHeading() {
@@ -178,13 +176,12 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setHeading(Rotation2d heading) {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), heading));
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
     }
 
     public void zeroHeading() {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        double radians = Robot.getAlliance() ? Math.PI : 0;
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
     }
 
     public Rotation2d getGyroYaw() {
@@ -197,51 +194,44 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
-    }
-
     /**
      * See
      * {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}.
      */
-    public void addVisionMeasurement(
-            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+        swerveOdomEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 
     @Override
     public void periodic() {
-        swerveOdometry.update(getGyroYaw(), getModulePositions());
-
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         }
 
-        // Correct pose estimate with vision measurements
-        var visionEst = vision.getEstimatedGlobalPose();
-        poseEstimator.update(getGyroYaw(), getModulePositions());
-        visionEst.ifPresent(
-                est -> {
-                    var estPose = est.estimatedPose.toPose2d();
-                    // Change our trust in the measurement based on the tags we can see
-                    var estStdDevs = vision.getEstimationStdDevs(estPose);
-
-                    addVisionMeasurement(
-                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                });
-
-        if (visionEst.isPresent()) {
-            SmartDashboard.putString("Fused Pose", getEstimatedPosition().toString());
+        // Correct pose estimate with multiple vision measurements
+        Optional <EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
+        if (OptionalEstimatedPoseFront.isPresent()) {
+            final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
         }
 
+        Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
+        if (OptionalEstimatedPoseBack.isPresent()) {
+            final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+        }
+
+        swerveOdomEstimator.update(getGyroYaw(), getModulePositions());
+
         m_field.setRobotPose(getEstimatedPosition());
-/* Doesn't work
-        kinematicsPosePublisher.set(getPose());
-        fusedPosePublisher.set(getEstimatedPosition());
-*/
+
+        posePublisher.set(getPose());
+
         SmartDashboard.putData("field", m_field);
+        SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
+        SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
+        SmartDashboard.putNumber("Heading", getHeading().getDegrees());
     }
 }
