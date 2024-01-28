@@ -29,7 +29,7 @@ public class RobotContainer {
 
   /* Controllers */
   private final Joystick driver = new Joystick(0);
-  private final Joystick mech = new Joystick(1);
+//  private final Joystick mech = new Joystick(1);
 
   /* Drive Controls */
   private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -39,8 +39,12 @@ public class RobotContainer {
   /* Driver Buttons */
   private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
   private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-  private final JoystickButton AngleUP = new JoystickButton(mech, XboxController.Button.kY.value);
-  private final JoystickButton AngleDown = new JoystickButton(mech, XboxController.Button.kA.value);
+  private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kY.value);
+  private final JoystickButton AngleDown = new JoystickButton(driver, XboxController.Button.kA.value);
+  private final JoystickButton wristUp = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+  private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton wristStop = new JoystickButton(driver, XboxController.Button.kBack.value);
+  private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kB.value);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -83,8 +87,12 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    AngleUP.onTrue(new ShootaTestCmd(m_Shoota, m_SwerveSubsystem));
-    // zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
+    //Shoot.whileTrue(new FIREEE(m_Shoota, m_SwerveSubsystem));
+    zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
+    wristUp.onTrue(new ManRizzt(m_Shoota, .05));
+    wristDown.onTrue(new ManRizzt(m_Shoota, -.05));
+    wristStop.onTrue(new ManRizzt(m_Shoota, 0));
+    zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetEncoder()));
 
   }
 

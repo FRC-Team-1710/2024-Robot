@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
@@ -17,128 +18,144 @@ import edu.wpi.first.math.controller.PIDController;
 
 public class ShootaTest extends SubsystemBase {
 
-  public CANSparkBase m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
-  public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
-  public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
-  public CANSparkBase m_Intake = new CANSparkMax(5, MotorType.kBrushless); // leader
-  private static RelativeEncoder m_SpdEncoder;
-  public static PIDController m_pidWrist; // create PIDController
-  private static SparkPIDController m_pidShoota; // create PIDController
-  private static SparkPIDController m_pidIntake; // create PIDController
-  private static DutyCycleEncoder m_WristEncoder; // create encoder
-  private double setpointv = 0;
-  private double setpointp = 0;
-  private Boolean ENCFAIL;
-  public double getA;
+    public CANSparkBase m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
+    public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
+    public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
+    private RelativeEncoder m_VelocityEncoder;
+    public PIDController m_pidWrist; // create PIDController
+    private SparkPIDController leftPID; // create PIDController
+    private SparkPIDController rightPID;
+    private DutyCycleEncoder m_WristEncoder; // create encoder
+    private double setpointv = 0;
+    private double setpointp = 0;
+    private Boolean ENCFAIL;
+    public double getA;
 
-  int pidPosP = 0;
-  int pidPosI = 0;
-  int pidPosD = 0;
-  double getH;
+    private double pidSpdP = .0000002;
+    private double pidSpdI = .0000002;
+    private double pidSpdD = .006;
 
-  /** Creates a new IntakeNWrist. */
+    private double pidPosP = .01;
+    private double pidPosI = 0;
+    private double pidPosD = 0;
 
-  public ShootaTest() {
-    m_SpdEncoder = m_ShootaL.getEncoder();
-    m_WristEncoder = new DutyCycleEncoder(1);
-    m_Intake.restoreFactoryDefaults();
-    m_ShootaL.restoreFactoryDefaults();
-    m_ShootaR.restoreFactoryDefaults();
-    m_Wrist.restoreFactoryDefaults();
-    m_ShootaR.follow(m_ShootaL);
-    m_ShootaR.setInverted(true);
-    m_pidShoota = m_ShootaL.getPIDController();
-    // m_pidIntake = m_IntakeL.getPIDController();
-    double pidPosP = .000001;
-    double pidPosI = 0;
-    double pidPosD = 0;
+    private double spin = 0;
 
-    double pidSpdP = .0000002;
-    double pidSpdI = .0000004;
-    double pidSpdD = .0016;
-    // wrist
-    m_pidWrist = new PIDController(pidPosP, pidPosI, pidPosD);
-    // Shoota
-    m_pidShoota.setP(pidSpdP, 0);
-    m_pidShoota.setI(pidSpdI, 0);
-    m_pidShoota.setD(pidSpdD, 0);
-    // intake
-    // m_pidIntake.setP(pidSpdP,0);
-    // m_pidIntake.setI(pidSpdI,0);
-    // m_pidIntake.setD(pidSpdD,0);
+    double getH;
 
-  }
+    public ShootaTest() {
+        m_VelocityEncoder = m_ShootaL.getEncoder();
+        m_WristEncoder = new DutyCycleEncoder(9);
+        m_ShootaL.restoreFactoryDefaults();
+        m_ShootaR.restoreFactoryDefaults();
+        m_Wrist.restoreFactoryDefaults();
+//        m_ShootaR.follow(m_ShootaL, false);
+        m_ShootaR.setInverted(true);
+        leftPID = m_ShootaL.getPIDController();
+        rightPID = m_ShootaR.getPIDController();
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    SmartDashboard.getNumber("velocity", setpointv);
-    SmartDashboard.getNumber("angle", setpointp);
-    SmartDashboard.putNumber("encoder angle", getAngle());
-    if (getAngle() == 0) {
-      ENCFAIL = true;
-    } else {
-      ENCFAIL = false;
+        // wrist
+        m_pidWrist = new PIDController(pidPosP, pidPosI, pidPosD);
+
+        SmartDashboard.putNumber("set velocity", 0);
+        SmartDashboard.putNumber("set angle", 0);
+
+        SmartDashboard.putNumber("Velo P", pidSpdP);
+        SmartDashboard.putNumber("Velo I", pidSpdI);
+        SmartDashboard.putNumber("Velo D", pidSpdD);
+        SmartDashboard.putNumber("Spin", spin);
+
+        resetEncoder();
     }
-    SmartDashboard.putBoolean("ENCODER FAILURE", ENCFAIL);
-  }
-public double getVelocity(){
-  return m_SpdEncoder.getVelocity();
-}
 
-  public double getAngle() {
-    getA = ((m_WristEncoder.get() * 120));
-    return getA;
-  }
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        pidSpdP = SmartDashboard.getNumber("Velo P", pidSpdP);
+        pidSpdI = SmartDashboard.getNumber("Velo I", pidSpdI);
+        pidSpdD = SmartDashboard.getNumber("Velo D", pidSpdD);
 
-  public void resetEncoder() {
-    m_WristEncoder.reset();
-  }
+        leftPID.setP(pidSpdP, 0);
+        leftPID.setI(pidSpdI, 0);
+        leftPID.setD(pidSpdD, 0);
 
-  public void wristManualSet(double angle) {
-    // double x = (42 / 360) * angle;
-    m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
-  }
+        rightPID.setP(pidSpdP, 0);
+        rightPID.setI(pidSpdI, 0);
+        rightPID.setD(pidSpdD, 0);
 
-  public void WristAngleSetFromSmartDashboard() {
-    if (getAngle() > setpointp + 360) {
-      m_pidWrist.setPID(0, 0, 0);
-    } else {
-      m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
+        spin = SmartDashboard.getNumber("Spin", spin);
+
+        setpointv = SmartDashboard.getNumber("set velocity", setpointv);
+        setpointp = SmartDashboard.getNumber("set angle", setpointp);
+        SmartDashboard.putNumber("current angle", getAngle());
+        SmartDashboard.putNumber("current velocity", getVelocity());
+
+        if (getAngle() == 0) {
+            ENCFAIL = true;
+        } else {
+            ENCFAIL = false;
+        }
+        SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
+
+        //SetShooterVelocity(setpointv);
+        //wristManualSet(setpointp);
     }
-    m_Wrist.set(m_pidWrist.calculate(getAngle(), setpointp));
-  }
 
-  public void Intaking(double speed) {
-    m_pidIntake.setReference(speed, CANSparkMax.ControlType.kVelocity);
-  }
-
-  public void ManualShootaSPD(double velocity) {
-    m_pidShoota.setReference(velocity, CANSparkMax.ControlType.kVelocity);
-  }
-
-  public void SetVelocityFromDashboard() {
-    m_pidShoota.setReference(setpointv, CANSparkMax.ControlType.kVelocity);
-  }
-
-  public void PointShoot(double PointAngle, double launchVelocity) {
-  if (getAngle() > setpointp + 360) {
-      m_pidWrist.setPID(0, 0, 0);
-    } else {
-      m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
+    public double getVelocity() {
+        return m_VelocityEncoder.getVelocity();
     }
-    m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
-      m_pidShoota.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
-  }
 
-  public void sillyString(double speed) {
-    m_ShootaL.set(speed);
+    public double getAngle() {
+        //getA = ((m_WristEncoder.get() * 360));
+        return m_WristEncoder.get() * 120;
+    }
 
-  }
+    public void resetEncoder() {
+        m_WristEncoder.reset();
+    }
 
-  public void StartShoota() {
-    resetEncoder();
-    wristManualSet(0);
-  }
+    public void wristManualSet(double angle) {
+        // double x = (42 / 360) * angle;
+        m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
+    }
+
+    public void WristAngleSetFromSmartDashboard() {
+        if (getAngle() > setpointp + 360) {
+            m_pidWrist.setPID(0, 0, 0);
+        } else {
+            m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
+        }
+        m_Wrist.set(m_pidWrist.calculate(getAngle(), setpointp));
+    }
+
+    public void SetShooterVelocity(double velocity) {
+        leftPID.setReference(velocity + spin, CANSparkMax.ControlType.kVelocity);
+        rightPID.setReference(velocity - spin, CANSparkMax.ControlType.kVelocity);
+    }
+
+
+    public void PointShoot(double PointAngle, double launchVelocity) {
+        if (getAngle() > setpointp + 360) {
+            m_pidWrist.setPID(0, 0, 0);
+        } else {
+            m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
+        }
+        m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
+        leftPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
+        rightPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
+    }
+
+    public void sillyString(double speed) {
+        m_ShootaL.set(speed);
+    }
+
+    public void StartShoota() {
+        resetEncoder();
+        wristManualSet(0);
+    }
+
+    public void manualWristSpeed(double speed){
+        m_Wrist.set(speed);
+    }
 
 }
