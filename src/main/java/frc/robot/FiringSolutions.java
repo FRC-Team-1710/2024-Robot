@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 public final class FiringSolutions {
     private static final double shooterHeight = 0.355;
     private static final double noteFallAccel = 9.8;
@@ -31,20 +33,35 @@ public final class FiringSolutions {
     }
 
     public static double getRobotVelocityTowardsSpeaker(double robotVelocityX, double robotVelocityY, double angleToSpeaker, double robotHeading){
-        if (robotVelocityX == 0){
-            //return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(-angleToSpeaker - robotHeading);
-            return 0;
+        if (shooterTargetX == shooterTargetXRed){
+            if (robotVelocityX == 0){
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(-angleToSpeaker - robotHeading);
+            } else {
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(Math.atan(robotVelocityY / robotVelocityX) - angleToSpeaker - robotHeading);
+            }
         } else {
-            return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(Math.atan(robotVelocityY / robotVelocityX) - angleToSpeaker - robotHeading);
+            if (robotVelocityX == 0){
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(angleToSpeaker + robotHeading);
+            } else {
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(Math.atan(robotVelocityY / robotVelocityX) + angleToSpeaker + robotHeading);
+            }
         }
+        
     }
 
     public static double getRobotVelocityPerpendicularToSpeaker(double robotVelocityX, double robotVelocityY, double angleToSpeaker, double robotHeading){
-        if (robotVelocityX == 0){
-            //return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(-angleToSpeaker - robotHeading);
-            return 0;
+        if (shooterTargetX == shooterTargetXRed){
+            if (robotVelocityX == 0){
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(-angleToSpeaker - robotHeading);
+            } else {
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(Math.atan(robotVelocityY / robotVelocityX) - angleToSpeaker - robotHeading);
+            }
         } else {
-            return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(Math.atan(robotVelocityY / robotVelocityX) - angleToSpeaker - robotHeading);
+            if (robotVelocityX == 0){
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(angleToSpeaker + robotHeading);
+            } else {
+                return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.sin(Math.atan(robotVelocityY / robotVelocityX) + angleToSpeaker + robotHeading);
+            }
         }
     }
 
