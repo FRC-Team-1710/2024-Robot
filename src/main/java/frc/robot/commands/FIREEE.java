@@ -29,16 +29,12 @@ public class FIREEE extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-    }
-
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-
         // m_shootaTest.SetVelocityFromDashboard();
         // m_shootaTest.WristAngleSetFromSmartDashboard();
 
         Pose2d pose = m_SwerveSubsystem.getPose();
+        double rotation = (pose.getRotation().getRadians() + Math.PI) % 2 * Math.PI;
+
         ChassisSpeeds chassisSpeeds = m_SwerveSubsystem.getChassisSpeeds();
         double shooterAngle = FiringSolutions.getShooterAngle(
                 pose.getX(),
@@ -49,10 +45,9 @@ public class FIREEE extends Command {
                         FiringSolutions.getAngleToSpeaker(
                                 pose.getX(),
                                 pose.getY()),
-                        pose.getRotation().getRadians()));
+                        rotation));
         double shooterVelocity = FiringSolutions.getShooterVelocity(
-                pose.getX(),
-                pose.getY(),
+                FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
                 FiringSolutions.getShooterVelocityZ(),
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
                         chassisSpeeds.vxMetersPerSecond,
@@ -60,23 +55,33 @@ public class FIREEE extends Command {
                         FiringSolutions.getAngleToSpeaker(
                                 pose.getX(),
                                 pose.getY()),
+                        pose.getRotation().getRadians()),
+                FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
+                        chassisSpeeds.vxMetersPerSecond,
+                        chassisSpeeds.vyMetersPerSecond,
+                        FiringSolutions.getAngleToSpeaker(
+                                pose.getX(),
+                                pose.getY()),
                         pose.getRotation().getRadians()));
 
-        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle);
-        SmartDashboard.putNumber("Calculated Velocity Set", shooterVelocity);
-        SmartDashboard.putNumber("Converted Velocity Set", FiringSolutions.convertToRPM(shooterVelocity));
-
         m_shootaTest.PointShoot(shooterAngle, FiringSolutions.convertToRPM(shooterVelocity));
+    }
+
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        m_shootaTest.SetShooterVelocity(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return true;
+        return false;
     }
 }

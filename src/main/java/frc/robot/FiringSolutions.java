@@ -29,7 +29,7 @@ public final class FiringSolutions {
     }
 
     public static double getDistanceToSpeaker(double robotX, double robotY){
-        return Math.sqrt(Math.pow(shooterTargetX - robotX, 2) + Math.pow(shooterTargetY - robotY, 2));
+        return Math.abs(Math.sqrt(Math.pow(shooterTargetX - robotX, 2) + Math.pow(shooterTargetY - robotY, 2)));
     }
 
     public static double getRobotVelocityTowardsSpeaker(double robotVelocityX, double robotVelocityY, double angleToSpeaker, double robotHeading){
@@ -46,7 +46,6 @@ public final class FiringSolutions {
                 return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2)) * Math.cos(Math.atan(robotVelocityY / robotVelocityX) + angleToSpeaker + robotHeading);
             }
         }
-        
     }
 
     public static double getRobotVelocityPerpendicularToSpeaker(double robotVelocityX, double robotVelocityY, double angleToSpeaker, double robotHeading){
@@ -78,7 +77,7 @@ public final class FiringSolutions {
     }
 
     public static double convertToRPM(double velocity) {
-        return (slipPercent * 60 * velocity)/(.75 * Math.PI * .1524);
+        return (60 * velocity)/(slipPercent * .75 * Math.PI * .1524);
     }
 
     public static double getShooterAngle(double shooterVelocityX, double shooterVelocityZ, double robotVelocityTowardsSpeaker){

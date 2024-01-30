@@ -86,7 +86,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
-                new Pose2d(1.5, 5.55, new Rotation2d(0)),
+                new Pose2d(2.4, 5.55, new Rotation2d(0)),
                 stateStdDevs,
                 visionStdDevs);
 
@@ -248,8 +248,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                 pose.getY()),
                         pose.getRotation().getRadians()));
         double shooterVelocity = FiringSolutions.getShooterVelocity(
-                pose.getX(),
-                pose.getY(),
+                FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
                 FiringSolutions.getShooterVelocityZ(),
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
                         chassisSpeeds.vxMetersPerSecond,
@@ -257,9 +256,19 @@ public class SwerveSubsystem extends SubsystemBase {
                         FiringSolutions.getAngleToSpeaker(
                                 pose.getX(),
                                 pose.getY()),
-                        pose.getRotation().getRadians()));
+                        pose.getRotation().getRadians()),
+                FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
+                    chassisSpeeds.vxMetersPerSecond,
+                    chassisSpeeds.vyMetersPerSecond,
+                    FiringSolutions.getAngleToSpeaker(
+                            pose.getX(),
+                            pose.getY()),
+                    pose.getRotation().getRadians()));
 
-        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle);
+        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle * 180 / Math.PI);
+        SmartDashboard.putNumber("distance", FiringSolutions.getDistanceToSpeaker(pose.getX(), pose.getY()));
+        SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
+        SmartDashboard.putNumber("Vz", FiringSolutions.getShooterVelocityZ());
         SmartDashboard.putNumber("Calculated Velocity Set", shooterVelocity);
         SmartDashboard.putNumber("Converted Velocity Set", FiringSolutions.convertToRPM(shooterVelocity));
     }

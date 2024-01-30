@@ -86,7 +86,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    //Shoot.whileTrue(new FIREEE(m_Shoota, m_SwerveSubsystem));
+    Shoot.whileTrue(new FIREEE(m_Shoota, m_SwerveSubsystem));
+    //Shoot.onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
     zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
     wristUp.onTrue(new ManRizzt(m_Shoota, .05));
     wristDown.onTrue(new ManRizzt(m_Shoota, -.05));

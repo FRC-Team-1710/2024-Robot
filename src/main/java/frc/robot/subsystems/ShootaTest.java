@@ -49,7 +49,7 @@ public class ShootaTest extends SubsystemBase {
         m_ShootaR.restoreFactoryDefaults();
         m_Wrist.restoreFactoryDefaults();
 //        m_ShootaR.follow(m_ShootaL, false);
-        m_ShootaR.setInverted(true);
+        //m_ShootaR.setInverted(false);
         leftPID = m_ShootaL.getPIDController();
         rightPID = m_ShootaR.getPIDController();
 
