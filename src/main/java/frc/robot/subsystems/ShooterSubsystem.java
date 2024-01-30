@@ -151,7 +151,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_ShootaL.set(speed);
     }
 
-    public void StartShoota() { // TODO ??????????
+    public void StartShoota() { // TODO: ??????????
         resetWristEncoder();
         wristManualSet(0);
     }
@@ -175,8 +175,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // Calculate angle
         shooterAngle = FiringSolutions.getShooterAngle(
-                pose.getX(),
-                pose.getY(),
+                FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
+                FiringSolutions.getShooterVelocityZ(),
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
                         chassisSpeeds.vxMetersPerSecond,
                         chassisSpeeds.vyMetersPerSecond,
