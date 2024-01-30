@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
-import frc.robot.FiringSolutions;
 import frc.robot.Robot;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -234,42 +233,5 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
-
-        Pose2d pose = getPose();
-        ChassisSpeeds chassisSpeeds = getChassisSpeeds();
-        double shooterAngle = FiringSolutions.getShooterAngle(
-                pose.getX(),
-                pose.getY(),
-                FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        chassisSpeeds.vxMetersPerSecond,
-                        chassisSpeeds.vyMetersPerSecond,
-                        FiringSolutions.getAngleToSpeaker(
-                                pose.getX(),
-                                pose.getY()),
-                        pose.getRotation().getRadians()));
-        double shooterVelocity = FiringSolutions.getShooterVelocity(
-                FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
-                FiringSolutions.getShooterVelocityZ(),
-                FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        chassisSpeeds.vxMetersPerSecond,
-                        chassisSpeeds.vyMetersPerSecond,
-                        FiringSolutions.getAngleToSpeaker(
-                                pose.getX(),
-                                pose.getY()),
-                        pose.getRotation().getRadians()),
-                FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
-                    chassisSpeeds.vxMetersPerSecond,
-                    chassisSpeeds.vyMetersPerSecond,
-                    FiringSolutions.getAngleToSpeaker(
-                            pose.getX(),
-                            pose.getY()),
-                    pose.getRotation().getRadians()));
-
-        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle * 180 / Math.PI);
-        SmartDashboard.putNumber("distance", FiringSolutions.getDistanceToSpeaker(pose.getX(), pose.getY()));
-        SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
-        SmartDashboard.putNumber("Vz", FiringSolutions.getShooterVelocityZ());
-        SmartDashboard.putNumber("Calculated Velocity Set", shooterVelocity);
-        SmartDashboard.putNumber("Converted Velocity Set", FiringSolutions.convertToRPM(shooterVelocity));
     }
 }

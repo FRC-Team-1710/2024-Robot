@@ -1,7 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
 public final class FiringSolutions {
     private static final double shooterHeight = 0.355;
     private static final double noteFallAccel = 9.8;

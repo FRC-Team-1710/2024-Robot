@@ -5,14 +5,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShootaTest;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class ManRizzt extends Command {
 
-    ShootaTest shooterSubsystem;
+    ShooterSubsystem shooterSubsystem;
     private double speed;
 
-    public ManRizzt(ShootaTest subsystem, double speed) {
+    public ManRizzt(ShooterSubsystem subsystem, double speed) {
         // Use addRequirements() here to declare subsystem dependencies.
         shooterSubsystem = subsystem;
         this.speed = speed;
@@ -31,11 +31,11 @@ public class ManRizzt extends Command {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return false;
     }
 
     @Override
     public void end(boolean interrupted) {
-        //shooterSubsystem.manualWristSpeed(0);
+        shooterSubsystem.manualWristSpeed(0);
     }
 }
