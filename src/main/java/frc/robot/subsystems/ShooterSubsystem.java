@@ -22,7 +22,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class ShooterSubsystem extends SubsystemBase {
 
     public CANSparkBase m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
-    public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
+    public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless);
     public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
     private RelativeEncoder m_VelocityEncoder;
     public PIDController m_pidWrist; // create PIDController
@@ -43,6 +43,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private double shooterVelocity;
     private double shooterAngle;
+
+    public boolean isZeroed = false;
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -70,8 +72,6 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Velo P", pidSpdP);
         SmartDashboard.putNumber("Velo I", pidSpdI);
         SmartDashboard.putNumber("Velo D", pidSpdD);
-
-        resetWristEncoder();
     }
 
     @Override
@@ -97,18 +97,19 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("current velocity", getVelocity());
 
         // check for encoder failure
-        if (getAngle() == 0) {
-            ENCFAIL = true;
-        } else {
+        if (m_WristEncoder.isConnected()) {
             ENCFAIL = false;
+        } else {
+            ENCFAIL = true;
         }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
+        //updateShooterMath();
 
+        wristManualSet(setpointp);
         //SetShooterVelocity(setpointv);
-        //wristManualSet(setpointp);
     }
 
-    public double getVelocity() {
+    public double getVelocity() {  
         return m_VelocityEncoder.getVelocity();
     }
 
@@ -118,6 +119,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void resetWristEncoder() {
         m_WristEncoder.reset();
+        isZeroed = true;
     }
 
     public void wristManualSet(double angle) {
@@ -168,8 +170,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooterAngle;
     }
 
-    public void updateShooterMath() {
-        // Shooter Math
+    public void updateShooterMath() { // Shooter Math
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
 

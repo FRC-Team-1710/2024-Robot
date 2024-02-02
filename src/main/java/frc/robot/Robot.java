@@ -34,6 +34,8 @@ public class Robot extends TimedRobot {
 
     public static boolean redAlliance;
 
+    private boolean isZeroed = false;
+
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
@@ -102,6 +104,11 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
+        if (!isZeroed){ // because the encoder doesn't zero on init, or in any of the contructors
+             m_robotContainer.m_Shoota.resetWristEncoder();
+             isZeroed = true;
+        }
+        
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         FiringSolutions.setAlliance(redAlliance);
@@ -119,6 +126,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        if (!isZeroed){ // because the encoder doesn't zero on init, or in any of the contructors
+             m_robotContainer.m_Shoota.resetWristEncoder();
+             isZeroed = true;
+        }
+
         FiringSolutions.setAlliance(redAlliance);
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
