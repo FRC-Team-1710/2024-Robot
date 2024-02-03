@@ -85,7 +85,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
-                new Pose2d(2.4, 5.55, new Rotation2d(0)),
+                new Pose2d(1.39, 5.55, new Rotation2d(0)),
                 stateStdDevs,
                 visionStdDevs);
 
@@ -217,11 +217,11 @@ public class SwerveSubsystem extends SubsystemBase {
             swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
         }
 
-        Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
+       /*  Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
         if (OptionalEstimatedPoseBack.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
             swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
-        }
+        }*/
 
         swerveOdomEstimator.update(getGyroYaw(), getModulePositions());
 

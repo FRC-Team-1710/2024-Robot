@@ -59,7 +59,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_ShootaL.restoreFactoryDefaults();
         m_ShootaR.restoreFactoryDefaults();
         m_Wrist.restoreFactoryDefaults();
-        //m_ShootaR.setInverted(false);
+        m_ShootaR.setInverted(true);
 
         // PID
         leftPID = m_ShootaL.getPIDController();
@@ -122,7 +122,7 @@ public class ShooterSubsystem extends SubsystemBase {
         isZeroed = true;
     }
 
-    public void wristManualSet(double angle) {
+    public void setWristPosition(double angle) {
         m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
     }
 
@@ -131,20 +131,10 @@ public class ShooterSubsystem extends SubsystemBase {
         rightPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
     }
 
-
     public void PointShoot(double PointAngle, double launchVelocity) {
         m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
         leftPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
         rightPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
-    }
-
-    public void sillyString(double speed) {
-        m_ShootaL.set(speed);
-    }
-
-    public void StartShoota() { // TODO: ??????????
-        resetWristEncoder();
-        wristManualSet(0);
     }
 
     public void manualWristSpeed(double speed){
