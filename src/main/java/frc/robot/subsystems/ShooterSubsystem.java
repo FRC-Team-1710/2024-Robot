@@ -37,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private double pidSpdI = .0000002;
     private double pidSpdD = .006;
 
-    private double pidPosP = .01;
+    private double pidPosP = 2;
     private double pidPosI = 0;
     private double pidPosD = 0;
 
@@ -103,9 +103,9 @@ public class ShooterSubsystem extends SubsystemBase {
             ENCFAIL = true;
         }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
-        //updateShooterMath();
+        updateShooterMath();
 
-        wristManualSet(setpointp);
+        //wristManualSet(setpointp);
         //SetShooterVelocity(setpointv);
     }
 
@@ -114,7 +114,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getAngle() {
-        return m_WristEncoder.get() * 120;
+        return m_WristEncoder.get() * 2 * Math.PI / 3;
     }
 
     public void resetWristEncoder() {
@@ -123,12 +123,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void wristManualSet(double angle) {
-        // double x = (42 / 360) * angle;
-        /*if (getAngle() > setpointp + 360) {
-            m_pidWrist.setPID(0, 0, 0);
-        } else {
-            m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
-        }*/
         m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
     }
 
@@ -139,11 +133,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
     public void PointShoot(double PointAngle, double launchVelocity) {
-        if (getAngle() > setpointp + 360) {
-            m_pidWrist.setPID(0, 0, 0);
-        } else {
-            m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
-        }
         m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
         leftPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
         rightPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
@@ -179,8 +168,9 @@ public class ShooterSubsystem extends SubsystemBase {
                 FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
                 FiringSolutions.getShooterVelocityZ(),
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        chassisSpeeds.vxMetersPerSecond,
-                        chassisSpeeds.vyMetersPerSecond,
+//                        chassisSpeeds.vxMetersPerSecond,
+//                        chassisSpeeds.vyMetersPerSecond,
+0,0,
                         FiringSolutions.getAngleToSpeaker(
                                 pose.getX(),
                                 pose.getY()),
@@ -191,21 +181,23 @@ public class ShooterSubsystem extends SubsystemBase {
                 FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
                 FiringSolutions.getShooterVelocityZ(),
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        chassisSpeeds.vxMetersPerSecond,
-                        chassisSpeeds.vyMetersPerSecond,
+//                        chassisSpeeds.vxMetersPerSecond,
+//                        chassisSpeeds.vyMetersPerSecond,
+0,0,
                         FiringSolutions.getAngleToSpeaker(
                                 pose.getX(),
                                 pose.getY()),
                         pose.getRotation().getRadians()),
                 FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
-                    chassisSpeeds.vxMetersPerSecond,
-                    chassisSpeeds.vyMetersPerSecond,
+//                    chassisSpeeds.vxMetersPerSecond,
+//                    chassisSpeeds.vyMetersPerSecond,
+0,0,
                     FiringSolutions.getAngleToSpeaker(
                             pose.getX(),
                             pose.getY()),
                     pose.getRotation().getRadians()));
 
-        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle * 180 / Math.PI);
+        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle);
         SmartDashboard.putNumber("distance", FiringSolutions.getDistanceToSpeaker(pose.getX(), pose.getY()));
         SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
         SmartDashboard.putNumber("Vz", FiringSolutions.getShooterVelocityZ());
