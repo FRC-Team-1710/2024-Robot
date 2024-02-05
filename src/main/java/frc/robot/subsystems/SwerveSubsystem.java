@@ -31,9 +31,24 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.MutableMeasure.mutable;
 
 public class SwerveSubsystem extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
@@ -41,11 +56,41 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
+      private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(),
+      new SysIdRoutine.Mechanism(
+          (Measure<Voltage> volts) -> {
+            voltage(volts.in(Units.Volts));
+          },
+          this::sysidroutine,
+          this));
 
     private Field2d m_field = new Field2d();
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
+
+    public void sysidroutine(SysIdRoutineLog log){
+            log.motor("drive-left")
+                .voltage(
+                    m_appliedVoltage.mut_replace(
+                        mSwerveMods[3].getMotorVoltage(), Volts))
+                .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
+                .linearVelocity(
+                    m_velocity.mut_replace(mSwerveMods[3].getVelocity(), MetersPerSecond));
+            log.motor("drive-right")
+                .voltage(
+                    m_appliedVoltage.mut_replace(
+                        mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
+                .linearVelocity(
+                    m_velocity.mut_replace(mSwerveMods[0].getVelocity(), MetersPerSecond));
+
+    }
 
 
     public SwerveSubsystem(VisionSubsystem vision) {
@@ -202,6 +247,12 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdomEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 
+    public void voltage(double Voltage ){
+         for (SwerveModule mod : mSwerveMods) {
+            mod.voltagedrive(Voltage);
+         }
+    }
+
     @Override
     public void periodic() {
         for (SwerveModule mod : mSwerveMods) {
@@ -233,5 +284,15 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
+
+        
     }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+  return m_sysIdRoutine.quasistatic(direction);
+}
+
+public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+  return m_sysIdRoutine.dynamic(direction);
+}
 }
