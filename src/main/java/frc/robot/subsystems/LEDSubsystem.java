@@ -10,12 +10,14 @@ import frc.robot.Robot;
 
 public class LEDSubsystem extends SubsystemBase {
   public DigitalOutput AllianceColor = new DigitalOutput(2); // Alliance color
-  public DigitalOutput FoundNote = new DigitalOutput(3);     // Sends if the camera 'OnionRing' sees a note
+  public DigitalOutput HasNote = new DigitalOutput(3);     // Sends if the camera 'OnionRing' sees a note
   public DigitalOutput Aimed = new DigitalOutput(4);         // Sends if the outtake is aimed
   public DigitalOutput NoteInIntake = new DigitalOutput(5);  // Sends if the Note is in the intake/outtake
   public DigitalOutput NoteOuttaked = new DigitalOutput(6);  // Sends if the Note has been outtaked
 
   VisionSubsystem vision;
+
+  boolean m_hasNote = false;
 
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem(VisionSubsystem m_VisionSubsystem) {
@@ -27,9 +29,9 @@ public class LEDSubsystem extends SubsystemBase {
     var results = vision.getLatestResultN();
 
     if (results.hasTargets()) {
-      FoundNote(true);
+      HasNote(true);
     } else {
-      FoundNote(false);
+      HasNote(false);
     }
   }
 
@@ -37,16 +39,26 @@ public class LEDSubsystem extends SubsystemBase {
     AllianceColor.set(Robot.getAlliance()); // True is Red, False is Blue
   }
 
-  public void FoundNote(boolean foundNote) {
-    FoundNote.set(foundNote);
+  public void HasNote(boolean hasNote) {
+    m_hasNote = hasNote;
+    HasNote.set(hasNote);
   }
 
-  public void Aimed(boolean aimed) {
-    Aimed.set(aimed);
+  public void HasNote() {
+    if (m_hasNote) {
+      m_hasNote = false;
+    } else {
+      m_hasNote = true;
+    }
+    HasNote.set(m_hasNote);
   }
 
   public void NoteInIntake(boolean noteInIntake) {
     NoteInIntake.set(noteInIntake);
+  }
+
+  public void Aimed(boolean aimed) {
+    Aimed.set(aimed);
   }
 
   public void NoteOuttaked(boolean noteOuttaked) {
