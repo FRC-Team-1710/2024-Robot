@@ -42,34 +42,34 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera aprilTagCameraFront;
-    private final PhotonCamera aprilTagCameraBack;
+    //private final PhotonCamera aprilTagCameraBack;
     private final PhotonCamera noteCamera;
 
     public final PhotonPoseEstimator photonEstimatorFront;
-    public final PhotonPoseEstimator photonEstimatorBack;
+    //public final PhotonPoseEstimator photonEstimatorBack;
 
     private double lastEstTimestamp = 0;
 
     public VisionSubsystem() {
         aprilTagCameraFront = new PhotonCamera(kAprilTagCameraFront);
-        aprilTagCameraBack = new PhotonCamera(kAprilTagCameraBack);
+        //aprilTagCameraBack = new PhotonCamera(kAprilTagCameraBack);
         noteCamera = new PhotonCamera(kNoteCamera);
 
         photonEstimatorFront = new PhotonPoseEstimator(
                 kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, kRobotToCamFront);
-        photonEstimatorBack = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, kRobotToCamBack);
+        //photonEstimatorBack = new PhotonPoseEstimator(
+        //        kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, kRobotToCamBack);
         photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        //photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     public PhotonPipelineResult getLatestResultATF() { // Get the latest result for the April Tag camera
         return aprilTagCameraFront.getLatestResult();
     }
 
-    public PhotonPipelineResult getLatestResultATB() {
+    /*public PhotonPipelineResult getLatestResultATB() {
         return aprilTagCameraBack.getLatestResult();
-    }
+    }*/
 
     public PhotonPipelineResult getLatestResultN() { // Get the latest result for the Note camera
         return noteCamera.getLatestResult();
