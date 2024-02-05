@@ -26,6 +26,7 @@ public class RobotContainer {
 
     /* Controllers */
     private final Joystick driver = new Joystick(0);
+    private final Joystick mech = new Joystick(1);
     //  private final Joystick mech = new Joystick(1);
 
     /* Drive Controls */
@@ -40,12 +41,20 @@ public class RobotContainer {
     private final JoystickButton wristUp = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton elevatorSetPoint =new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton elevatorManUP =new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton elevatorManDOWN =new JoystickButton(mech, XboxController.Button.kRightBumper.value);
 
+    
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
     private final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
+    private final elevatorSubsystem m_ElevatorSubsystem = new elevatorSubsystem();
+
+   // private final Command Rizzler = new ManRizzt(m_Shoota, 0);
+
 
     private final SendableChooser<Command> autoChooser;
 
@@ -58,7 +67,8 @@ public class RobotContainer {
                         () -> -driver.getRawAxis(strafeAxis),
                         () -> -driver.getRawAxis(rotationAxis),
                         () -> robotCentric.getAsBoolean()));
-
+        //attempt 1 to reset encoder. 
+        m_Shoota.resetWristEncoder();
         m_LEDSubsystem.setAllianceColor();
 
         // Another option that allows you to specify the default auto by its name
@@ -87,8 +97,11 @@ public class RobotContainer {
         wristUp.whileTrue(new ManRizzt(m_Shoota, .05));
         wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder()));
-
+        elevatorSetPoint.whileTrue(new ElevatorCmd(m_ElevatorSubsystem));
+        elevatorManUP.whileTrue(new VaderMan(m_ElevatorSubsystem, .5));
+        elevatorManDOWN.whileTrue(new VaderMan(m_ElevatorSubsystem, -.5));
     }
+
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
