@@ -84,8 +84,8 @@ public class RobotContainer {
         /* Driver Buttons */
         Shoot.whileTrue(new FIREEE(m_Shoota));
         zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
-        wristUp.whileTrue(new ManRizzt(m_Shoota, .05));
-        wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));
+        wristUp.whileTrue(new ManRizzt(m_Shoota, m_LEDSubsystem, .05));
+        wristDown.whileTrue(new ManRizzt(m_Shoota, m_LEDSubsystem, -.05));
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder()));
 
     }

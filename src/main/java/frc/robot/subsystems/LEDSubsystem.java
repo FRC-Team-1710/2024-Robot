@@ -5,19 +5,21 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
 public class LEDSubsystem extends SubsystemBase {
   public DigitalOutput AllianceColor = new DigitalOutput(2); // Alliance color
-  public DigitalOutput HasNote = new DigitalOutput(3);     // Sends if the camera 'OnionRing' sees a note
-  public DigitalOutput Aimed = new DigitalOutput(4);         // Sends if the outtake is aimed
-  public DigitalOutput NoteInIntake = new DigitalOutput(5);  // Sends if the Note is in the intake/outtake
-  public DigitalOutput NoteOuttaked = new DigitalOutput(6);  // Sends if the Note has been outtaked
+  public DigitalOutput Disconnected = new DigitalOutput(3); // Disconnected color
+  public DigitalOutput NoteDetected = new DigitalOutput(4); // Note Detected color
+  public DigitalOutput Intaking = new DigitalOutput(5); // Intaking color
+  public DigitalOutput ChargingOuttake = new DigitalOutput(6); // Charging the Outtake color
+  public DigitalOutput ReadyToFire = new DigitalOutput(7); // Ready to Fire color
 
   VisionSubsystem vision;
 
-  boolean m_hasNote = false;
+  
 
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem(VisionSubsystem m_VisionSubsystem) {
@@ -29,9 +31,15 @@ public class LEDSubsystem extends SubsystemBase {
     var results = vision.getLatestResultN();
 
     if (results.hasTargets()) {
-      HasNote(true);
+      NoteDetected(true);
     } else {
-      HasNote(false);
+      NoteDetected(false);
+    }
+
+    if (DriverStation.isDSAttached()) {
+      Disconnected.set(false);
+    } else {
+      Disconnected.set(true);
     }
   }
 
@@ -39,29 +47,23 @@ public class LEDSubsystem extends SubsystemBase {
     AllianceColor.set(Robot.getAlliance()); // True is Red, False is Blue
   }
 
-  public void HasNote(boolean hasNote) {
-    m_hasNote = hasNote;
-    HasNote.set(hasNote);
+  public void Disconnected(boolean disconnected) {
+    Disconnected.set(disconnected);
   }
 
-  public void HasNote() {
-    if (m_hasNote) {
-      m_hasNote = false;
-    } else {
-      m_hasNote = true;
-    }
-    HasNote.set(m_hasNote);
+  public void NoteDetected(boolean note) {
+    NoteDetected.set(note);
   }
 
-  public void NoteInIntake(boolean noteInIntake) {
-    NoteInIntake.set(noteInIntake);
+  public void Intaking(boolean intaking) {
+    Intaking.set(intaking);
   }
 
-  public void Aimed(boolean aimed) {
-    Aimed.set(aimed);
+  public void ChargingOuttake(boolean chargingOuttake) {
+    ChargingOuttake.set(chargingOuttake);
   }
 
-  public void NoteOuttaked(boolean noteOuttaked) {
-    NoteOuttaked.set(noteOuttaked);
+  public void ReadyToFire(boolean fire) {
+    ReadyToFire.set(fire);
   }
 }

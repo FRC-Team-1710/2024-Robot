@@ -6,15 +6,18 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class ManRizzt extends Command {
 
     ShooterSubsystem shooterSubsystem;
+    LEDSubsystem ledSubsystem;
     private double speed;
 
-    public ManRizzt(ShooterSubsystem subsystem, double speed) {
+    public ManRizzt(ShooterSubsystem subsystem, LEDSubsystem ledSubsystem, double speed) {
         // Use addRequirements() here to declare subsystem dependencies.
         shooterSubsystem = subsystem;
+        this.ledSubsystem = ledSubsystem;
         this.speed = speed;
         addRequirements(shooterSubsystem);
     }
@@ -27,15 +30,18 @@ public class ManRizzt extends Command {
     @Override
     public void execute() {
         shooterSubsystem.manualWristSpeed(speed);
+        ledSubsystem.ReadyToFire(false);
     }
 
     @Override
     public boolean isFinished() {
+        ledSubsystem.ReadyToFire(true);
         return false;
     }
 
     @Override
     public void end(boolean interrupted) {
         shooterSubsystem.manualWristSpeed(0);
+        ledSubsystem.ReadyToFire(false);
     }
 }
