@@ -22,20 +22,19 @@ public class FIREEE extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_shootaTest.PointShoot(m_shootaTest.getCalculatedAngle(), FiringSolutions.convertToRPM(m_shootaTest.getCalculatedVelocity()));
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-
+        m_shootaTest.PointShoot(m_shootaTest.getCalculatedAngle(), FiringSolutions.convertToRPM(m_shootaTest.getCalculatedVelocity()));
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         m_shootaTest.SetShooterVelocity(0);
-        //m_shootaTest.wristManualSet(0); TODO finalize
+        m_shootaTest.manualWristSpeed(0);
     }
 
     // Returns true when the command should end.

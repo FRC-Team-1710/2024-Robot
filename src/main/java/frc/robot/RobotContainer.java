@@ -49,7 +49,7 @@ public class RobotContainer {
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
-    private final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
+    public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final elevatorSubsystem m_ElevatorSubsystem = new elevatorSubsystem();
 
@@ -66,9 +66,9 @@ public class RobotContainer {
                         () -> -driver.getRawAxis(translationAxis),
                         () -> -driver.getRawAxis(strafeAxis),
                         () -> -driver.getRawAxis(rotationAxis),
-                        () -> robotCentric.getAsBoolean()));
-        //attempt 1 to reset encoder. 
-        m_Shoota.resetWristEncoder();
+                        () -> robotCentric.getAsBoolean(),
+                        () -> Shoot.getAsBoolean()));
+
         m_LEDSubsystem.setAllianceColor();
 
         // Another option that allows you to specify the default auto by its name
@@ -92,7 +92,6 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         Shoot.whileTrue(new FIREEE(m_Shoota));
-        //Shoot.onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
         zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
         wristUp.whileTrue(new ManRizzt(m_Shoota, .05));
         wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));

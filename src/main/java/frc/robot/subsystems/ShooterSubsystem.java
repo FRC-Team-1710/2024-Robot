@@ -37,12 +37,14 @@ public class ShooterSubsystem extends SubsystemBase {
     private double pidSpdI = .0000002;
     private double pidSpdD = .006;
 
-    private double pidPosP = .01;
+    private double pidPosP = 2;
     private double pidPosI = 0;
     private double pidPosD = 0;
 
     private double shooterVelocity;
     private double shooterAngle;
+
+    public boolean isZeroed = false;
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -57,7 +59,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_ShootaL.restoreFactoryDefaults();
         m_ShootaR.restoreFactoryDefaults();
         m_Wrist.restoreFactoryDefaults();
-        //m_ShootaR.setInverted(false);
+        m_ShootaR.setInverted(true);
 
         // PID
         leftPID = m_ShootaL.getPIDController();
@@ -70,8 +72,6 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Velo P", pidSpdP);
         SmartDashboard.putNumber("Velo I", pidSpdI);
         SmartDashboard.putNumber("Velo D", pidSpdD);
-
-        resetWristEncoder();
     }
 
     @Override
@@ -97,36 +97,32 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("current velocity", getVelocity());
 
         // check for encoder failure
-        if (getAngle() == 0) {
-            ENCFAIL = true;
-        } else {
+        if (m_WristEncoder.isConnected()) {
             ENCFAIL = false;
+        } else {
+            ENCFAIL = true;
         }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
+        updateShooterMath();
 
-        //SetShooterVelocity(setpointv);
         //wristManualSet(setpointp);
+        //SetShooterVelocity(setpointv);
     }
 
-    public double getVelocity() {
+    public double getVelocity() {  
         return m_VelocityEncoder.getVelocity();
     }
 
     public double getAngle() {
-        return m_WristEncoder.get() * 120;
+        return m_WristEncoder.get() * 2 * Math.PI / 3;
     }
 
     public void resetWristEncoder() {
         m_WristEncoder.reset();
+        isZeroed = true;
     }
 
-    public void wristManualSet(double angle) {
-        // double x = (42 / 360) * angle;
-        /*if (getAngle() > setpointp + 360) {
-            m_pidWrist.setPID(0, 0, 0);
-        } else {
-            m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
-        }*/
+    public void setWristPosition(double angle) {
         m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
     }
 
@@ -135,25 +131,10 @@ public class ShooterSubsystem extends SubsystemBase {
         rightPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
     }
 
-
     public void PointShoot(double PointAngle, double launchVelocity) {
-        if (getAngle() > setpointp + 360) {
-            m_pidWrist.setPID(0, 0, 0);
-        } else {
-            m_pidWrist.setPID(pidPosP, pidPosI, pidPosD);
-        }
         m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
         leftPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
         rightPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
-    }
-
-    public void sillyString(double speed) {
-        m_ShootaL.set(speed);
-    }
-
-    public void StartShoota() { // TODO: ??????????
-        resetWristEncoder();
-        wristManualSet(0);
     }
 
     public void manualWristSpeed(double speed){
@@ -168,8 +149,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooterAngle;
     }
 
-    public void updateShooterMath() {
-        // Shooter Math
+    public void updateShooterMath() { // Shooter Math
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
 
@@ -178,8 +158,9 @@ public class ShooterSubsystem extends SubsystemBase {
                 FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
                 FiringSolutions.getShooterVelocityZ(),
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        chassisSpeeds.vxMetersPerSecond,
-                        chassisSpeeds.vyMetersPerSecond,
+//                        chassisSpeeds.vxMetersPerSecond,
+//                        chassisSpeeds.vyMetersPerSecond,
+0,0,
                         FiringSolutions.getAngleToSpeaker(
                                 pose.getX(),
                                 pose.getY()),
@@ -190,21 +171,23 @@ public class ShooterSubsystem extends SubsystemBase {
                 FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
                 FiringSolutions.getShooterVelocityZ(),
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        chassisSpeeds.vxMetersPerSecond,
-                        chassisSpeeds.vyMetersPerSecond,
+//                        chassisSpeeds.vxMetersPerSecond,
+//                        chassisSpeeds.vyMetersPerSecond,
+0,0,
                         FiringSolutions.getAngleToSpeaker(
                                 pose.getX(),
                                 pose.getY()),
                         pose.getRotation().getRadians()),
                 FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
-                    chassisSpeeds.vxMetersPerSecond,
-                    chassisSpeeds.vyMetersPerSecond,
+//                    chassisSpeeds.vxMetersPerSecond,
+//                    chassisSpeeds.vyMetersPerSecond,
+0,0,
                     FiringSolutions.getAngleToSpeaker(
                             pose.getX(),
                             pose.getY()),
                     pose.getRotation().getRadians()));
 
-        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle * 180 / Math.PI);
+        SmartDashboard.putNumber("Calculated Angle Set", shooterAngle);
         SmartDashboard.putNumber("distance", FiringSolutions.getDistanceToSpeaker(pose.getX(), pose.getY()));
         SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
         SmartDashboard.putNumber("Vz", FiringSolutions.getShooterVelocityZ());
