@@ -4,16 +4,22 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevatorSubsystem;
 
 public class VaderMan extends Command {
   private elevatorSubsystem mElevatorSubsystem;
   double m_speed;
+  DoubleSupplier leftAxis;
+  DoubleSupplier rightAxis;
   /** Creates a new VaderMan. */
-  public VaderMan(elevatorSubsystem elevate, double speed) {
+  public VaderMan(elevatorSubsystem elevate, DoubleSupplier left, DoubleSupplier right) {
     mElevatorSubsystem = elevate;
-    m_speed = speed;
+   leftAxis = left;
+   rightAxis=right;
+
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -24,7 +30,8 @@ public class VaderMan extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mElevatorSubsystem.ManSpin(m_speed);
+    double x = leftAxis.getAsDouble()-rightAxis.getAsDouble();
+   mElevatorSubsystem.ManSpin(x);
   }
 
   // Called once the command ends or is interrupted.

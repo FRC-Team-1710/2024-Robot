@@ -27,12 +27,14 @@ public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
     private final Joystick mech = new Joystick(1);
-    //  private final Joystick mech = new Joystick(1);
+    // private final Joystick mech = new Joystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
     private final int rotationAxis = XboxController.Axis.kRightX.value;
+    private final int elevatorUpTrigger = XboxController.Axis.kLeftTrigger.value;
+    private final int elevatorDownTrigger = XboxController.Axis.kRightTrigger.value;
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
@@ -41,11 +43,9 @@ public class RobotContainer {
     private final JoystickButton wristUp = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton elevatorSetPoint =new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton elevatorManUP =new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton elevatorManDOWN =new JoystickButton(mech, XboxController.Button.kRightBumper.value);
+    private final JoystickButton elevatorUP = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton elevatorDOWN = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
 
-    
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
@@ -53,12 +53,13 @@ public class RobotContainer {
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final elevatorSubsystem m_ElevatorSubsystem = new elevatorSubsystem();
 
-   // private final Command Rizzler = new ManRizzt(m_Shoota, 0);
-
+    // private final Command Rizzler = new ManRizzt(m_Shoota, 0);
 
     private final SendableChooser<Command> autoChooser;
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
     public RobotContainer() {
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
@@ -68,6 +69,13 @@ public class RobotContainer {
                         () -> -driver.getRawAxis(rotationAxis),
                         () -> robotCentric.getAsBoolean(),
                         () -> Shoot.getAsBoolean()));
+
+        m_ElevatorSubsystem.setDefaultCommand(
+                new VaderMan(
+                        m_ElevatorSubsystem,
+                        () -> mech.getRawAxis(elevatorUpTrigger),
+                        () -> mech.getRawAxis(elevatorDownTrigger)
+                        ));
 
         m_LEDSubsystem.setAllianceColor();
 
@@ -96,11 +104,8 @@ public class RobotContainer {
         wristUp.whileTrue(new ManRizzt(m_Shoota, .05));
         wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder()));
-        elevatorSetPoint.whileTrue(new ElevatorCmd(m_ElevatorSubsystem));
-        elevatorManUP.whileTrue(new VaderMan(m_ElevatorSubsystem, .5));
-        elevatorManDOWN.whileTrue(new VaderMan(m_ElevatorSubsystem, -.5));
+         
     }
-
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

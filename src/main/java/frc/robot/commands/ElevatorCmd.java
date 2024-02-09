@@ -4,16 +4,22 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevatorSubsystem;
 
 public class ElevatorCmd extends Command {
     private elevatorSubsystem m_elevator;
+   double m_position;
+    double setpoint;
   /** Creates a new ElevatorCmd. */
-  public ElevatorCmd(elevatorSubsystem elevate) {
+  public ElevatorCmd(elevatorSubsystem elevate, double position) {
    addRequirements(elevate);
    m_elevator = elevate;
-
+   m_position = position;
+  
   }
 
   // Called when the command is initially scheduled.
@@ -23,8 +29,10 @@ public class ElevatorCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_elevator.setHeightFromEncoder(5);
-  }
+    
+    
+    m_elevator.setHeight(m_position);
+  } 
 
   // Called once the command ends or is interrupted.
   @Override

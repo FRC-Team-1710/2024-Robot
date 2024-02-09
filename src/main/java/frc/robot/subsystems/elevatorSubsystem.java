@@ -10,40 +10,37 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
-import com.revrobotics.CANSparkMax;
-
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class elevatorSubsystem extends SubsystemBase {
     /** Creates a new elevatorSubsystem. */
-    LaserCan lasercan = new LaserCan(0);
+    LaserCan lasercan = new LaserCan(39);
     LaserCan.Measurement measurement = lasercan.getMeasurement();
-    boolean laser;
+    public boolean laser;
     PhoenixPIDController pidSet = new PhoenixPIDController(0, 0, 0);
     // falcon
-    public CoreTalonFX m_elevatorLeft = new CoreTalonFX(0); // left leader
-    public TalonFX vaderLeft = new TalonFX(0);
-    public CoreTalonFX m_elevatorRight = new CoreTalonFX(1);
-    public TalonFX vaderRight = new TalonFX(1);
+
+    public TalonFX m_elevatorLeft = new TalonFX(0); // left leader
+    public TalonFX m_elevatorRight = new TalonFX(1);
+
     // requests
     final Follower m_requestFollower = new Follower(0, true);
     final VelocityDutyCycle m_requestVelocity = new VelocityDutyCycle(0);
     final PositionDutyCycle m_requestPosition = new PositionDutyCycle(0);
     // math
-    double revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
+    double revolutionCount;
     double revolutioncircumphrence = 6.28;
     double setHeight;
     double maxHeightInCm;
+    double offset;
 
     public elevatorSubsystem() {
-        m_elevatorLeft = vaderLeft;
-        m_elevatorRight = vaderRight;
+      
+        // magnetSensorConfigs.withMagnetOffset(offset);
         m_elevatorRight.setControl(m_requestFollower);
-        vaderRight.setInverted(true);
 
         var slot0Configs = new Slot0Configs();
         var closedloop = new ClosedLoopRampsConfigs();
@@ -52,13 +49,14 @@ public class elevatorSubsystem extends SubsystemBase {
         slot0Configs.kI = .0;
         slot0Configs.kD = 0.;
         slot0Configs.kV = .01;
+
+        // m_elevatorLeft.getConfigurator().apply(magnetSensorConfigs);
         m_elevatorLeft.getConfigurator().apply(slot0Configs, 0.050);
 
         // laser can pid shenanigans
         pidSet.setP(0);
         pidSet.setI(0);
         pidSet.setD(0);
-
     }
 
     @Override
@@ -66,42 +64,38 @@ public class elevatorSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("height", getHeightFromEncoder());
         SmartDashboard.putNumber("setPoint", setHeight);
+        SmartDashboard.putNumber("laser Can Raw", getHeight());
+        SmartDashboard.putBoolean("laserCan failure", lasercanFailureCheck());
+        revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
     }
 
     // encoder getters
-
     public double getHeightFromEncoder() {
-        return (revolutionCount * revolutioncircumphrence);
+        return (revolutionCount * revolutioncircumphrence)/17.04;
     }
 
-    // encoder setters
-    private void setElevatorVelocity(double velocity) {
-        m_elevatorLeft.setControl(m_requestVelocity.withVelocity(velocity));
-    }
-
-    public void setHeightFromEncoder(double height) {
+    public void setHeight(double height) {
         setHeight = height;
-        double rot = height / revolutioncircumphrence;
-        if (getHeightFromEncoder() < height) {
-            m_elevatorLeft.setControl(m_requestPosition.withPosition(rot));
+        if (laser) {
+            m_elevatorLeft.set(pidSet.calculate(getHeight(), height, .1));
+            m_elevatorRight.set(pidSet.calculate(getHeight(), height, .1));
+        } else {
+            double rot = height / revolutioncircumphrence;
+            if (getHeightFromEncoder() < maxHeightInCm) {
+                m_elevatorLeft.setControl(m_requestPosition.withPosition(rot));
+            }
         }
     }
 
     public void ManSpin(double percent) {
-        vaderLeft.set(percent);
-        vaderRight.set(percent);
+        m_elevatorLeft.set(percent);
     }
 
     public void resetElevatorEncoder() {
-        // m_elevatorLeft
+        m_elevatorLeft.setPosition(0);
     }
 
-    // laser can methods scrapped
-    public void setHeightFromLaserCan(double height) {
-        vaderLeft.set(pidSet.calculate(getHeight(), height, .1));
-        vaderRight.set(pidSet.calculate(getHeight(), height, .1));
-    }
-
+    //lasercan methods
     public void useLaserCan(boolean laserCanOn) {
         laser = laserCanOn;
     }
@@ -111,6 +105,15 @@ public class elevatorSubsystem extends SubsystemBase {
             return measurement.distance_mm;
         }
         return 0;
+    }
+
+    public boolean lasercanFailureCheck() {
+        if (measurement == null) {
+            return true;
+        } else {
+            laser = false;
+            return false;
+        }
     }
 
 }
