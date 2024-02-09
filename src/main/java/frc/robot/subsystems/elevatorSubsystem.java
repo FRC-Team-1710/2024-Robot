@@ -12,8 +12,6 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
-import com.revrobotics.CANSparkMax;
-
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
