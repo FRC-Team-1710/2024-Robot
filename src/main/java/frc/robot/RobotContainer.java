@@ -27,7 +27,6 @@ public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
     private final Joystick mech = new Joystick(1);
-    // private final Joystick mech = new Joystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -38,20 +37,18 @@ public class RobotContainer {
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton wristUp = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kB.value);
-//private final JoystickButton elevatorUP = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
-//   private final JoystickButton elevatorDOWN = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
     public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
-    private final elevatorSubsystem m_ElevatorSubsystem = new elevatorSubsystem();
+    private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
 
     private final SendableChooser<Command> autoChooser;
 
@@ -69,10 +66,10 @@ public class RobotContainer {
                         () -> Shoot.getAsBoolean()));
 
         m_ElevatorSubsystem.setDefaultCommand(
-                new VaderMan(
+                new ElevationControl(
                         m_ElevatorSubsystem,
-                        () -> mech.getRawAxis(elevatorUpTrigger),
-                        () -> mech.getRawAxis(elevatorDownTrigger)
+                        () -> driver.getRawAxis(elevatorUpTrigger),
+                        () -> driver.getRawAxis(elevatorDownTrigger)
                         ));
 
         m_LEDSubsystem.setAllianceColor();

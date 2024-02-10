@@ -47,7 +47,6 @@ public class SwerveSubsystem extends SubsystemBase {
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Fused Pose", Pose2d.struct).publish();
 
-
     public SwerveSubsystem(VisionSubsystem vision) {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -76,8 +75,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
         );
 
-        // and how many or how frequently vision measurements are applied to the pose
-        // estimator.
+        // Vision Standard Deviation - Smaller means trust more
         Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 0.1); // Encoder Odometry
         Vector<N3> visionStdDevs = VecBuilder.fill(1, 1, 2); // Vision Odometry
 
@@ -85,7 +83,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
-                new Pose2d(1.39, 5.55, new Rotation2d(0)),
+                new Pose2d(1.39, 5.55, new Rotation2d(0)), //TODO change based on auto
                 stateStdDevs,
                 visionStdDevs);
 

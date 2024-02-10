@@ -21,18 +21,19 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class ShooterSubsystem extends SubsystemBase {
 
+    // Devices
     public CANSparkBase m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
     public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
     public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
     private RelativeEncoder m_VelocityEncoder;
-    public PIDController m_pidWrist; // create PIDController
-    private SparkPIDController leftPID; // create PIDController
-    private SparkPIDController rightPID;
-    private DutyCycleEncoder m_WristEncoder; // create encoder
-    private double setpointv = 0;
-    private double setpointp = 0;
-    private Boolean ENCFAIL;
+    private DutyCycleEncoder m_WristEncoder;
 
+    // PID
+    private PIDController m_pidWrist;
+    private SparkPIDController leftPID;
+    private SparkPIDController rightPID;
+
+    // PID Constants
     private double pidSpdP = .0000002;
     private double pidSpdI = .0000002;
     private double pidSpdD = .006;
@@ -41,9 +42,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private double pidPosI = 0;
     private double pidPosD = 0;
 
+    // Vars
+    private double setpointv = 0;
+    private double setpointp = 0;
+    private Boolean ENCFAIL;
     private double shooterVelocity;
     private double shooterAngle;
-
     public boolean isZeroed = false;
 
     private SwerveSubsystem swerveSubsystem;
