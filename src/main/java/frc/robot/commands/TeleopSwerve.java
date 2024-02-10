@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
+import frc.lib.math.FiringSolutions;
 import frc.robot.Constants;
-import frc.robot.FiringSolutions;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.util.function.BooleanSupplier;

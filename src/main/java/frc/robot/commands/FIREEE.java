@@ -5,8 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.math.FiringSolutions;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.FiringSolutions;
 
 public class FIREEE extends Command {
     private ShooterSubsystem m_shootaTest;

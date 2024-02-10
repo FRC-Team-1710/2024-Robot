@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.lib.math;
 
 public final class FiringSolutions {
     private static final double shooterHeight = 0.355;
