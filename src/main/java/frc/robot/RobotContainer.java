@@ -50,7 +50,7 @@ public class RobotContainer {
     public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
-    private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
+    private final IntexerSubsystem m_IntakeSubsystem = new IntexerSubsystem();
 
     private final SendableChooser<Command> autoChooser;
 

@@ -13,6 +13,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,12 +23,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class ShooterSubsystem extends SubsystemBase {
 
     // Devices
-    public CANSparkBase m_Wrist = new CANSparkMax(3, MotorType.kBrushless);
-    public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
-    public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
+    private CANSparkBase m_Wrist = new CANSparkMax(13, MotorType.kBrushless);
+    private CANSparkBase m_ShootaL = new CANSparkMax(11, MotorType.kBrushless); // leader
+    private CANSparkBase m_ShootaR = new CANSparkMax(12, MotorType.kBrushless);
+    private CANSparkBase m_Intake = new CANSparkMax(10, MotorType.kBrushless);
+
     private RelativeEncoder m_VelocityEncoder;
     private RelativeEncoder m_PositionEncoder;
     private DutyCycleEncoder m_WristEncoder;
+    private DigitalInput shooterBeamBreak = new DigitalInput(1);
 
     // PID
     private PIDController m_pidWrist;
@@ -99,6 +103,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
         setpointv = SmartDashboard.getNumber("set velocity", setpointv);
         setpointp = SmartDashboard.getNumber("set angle", setpointp);
+
+        SmartDashboard.putBoolean("Shooter Beam Break", shooterBeamBreak.get());
         SmartDashboard.putNumber("current angle", getAngle());
         SmartDashboard.putNumber("current velocity", getVelocity());
 
@@ -131,6 +137,10 @@ public class ShooterSubsystem extends SubsystemBase {
         m_WristEncoder.reset();
         m_PositionEncoder.setPosition(0);
         isZeroed = true;
+    }
+
+    public void intakeSpin (double speed) {
+        m_Intake.set(speed);
     }
 
     public void setWristPosition(double angle) {
