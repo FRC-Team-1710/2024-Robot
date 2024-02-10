@@ -31,11 +31,13 @@ public class RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton m_aButton = new JoystickButton(driver, XboxController.Button.kA.value);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
+    private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
 
     private final SendableChooser<Command> autoChooser;
 
@@ -53,6 +55,7 @@ public class RobotContainer {
 
         m_LEDSubsystem.setAllianceColor();
 
+
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -63,6 +66,7 @@ public class RobotContainer {
         configureButtonBindings();
     }
 
+
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -72,6 +76,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
+        m_aButton.onFalse(new InstantCommand(() -> m_IntakeSubsystem.set(0)));
+        m_aButton.whileTrue(new InstantCommand(() -> m_IntakeSubsystem.set(0.5)));
     }
 
     /**
