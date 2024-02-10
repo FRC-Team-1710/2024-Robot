@@ -37,11 +37,12 @@ public class RobotContainer {
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton wristUp = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kBack.value);
+    private final JoystickButton intexer = new JoystickButton(driver, XboxController.Button.kA.value);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -49,6 +50,7 @@ public class RobotContainer {
     public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
+    private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
 
     private final SendableChooser<Command> autoChooser;
 
@@ -74,6 +76,7 @@ public class RobotContainer {
 
         m_LEDSubsystem.setAllianceColor();
 
+
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -81,8 +84,8 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
         // Configure the button bindings
         configureButtonBindings();
-
     }
+
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
@@ -100,6 +103,8 @@ public class RobotContainer {
         wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder()));
          
+        intexer.onFalse(new InstantCommand(() -> m_IntakeSubsystem.set(0)));
+        intexer.whileTrue(new InstantCommand(() -> m_IntakeSubsystem.set(0.5)));
     }
 
     /**
