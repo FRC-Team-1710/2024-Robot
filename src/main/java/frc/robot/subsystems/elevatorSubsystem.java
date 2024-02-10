@@ -63,10 +63,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        SmartDashboard.putNumber("height", getHeightEncoder());
+        SmartDashboard.putNumber("Encoder Height", getHeightEncoder());
+        SmartDashboard.putNumber("Encoder Raw", revolutionCount);
         SmartDashboard.putNumber("Set Height", setHeight);
-        SmartDashboard.putNumber("laserCan Raw", getHeightLaserCan());
-        SmartDashboard.putBoolean("laserCan failure", lasercanFailureCheck());
+        SmartDashboard.putNumber("LaserCan Meters", getHeightLaserCan());
+        SmartDashboard.putBoolean("LaserCan failure", lasercanFailureCheck());
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
     }
 

@@ -66,7 +66,7 @@ public class RobotContainer {
                         () -> Shoot.getAsBoolean()));
 
         m_ElevatorSubsystem.setDefaultCommand(
-                new ElevationControl(
+                new ElevationManual(
                         m_ElevatorSubsystem,
                         () -> driver.getRawAxis(elevatorUpTrigger),
                         () -> driver.getRawAxis(elevatorDownTrigger)

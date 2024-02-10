@@ -26,6 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public CANSparkBase m_ShootaL = new CANSparkMax(7, MotorType.kBrushless); // leader
     public CANSparkBase m_ShootaR = new CANSparkMax(6, MotorType.kBrushless);
     private RelativeEncoder m_VelocityEncoder;
+    private RelativeEncoder m_PositionEncoder;
     private DutyCycleEncoder m_WristEncoder;
 
     // PID
@@ -57,6 +58,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // Encoders
         m_VelocityEncoder = m_ShootaL.getEncoder();
+        m_PositionEncoder = m_Wrist.getEncoder();
         m_WristEncoder = new DutyCycleEncoder(9);
 
         // Spark Max Setup
@@ -118,11 +120,16 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getAngle() {
-        return m_WristEncoder.get() * 2 * Math.PI / 3;
+        if (!ENCFAIL){
+            return (m_WristEncoder.get() * 2 * Math.PI) / 4;
+        } else {
+            return (m_PositionEncoder.getPosition() * 2 * Math.PI) / 100;
+        }
     }
 
     public void resetWristEncoder() {
         m_WristEncoder.reset();
+        m_PositionEncoder.setPosition(0);
         isZeroed = true;
     }
 
