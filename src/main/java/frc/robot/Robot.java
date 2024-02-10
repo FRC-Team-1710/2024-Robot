@@ -76,7 +76,6 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        redAlliance = checkRedAlliance();
     }
 
     public static boolean getAlliance() {
@@ -106,6 +105,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
+        redAlliance = checkRedAlliance();
+
         if (!isZeroed){ // because the encoder doesn't zero on init, or in any of the contructors
              m_robotContainer.m_Shoota.resetWristEncoder();
              isZeroed = true;
@@ -128,7 +129,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        if (!isZeroed){ // because the encoder doesn't zero on init, or in any of the contructors
+        redAlliance = checkRedAlliance();
+        
+        if (!isZeroed){ // because the encoder doesn't zero in robotInit, or in any of the contructors
              m_robotContainer.m_Shoota.resetWristEncoder();
              isZeroed = true;
         }

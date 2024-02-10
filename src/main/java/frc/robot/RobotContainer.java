@@ -43,8 +43,8 @@ public class RobotContainer {
     private final JoystickButton wristUp = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton elevatorUP = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton elevatorDOWN = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
+//private final JoystickButton elevatorUP = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
+//   private final JoystickButton elevatorDOWN = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -52,8 +52,6 @@ public class RobotContainer {
     public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final elevatorSubsystem m_ElevatorSubsystem = new elevatorSubsystem();
-
-    // private final Command Rizzler = new ManRizzt(m_Shoota, 0);
 
     private final SendableChooser<Command> autoChooser;
 

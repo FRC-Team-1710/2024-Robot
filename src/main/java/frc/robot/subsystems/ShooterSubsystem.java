@@ -152,45 +152,41 @@ public class ShooterSubsystem extends SubsystemBase {
     public void updateShooterMath() { // Shooter Math
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
-
+        double velocityZ = FiringSolutions.getShooterVelocityZ();
+        double angleToSpeaker = FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY());
+        
         // Calculate angle
         shooterAngle = FiringSolutions.getShooterAngle(
                 FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
-                FiringSolutions.getShooterVelocityZ(),
+                velocityZ,
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
 //                        chassisSpeeds.vxMetersPerSecond,
 //                        chassisSpeeds.vyMetersPerSecond,
 0,0,
-                        FiringSolutions.getAngleToSpeaker(
-                                pose.getX(),
-                                pose.getY()),
+                        angleToSpeaker,
                         pose.getRotation().getRadians()));
 
         // Calculate velocity
         shooterVelocity = FiringSolutions.getShooterVelocity(
                 FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
-                FiringSolutions.getShooterVelocityZ(),
+                velocityZ,
                 FiringSolutions.getRobotVelocityTowardsSpeaker(
 //                        chassisSpeeds.vxMetersPerSecond,
 //                        chassisSpeeds.vyMetersPerSecond,
 0,0,
-                        FiringSolutions.getAngleToSpeaker(
-                                pose.getX(),
-                                pose.getY()),
+                        angleToSpeaker,
                         pose.getRotation().getRadians()),
                 FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
 //                    chassisSpeeds.vxMetersPerSecond,
 //                    chassisSpeeds.vyMetersPerSecond,
 0,0,
-                    FiringSolutions.getAngleToSpeaker(
-                            pose.getX(),
-                            pose.getY()),
+                    angleToSpeaker,
                     pose.getRotation().getRadians()));
 
         SmartDashboard.putNumber("Calculated Angle Set", shooterAngle);
         SmartDashboard.putNumber("distance", FiringSolutions.getDistanceToSpeaker(pose.getX(), pose.getY()));
         SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
-        SmartDashboard.putNumber("Vz", FiringSolutions.getShooterVelocityZ());
+        SmartDashboard.putNumber("Vz", velocityZ);
         SmartDashboard.putNumber("Calculated Velocity Set", shooterVelocity);
         SmartDashboard.putNumber("Converted Velocity Set", FiringSolutions.convertToRPM(shooterVelocity));
     }
