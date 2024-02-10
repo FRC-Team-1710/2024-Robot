@@ -92,17 +92,15 @@ public class SwerveModule {
         );
     }
 
-    public void voltagedrive(double Volts){
+    public void voltageDrive(double Volts){
         mDriveMotor.setControl(driveCharacteriztionControl.withOutput(Volts));
     }
 
     public double getMotorVoltage(){
-
         return mDriveMotor.getMotorVoltage().getValue();
     }
 
-    public double getVelocity(){
-
+    public double getMotorVelocity(){
         return mDriveMotor.getVelocity().getValue();
     }
 }

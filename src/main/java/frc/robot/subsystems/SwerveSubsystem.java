@@ -56,45 +56,27 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
-      private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
-  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
 
-  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(),
-      new SysIdRoutine.Mechanism(
-          (Measure<Voltage> volts) -> {
-            voltage(volts.in(Units.Volts));
-          },
-          this::sysidroutine,
-          this));
+    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+    private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                    (Measure<Voltage> volts) -> {
+                        voltage(volts.in(Units.Volts));
+                    },
+                    this::sysidroutine,
+                    this));
 
     private Field2d m_field = new Field2d();
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Fused Pose", Pose2d.struct).publish();
-
-    public void sysidroutine(SysIdRoutineLog log){
-            log.motor("drive-left")
-                .voltage(
-                    m_appliedVoltage.mut_replace(
-                        mSwerveMods[3].getMotorVoltage(), Volts))
-                .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
-                .linearVelocity(
-                    m_velocity.mut_replace(mSwerveMods[3].getVelocity(), MetersPerSecond));
-            log.motor("drive-right")
-                .voltage(
-                    m_appliedVoltage.mut_replace(
-                        mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
-                .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
-                .linearVelocity(
-                    m_velocity.mut_replace(mSwerveMods[0].getVelocity(), MetersPerSecond));
-
-    }
-
+            .getStructTopic("Fused Pose", Pose2d.struct).publish();
 
     public SwerveSubsystem(VisionSubsystem vision) {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -145,7 +127,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double translationX = translation.getX();
         double translationY = translation.getY();
 
-        if (Robot.getAlliance()){
+        if (Robot.getAlliance()) {
             translationX *= -1;
             translationY *= -1;
         }
@@ -220,12 +202,14 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setHeading(Rotation2d heading) {
-        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(),
+                new Pose2d(getPose().getTranslation(), heading));
     }
 
     public void zeroHeading() {
         double radians = Robot.getAlliance() ? Math.PI : 0;
-        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(),
+                new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
     }
 
     public Rotation2d getGyroYaw() {
@@ -246,10 +230,10 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdomEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 
-    public void voltage(double Voltage ){
-         for (SwerveModule mod : mSwerveMods) {
-            mod.voltagedrive(Voltage);
-         }
+    public void voltage(double Voltage) {
+        for (SwerveModule mod : mSwerveMods) {
+            mod.voltageDrive(Voltage);
+        }
     }
 
     @Override
@@ -261,13 +245,14 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Correct pose estimate with multiple vision measurements
-        Optional <EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
+        Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
         if (OptionalEstimatedPoseFront.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
-            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
+                    estimatedPose.timestampSeconds);
         }
 
-       /*  Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
+        /*  Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
         if (OptionalEstimatedPoseBack.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
             swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
@@ -283,15 +268,30 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
+    }
 
-        
+    public void sysidroutine(SysIdRoutineLog log) {
+        log.motor("drive-left")
+                .voltage(
+                        m_appliedVoltage.mut_replace(
+                                mSwerveMods[3].getMotorVoltage(), Volts))
+                .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
+                .linearVelocity(
+                        m_velocity.mut_replace(mSwerveMods[3].getMotorVelocity(), MetersPerSecond));
+        log.motor("drive-right")
+                .voltage(
+                        m_appliedVoltage.mut_replace(
+                                mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
+                .linearVelocity(
+                        m_velocity.mut_replace(mSwerveMods[0].getMotorVelocity(), MetersPerSecond));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-  return m_sysIdRoutine.quasistatic(direction);
-}
+        return m_sysIdRoutine.quasistatic(direction);
+    }
 
-public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-  return m_sysIdRoutine.dynamic(direction);
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+    }
 }
-} 
