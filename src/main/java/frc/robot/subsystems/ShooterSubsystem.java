@@ -13,7 +13,6 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.PIDController;
@@ -31,7 +30,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private RelativeEncoder m_VelocityEncoder;
     private RelativeEncoder m_PositionEncoder;
     private DutyCycleEncoder m_WristEncoder;
-    private DigitalInput shooterBeamBreak = new DigitalInput(1);
 
     // PID
     private PIDController m_pidWrist;
@@ -50,10 +48,11 @@ public class ShooterSubsystem extends SubsystemBase {
     // Vars
     private double setpointv = 0;
     private double setpointp = 0;
-    private Boolean ENCFAIL;
+    private Boolean ENCFAIL = false;
     private double shooterVelocity;
     private double shooterAngle;
     public boolean isZeroed = false;
+    private final double angleOffset = 0;
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -63,7 +62,7 @@ public class ShooterSubsystem extends SubsystemBase {
         // Encoders
         m_VelocityEncoder = m_ShootaL.getEncoder();
         m_PositionEncoder = m_Wrist.getEncoder();
-        m_WristEncoder = new DutyCycleEncoder(9);
+        m_WristEncoder = new DutyCycleEncoder(0);
 
         // Spark Max Setup
         m_ShootaL.restoreFactoryDefaults();
@@ -104,7 +103,6 @@ public class ShooterSubsystem extends SubsystemBase {
         setpointv = SmartDashboard.getNumber("set velocity", setpointv);
         setpointp = SmartDashboard.getNumber("set angle", setpointp);
 
-        SmartDashboard.putBoolean("Shooter Beam Break", shooterBeamBreak.get());
         SmartDashboard.putNumber("current angle", getAngle());
         SmartDashboard.putNumber("current velocity", getVelocity());
 
@@ -127,9 +125,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public double getAngle() {
         if (!ENCFAIL){
-            return (m_WristEncoder.get() * 2 * Math.PI) / 4;
+            return ((m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
         } else {
-            return (m_PositionEncoder.getPosition() * 2 * Math.PI) / 100;
+            return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100) + angleOffset;
         }
     }
 

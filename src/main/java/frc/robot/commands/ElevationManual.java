@@ -20,8 +20,7 @@ public class ElevationManual extends Command {
         mElevatorSubsystem = elevate;
         leftAxis = left;
         rightAxis = right;
-
-        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(elevate);
     }
 
     // Called when the command is initially scheduled.

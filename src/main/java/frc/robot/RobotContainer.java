@@ -48,9 +48,9 @@ public class RobotContainer {
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
     public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
-    private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
+    //private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
-    private final IntexerSubsystem m_IntakeSubsystem = new IntexerSubsystem();
+    //private final IntexerSubsystem m_IntakeSubsystem = new IntexerSubsystem();
 
     private final SendableChooser<Command> autoChooser;
 
@@ -71,11 +71,9 @@ public class RobotContainer {
                 new ElevationManual(
                         m_ElevatorSubsystem,
                         () -> driver.getRawAxis(elevatorUpTrigger),
-                        () -> driver.getRawAxis(elevatorDownTrigger)
-                        ));
+                        () -> driver.getRawAxis(elevatorDownTrigger)));
 
-        m_LEDSubsystem.setAllianceColor();
-
+        // m_LEDSubsystem.setAllianceColor();
 
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
@@ -85,7 +83,6 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
     }
-
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
@@ -102,9 +99,9 @@ public class RobotContainer {
         wristUp.whileTrue(new ManRizzt(m_Shoota, .05));
         wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder()));
-         
-        intexer.onFalse(new InstantCommand(() -> m_IntakeSubsystem.set(0)));
-        intexer.whileTrue(new InstantCommand(() -> m_IntakeSubsystem.set(0.5)));
+
+        //intexer.onFalse(new InstantCommand(() -> m_IntakeSubsystem.set(0)));
+        //intexer.whileTrue(new InstantCommand(() -> m_IntakeSubsystem.set(0.5)));
     }
 
     /**

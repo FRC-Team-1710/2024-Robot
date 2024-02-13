@@ -22,7 +22,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public LaserCan lasercan = new LaserCan(22);
     
     // Falcon stuff
-    private final Follower m_requestFollower = new Follower(0, true);
+    private final Follower m_requestFollower = new Follower(20, true);
     private final PositionDutyCycle m_requestPosition = new PositionDutyCycle(0);
     private final PhoenixPIDController phoenixPID = new PhoenixPIDController(0, 0, 0);
     

@@ -76,7 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
             .getStructTopic("Fused Pose", Pose2d.struct).publish();
 
     public SwerveSubsystem(VisionSubsystem vision) {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.canivore);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
