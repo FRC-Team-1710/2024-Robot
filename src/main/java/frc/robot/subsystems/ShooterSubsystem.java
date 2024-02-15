@@ -184,11 +184,8 @@ public class ShooterSubsystem extends SubsystemBase {
                 angleToSpeaker,
                 pose.getRotation().getRadians());
         double distanceToSpeaker = FiringSolutionsV2.getDistanceToSpeaker(pose.getX(), pose.getY());
-        double wtfisC = FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker);
 
-        FiringSolutionsV2.updateR(distanceToSpeaker,
-                        robotVelocityTowardsSpeaker,
-                        wtfisC);
+        FiringSolutionsV2.updateR(distanceToSpeaker, robotVelocityTowardsSpeaker);
 
         shooterAngle = FiringSolutionsV2.getShooterAngle();
         shooterVelocity = 13;
