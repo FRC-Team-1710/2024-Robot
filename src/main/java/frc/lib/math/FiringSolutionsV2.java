@@ -12,7 +12,7 @@ public class FiringSolutionsV2 {
 
     private static double shooterTargetX;
     private static double shooterVelocity;
-    private static double targetShooterAngle;
+    private static double R;
 
     private FiringSolutionsV2() {
     }
@@ -108,14 +108,14 @@ public class FiringSolutionsV2 {
                 * Math.pow(distanceToSpeaker, 2);
     }
 
-    public static void updateRobotAngle(double currentAngle, double quarticA, double quarticB, double quarticC, double quarticD, double quarticE) {
-        targetShooterAngle = currentAngle - ((quarticA * Math.pow(currentAngle, 4) + quarticB * Math.pow(currentAngle, 3)
-                + quarticC * Math.pow(currentAngle, 2) + quarticD * currentAngle + quarticE)
-                / (4 * quarticA * Math.pow(currentAngle, 3) + 3 * quarticB * Math.pow(currentAngle, 2)
-                        + 2 * quarticC * currentAngle + quarticD));  
+    public static void updateR(double R, double quarticA, double quarticB, double quarticC, double quarticD, double quarticE) {
+        R = R - ((quarticA * Math.pow(R, 4) + quarticB * Math.pow(R, 3)
+                + quarticC * Math.pow(R, 2) + quarticD * R + quarticE)
+                / (4 * quarticA * Math.pow(R, 3) + 3 * quarticB * Math.pow(R, 2)
+                        + 2 * quarticC * R + quarticD));  
     }
 
     public static double getShooterAngle(){
-        return targetShooterAngle;
+        return Math.acos(R);
     }
 }
