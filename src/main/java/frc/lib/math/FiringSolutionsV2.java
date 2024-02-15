@@ -12,7 +12,7 @@ public class FiringSolutionsV2 {
 
     private static double shooterTargetX;
     private static double shooterVelocity;
-    private static double R;
+    private static double R = 0.0;
 
     private FiringSolutionsV2() {
     }
@@ -108,7 +108,7 @@ public class FiringSolutionsV2 {
                 * Math.pow(distanceToSpeaker, 2);
     }
 
-    public static void updateR(double R, double quarticA, double quarticB, double quarticC, double quarticD, double quarticE) {
+    public static void updateR(double quarticA, double quarticB, double quarticC, double quarticD, double quarticE) {
         R = R - ((quarticA * Math.pow(R, 4) + quarticB * Math.pow(R, 3)
                 + quarticC * Math.pow(R, 2) + quarticD * R + quarticE)
                 / (4 * quarticA * Math.pow(R, 3) + 3 * quarticB * Math.pow(R, 2)
