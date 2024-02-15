@@ -12,20 +12,55 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class IntexerSubsystem extends SubsystemBase {
-    /** Creates a new IntakeSubsystem. */
 
+    // Devices
     private CANSparkBase left = new CANSparkMax(30, MotorType.kBrushless);
     private CANSparkBase right = new CANSparkMax(31, MotorType.kBrushless);
-    private DigitalInput breakingBeam = new DigitalInput(6);
-    private DigitalInput beamKamen = new DigitalInput(5);
+    private CANSparkBase shooterIntake = new CANSparkMax(10, MotorType.kBrushless);
+
+    private DigitalInput breakingBeam = new DigitalInput(2);
+    private DigitalInput beamKamen = new DigitalInput(1);
 
     public IntexerSubsystem() {
 
     }
 
-    public void set(double speed) {
-        left.set(speed);
-        right.set(speed);
+    public void setALL(double speed) {
+        if (speed == 0) {
+            left.stopMotor();
+            right.stopMotor();
+            shooterIntake.stopMotor();
+        } else {
+            left.set(speed);
+            right.set(speed);
+            shooterIntake.set(-speed);
+        }
+    }
+
+    public void setFrontIntake(double speed) {
+        if (speed == 0) {
+            left.stopMotor();
+            right.stopMotor();
+        } else {
+            left.set(speed);
+            right.set(speed);
+        }
+    }
+
+    public void setShooterIntake(double speed) {
+        if (speed == 0){
+            shooterIntake.stopMotor();
+        } else {
+            shooterIntake.set(-speed);
+        }
+    }
+
+    public boolean intakeBreak () {
+        return breakingBeam.get();
+    }
+
+    public boolean shooterBreak() {
+        return beamKamen.get();
     }
 
     @Override

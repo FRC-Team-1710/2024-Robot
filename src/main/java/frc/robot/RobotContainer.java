@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import frc.lib.math.FiringSolutions;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -43,6 +43,7 @@ public class RobotContainer {
     private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kBack.value);
     private final JoystickButton intexer = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton manualShoot = new JoystickButton(driver, XboxController.Button.kX.value);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -50,7 +51,7 @@ public class RobotContainer {
     public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
     //private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
-    //private final IntexerSubsystem m_IntakeSubsystem = new IntexerSubsystem();
+    private final IntexerSubsystem m_IntexerSubsystem = new IntexerSubsystem();
 
     private final SendableChooser<Command> autoChooser;
 
@@ -94,14 +95,19 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        Shoot.whileTrue(new FIREEE(m_Shoota));
+        Shoot.whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem));
         zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
         wristUp.whileTrue(new ManRizzt(m_Shoota, .05));
         wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder()));
 
-        //intexer.onFalse(new InstantCommand(() -> m_IntakeSubsystem.set(0)));
-        //intexer.whileTrue(new InstantCommand(() -> m_IntakeSubsystem.set(0.5)));
+        /*intexer.onFalse(new InstantCommand(() -> m_IntexerSubsystem.setFrontIntake(0)));
+        intexer.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setFrontIntake(0.45)));
+        manualShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.75)));
+        manualShoot.onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));*/
+        intexer.whileTrue(new IntexBestHex(m_IntexerSubsystem));
+        manualShoot.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(13))));
+        manualShoot.onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
     }
 
     /**

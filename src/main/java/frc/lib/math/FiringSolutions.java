@@ -7,7 +7,7 @@ public final class FiringSolutions {
     private static final double shooterTargetXRed = 16.54;
     private static final double shooterTargetY = 5.55;
     private static final double shooterTargetZ = 2.05;
-    private static final double slipPercent = .65;
+    private static final double slipPercent = .5;
 
     private static double shooterTargetX;
 

@@ -51,12 +51,16 @@ import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.MutableMeasure.mutable;
 
 public class SwerveSubsystem extends SubsystemBase {
+
+    // Swerve devices
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
+    // Vars
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
 
+    // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
     private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
     private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
@@ -70,16 +74,18 @@ public class SwerveSubsystem extends SubsystemBase {
                     this::sysidroutine,
                     this));
 
+    // Logging
     private Field2d m_field = new Field2d();
+    StructPublisher<Pose2d> posePublisher;
 
-    StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
-            .getStructTopic("Fused Pose", Pose2d.struct).publish();
-
+    // Constructor
     public SwerveSubsystem(VisionSubsystem vision) {
+        // Gyro setup
         gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.canivore);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
+        // Swerve setup
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, Constants.Swerve.Mod0.constants),
                 new SwerveModule(1, Constants.Swerve.Mod1.constants),
@@ -87,6 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
+        // Auto setup
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -107,13 +114,17 @@ public class SwerveSubsystem extends SubsystemBase {
         Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 0.1); // Encoder Odometry
         Vector<N3> visionStdDevs = VecBuilder.fill(1, 1, 2); // Vision Odometry
 
+        // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
-                new Pose2d(1.39, 5.55, new Rotation2d(0)), //TODO change based on auto
+                new Pose2d(1.35, 5.55, new Rotation2d(0)), //TODO change based on auto
                 stateStdDevs,
                 visionStdDevs);
+
+        // Logging
+        posePublisher = NetworkTableInstance.getDefault().getStructTopic("Fused Pose", Pose2d.struct).publish();
 
         this.vision = vision;
     }

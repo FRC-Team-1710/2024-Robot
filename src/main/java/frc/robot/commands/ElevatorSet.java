@@ -12,7 +12,6 @@ public class ElevatorSet extends Command {
     double m_position;
     double setpoint;
 
-    /** Creates a new ElevatorCmd. */
     public ElevatorSet(ElevatorSubsystem elevator, double position) {
         addRequirements(elevator);
         m_elevator = elevator;

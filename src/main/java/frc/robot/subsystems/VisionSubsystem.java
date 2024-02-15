@@ -75,10 +75,6 @@ public class VisionSubsystem extends SubsystemBase {
         return noteCamera.getLatestResult();
     }
 
-    public void update() {
-
-    }
-
     /**
      * The latest estimated robot pose on the field from vision data. This may be empty. This should
      * only be called once per loop.

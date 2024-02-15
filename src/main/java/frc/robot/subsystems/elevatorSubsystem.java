@@ -4,13 +4,16 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.LaserCan.RangingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -29,7 +32,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
     private final double gearRatio = 17.33;
-    private final double maxHeight = 0;
+    private final double maxHeight = 0; //TODO measure
     
     // Vars
     private double revolutionCount;
@@ -38,8 +41,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     LaserCan.Measurement measurement;
     
     public ElevatorSubsystem() {
+        // Falcon setup
+        m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
         m_elevatorRight.setControl(m_requestFollower);
 
+        // PID
         Slot0Configs encoderConfig = new Slot0Configs();
         //ClosedLoopRampsConfigs closedloop = new ClosedLoopRampsConfigs();
 
@@ -56,6 +62,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         phoenixPID.setP(0);
         phoenixPID.setI(0);
         phoenixPID.setD(0);
+
+        /*try {
+            lasercan.setRangingMode(RangingMode.SHORT);
+        } catch (ConfigurationFailedException e){
+
+        } */
 
         laser = false;
     }

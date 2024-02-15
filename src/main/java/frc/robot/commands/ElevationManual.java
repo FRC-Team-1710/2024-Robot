@@ -15,7 +15,6 @@ public class ElevationManual extends Command {
     DoubleSupplier leftAxis;
     DoubleSupplier rightAxis;
 
-    /** Creates a new VaderMan. */
     public ElevationManual(ElevatorSubsystem elevate, DoubleSupplier left, DoubleSupplier right) {
         mElevatorSubsystem = elevate;
         leftAxis = left;

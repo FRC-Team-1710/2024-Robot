@@ -5,40 +5,40 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.math.FiringSolutions;
 import frc.robot.subsystems.IntexerSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
-public class FIREEE extends Command {
-    private ShooterSubsystem m_shootaTest;
-    private IntexerSubsystem intexer;
+public class IntexBestHex extends Command {
 
-    public FIREEE(ShooterSubsystem shootaTest, IntexerSubsystem intex) {
-        m_shootaTest = shootaTest;
-        intexer = intex;
+    IntexerSubsystem intexer;
 
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shootaTest, intex);
+    /** Creates a new IntexBestHex. */
+    public IntexBestHex(IntexerSubsystem intexer) {
+        this.intexer = intexer;
+        addRequirements(intexer);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        intexer.setShooterIntake(.75);
-        m_shootaTest.PointShoot(m_shootaTest.getCalculatedAngle(), FiringSolutions.convertToRPM(m_shootaTest.getCalculatedVelocity()));
+        if (intexer.intakeBreak() && !intexer.shooterBreak()){
+            intexer.setALL(.5);
+        } else if (!intexer.intakeBreak() && intexer.shooterBreak()){
+            intexer.setALL(0);
+        } else {
+            intexer.setFrontIntake(.5);
+        }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        intexer.setShooterIntake(0);
-        m_shootaTest.SetShooterVelocity(0);
-        m_shootaTest.manualWristSpeed(0);
+        intexer.setALL(0);
     }
 
     // Returns true when the command should end.
