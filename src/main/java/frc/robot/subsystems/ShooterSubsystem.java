@@ -186,19 +186,9 @@ public class ShooterSubsystem extends SubsystemBase {
         double distanceToSpeaker = FiringSolutionsV2.getDistanceToSpeaker(pose.getX(), pose.getY());
         double wtfisC = FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker);
 
-        FiringSolutionsV2.updateRobotAngle(getAngle(),
-                FiringSolutionsV2.quarticA(robotVelocityTowardsSpeaker),
-                FiringSolutionsV2.quarticB(distanceToSpeaker,
-                        robotVelocityTowardsSpeaker),
-                FiringSolutionsV2.quarticC(distanceToSpeaker,
+        FiringSolutionsV2.updateR(distanceToSpeaker,
                         robotVelocityTowardsSpeaker,
-                        wtfisC),
-                FiringSolutionsV2.quarticD(distanceToSpeaker,
-                        robotVelocityTowardsSpeaker,
-                        wtfisC),
-                FiringSolutionsV2.quarticE(distanceToSpeaker,
-                        robotVelocityTowardsSpeaker,
-                        wtfisC));
+                        wtfisC);
 
         shooterAngle = FiringSolutionsV2.getShooterAngle();
         shooterVelocity = 13;
