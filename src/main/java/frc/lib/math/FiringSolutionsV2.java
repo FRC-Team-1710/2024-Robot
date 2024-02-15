@@ -115,6 +115,10 @@ public class FiringSolutionsV2 {
                         + 2 * quarticC * R + quarticD));  
     }
 
+    public static void resetR(){
+        R = 0.0;
+    }
+
     public static double getShooterAngle(){
         return Math.acos(R);
     }
