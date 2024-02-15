@@ -29,7 +29,9 @@ public class FIREEE extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        intexer.setShooterIntake(.75);
+        if (m_shootaTest.shooterAtSpeed()){
+            intexer.setShooterIntake(.75);
+        }
         m_shootaTest.PointShoot(m_shootaTest.getCalculatedAngle(), FiringSolutions.convertToRPM(m_shootaTest.getCalculatedVelocity()));
     }
 

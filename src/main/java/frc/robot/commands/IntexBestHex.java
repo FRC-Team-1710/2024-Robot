@@ -26,13 +26,14 @@ public class IntexBestHex extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (intexer.intakeBreak() && !intexer.shooterBreak()){
-            intexer.setALL(.5);
+        /*if (intexer.intakeBreak() && !intexer.shooterBreak()){
+            intexer.setALL(.75);
         } else if (!intexer.intakeBreak() && intexer.shooterBreak()){
             intexer.setALL(0);
         } else {
-            intexer.setFrontIntake(.5);
-        }
+            intexer.setFrontIntake(.75);
+        }*/
+        intexer.setALL(.75);
     }
 
     // Called once the command ends or is interrupted.

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class IntexerSubsystem extends SubsystemBase {
@@ -22,7 +23,13 @@ public class IntexerSubsystem extends SubsystemBase {
     private DigitalInput beamKamen = new DigitalInput(1);
 
     public IntexerSubsystem() {
+        left.setIdleMode(IdleMode.kCoast);
+        right.setIdleMode(IdleMode.kCoast);
+        shooterIntake.setIdleMode(IdleMode.kCoast);
 
+        left.burnFlash();
+        right.burnFlash();
+        shooterIntake.burnFlash();
     }
 
     public void setALL(double speed) {
@@ -60,12 +67,12 @@ public class IntexerSubsystem extends SubsystemBase {
     }
 
     public boolean shooterBreak() {
-        return beamKamen.get();
+        return !beamKamen.get();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Intake Beam Break", breakingBeam.get());
-        SmartDashboard.putBoolean("Shooter Beam Break", beamKamen.get());
+        SmartDashboard.putBoolean("Intake Beam Break", intakeBreak());
+        SmartDashboard.putBoolean("Shooter Beam Break", shooterBreak());
     }
 }

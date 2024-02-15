@@ -46,11 +46,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private double pidPosD = 0;
 
     // Vars
+    private final double shooterVelocity = 13;
+    private double shooterAngle;
     private double setpointv = 0;
     private double setpointp = 0;
     private Boolean ENCFAIL = false;
-    private double shooterVelocity;
-    private double shooterAngle;
     public boolean isZeroed = false;
     private final double angleOffset = -.349; // IN RADIANS
 
@@ -184,24 +184,23 @@ public class ShooterSubsystem extends SubsystemBase {
                 angleToSpeaker,
                 pose.getRotation().getRadians());
         double distanceToSpeaker = FiringSolutionsV2.getDistanceToSpeaker(pose.getX(), pose.getY());
-        double wtfisC = FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker);
+        double Cdeeznuts = FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker);
 
-        FiringSolutionsV2.updateRobotAngle(getAngle(),
+        FiringSolutionsV2.updateR(
                 FiringSolutionsV2.quarticA(robotVelocityTowardsSpeaker),
                 FiringSolutionsV2.quarticB(distanceToSpeaker,
                         robotVelocityTowardsSpeaker),
                 FiringSolutionsV2.quarticC(distanceToSpeaker,
                         robotVelocityTowardsSpeaker,
-                        wtfisC),
+                        Cdeeznuts),
                 FiringSolutionsV2.quarticD(distanceToSpeaker,
                         robotVelocityTowardsSpeaker,
-                        wtfisC),
+                        Cdeeznuts),
                 FiringSolutionsV2.quarticE(distanceToSpeaker,
                         robotVelocityTowardsSpeaker,
-                        wtfisC));
+                        Cdeeznuts));
 
         shooterAngle = FiringSolutionsV2.getShooterAngle();
-        shooterVelocity = 13;
         // Calculate angle
         /*shooterAngle = FiringSolutions.getShooterAngle(
                 FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
@@ -234,7 +233,5 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("distance", FiringSolutionsV2.getDistanceToSpeaker(pose.getX(), pose.getY()));
         //SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
         //SmartDashboard.putNumber("Vz", velocityZ);
-        SmartDashboard.putNumber("Calculated Velocity Set", shooterVelocity);
-        SmartDashboard.putNumber("Converted Velocity Set", FiringSolutions.convertToRPM(shooterVelocity));
     }
 }
