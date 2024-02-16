@@ -17,7 +17,7 @@ import au.grapplerobotics.LaserCan.RangingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class elevatorSubsystem extends SubsystemBase {
 
     // Devices
     public TalonFX m_elevatorLeft = new TalonFX(20); // left leader
@@ -40,7 +40,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private boolean laser;
     LaserCan.Measurement measurement;
     
-    public ElevatorSubsystem() {
+    public elevatorSubsystem() {
         // Falcon setup
         m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
         m_elevatorRight.setControl(m_requestFollower);

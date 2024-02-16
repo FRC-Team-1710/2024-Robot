@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV2;
+import frc.robot.Constants;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
@@ -56,6 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public boolean isZeroed = false;
     private final double angleOffset = Units.degreesToRadians(53.5); // IN RADIANS
     private final Timer speedTimer = new Timer();
+    private final int m_Wrist_CurrentMax = 10;
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -124,6 +126,22 @@ public class ShooterSubsystem extends SubsystemBase {
 
         //wristManualSet(setpointp);
         //SetShooterVelocity(setpointv);
+    }
+
+    public boolean isWristMotorStalled(){
+        if(m_Wrist.getOutputCurrent()> (m_Wrist_CurrentMax-1)){
+      
+      return true;
+
+    } else { 
+      
+      return false;
+    
+    }
+    }
+
+    public void setWristEncoderPosition(double newPosition){
+    m_WristEncoder.setPositionOffset(newPosition);
     }
 
     public boolean shooterAtSpeed() { // Copied from Hudson but made it better
