@@ -9,6 +9,7 @@ public class FiringSolutionsV2 {
     private static final double shooterTargetY = 5.55;
     private static final double shooterTargetZ = 2.04;
     private static final double slipPercent = .67;
+    private static final double maxShooterAngle = Math.toRadians(70);
 
     private static double shooterTargetX;
     private static double shooterVelocity = 13.0;
@@ -111,24 +112,34 @@ public class FiringSolutionsV2 {
     public static void updateR(double distanceToSpeaker, double robotVelocityTowardsSpeaker) {
         R = R - ((quarticA(distanceToSpeaker) * Math.pow(R, 4)
                 + quarticB(distanceToSpeaker, robotVelocityTowardsSpeaker) * Math.pow(R, 3)
-                + quarticC(distanceToSpeaker, robotVelocityTowardsSpeaker, C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * Math.pow(R, 2)
-                + quarticD(distanceToSpeaker, robotVelocityTowardsSpeaker, C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * R
-                + quarticE(distanceToSpeaker, robotVelocityTowardsSpeaker, C(distanceToSpeaker, robotVelocityTowardsSpeaker)))
+                + quarticC(distanceToSpeaker, robotVelocityTowardsSpeaker,
+                        C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * Math.pow(R, 2)
+                + quarticD(distanceToSpeaker, robotVelocityTowardsSpeaker,
+                        C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * R
+                + quarticE(distanceToSpeaker, robotVelocityTowardsSpeaker,
+                        C(distanceToSpeaker, robotVelocityTowardsSpeaker)))
                 / (4 * quarticA(distanceToSpeaker) * Math.pow(R, 3)
                         + 3 * quarticB(distanceToSpeaker, robotVelocityTowardsSpeaker) * Math.pow(R, 2)
-                        + 2 * quarticC(distanceToSpeaker, robotVelocityTowardsSpeaker, C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * R
-                        + quarticD(distanceToSpeaker, robotVelocityTowardsSpeaker, C(distanceToSpeaker, robotVelocityTowardsSpeaker))));
+                        + 2 * quarticC(distanceToSpeaker, robotVelocityTowardsSpeaker,
+                                C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * R
+                        + quarticD(distanceToSpeaker, robotVelocityTowardsSpeaker,
+                                C(distanceToSpeaker, robotVelocityTowardsSpeaker))));
+
+        if (R < .4 || getShooterAngle() > maxShooterAngle) {
+            resetR();
+        }
     }
 
     public static void resetR() {
         R = 1.0;
     }
 
-    public static double getR(){
+    public static double getR() {
         return R;
     }
 
     public static double getShooterAngle() {
         return Math.acos(R);
     }
+
 }

@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.math.FiringSolutionsV2;
 import frc.robot.subsystems.IntexerSubsystem;
 
 public class IntexBestHex extends Command {
@@ -22,7 +23,7 @@ public class IntexBestHex extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-
+        FiringSolutionsV2.resetR();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
