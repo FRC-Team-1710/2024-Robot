@@ -7,7 +7,7 @@ public final class FiringSolutions {
     private static final double shooterTargetXRed = 16.54;
     private static final double shooterTargetY = 5.55;
     private static final double shooterTargetZ = 2.05;
-    private static final double slipPercent = .5;
+    private static final double slipPercent = .3;
 
     private static double shooterTargetX;
 
@@ -74,8 +74,9 @@ public final class FiringSolutions {
         return Math.sqrt(Math.pow(shooterVelocityX - robotVelocityTowardsSpeaker, 2) + Math.pow(shooterVelocityZ, 2) + Math.pow(robotVelocityPerpendicularToSpeaker, 2));
     }
 
+    /** Convert meters per second to rotations per minute */
     public static double convertToRPM(double velocity) {
-        return (60 * velocity)/(slipPercent * .75 * Math.PI * .1524);
+        return (60 * velocity)/(slipPercent * Math.PI * .1016);
     }
 
     public static double getShooterAngle(double shooterVelocityX, double shooterVelocityZ, double robotVelocityTowardsSpeaker){

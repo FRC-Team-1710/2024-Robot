@@ -11,8 +11,8 @@ public class FiringSolutionsV2 {
     private static final double slipPercent = .67;
 
     private static double shooterTargetX;
-    private static double shooterVelocity;
-    private static double R = 0.0;
+    private static double shooterVelocity = 13.0;
+    private static double R = 1.0;
 
     private FiringSolutionsV2() {
     }
@@ -92,7 +92,7 @@ public class FiringSolutionsV2 {
 
     public static double quarticC(double distanceToSpeaker, double robotVelocityTowardsSpeaker, double C) {
         return 4 * Math.pow(shooterVelocity, 2)
-                * (4 * Math.pow(shooterVelocity, 2) * Math.pow(shooterTargetZ - shooterHeight, 2)
+                * (4 * Math.pow(robotVelocityTowardsSpeaker, 2) * Math.pow(shooterTargetZ - shooterHeight, 2)
                         + C * (shooterTargetZ - shooterHeight)
                         - Math.pow(shooterVelocity, 2) * Math.pow(distanceToSpeaker, 2)
                         + Math.pow(robotVelocityTowardsSpeaker, 2) * Math.pow(distanceToSpeaker, 2));
@@ -121,7 +121,11 @@ public class FiringSolutionsV2 {
     }
 
     public static void resetR() {
-        R = 0.0;
+        R = 1.0;
+    }
+
+    public static double getR(){
+        return R;
     }
 
     public static double getShooterAngle() {

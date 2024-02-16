@@ -1,6 +1,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -9,7 +12,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.math.FiringSolutions;
+import frc.lib.math.FiringSolutionsV2;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -36,14 +42,24 @@ public class RobotContainer {
     private final int elevatorDownTrigger = XboxController.Axis.kRightTrigger.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
+    private final JoystickButton resetOdom = new JoystickButton(driver, XboxController.Button.kStart.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton wristUp = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton wristDown = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kBack.value);
     private final JoystickButton intexer = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton manualShoot = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton shooterToIntake = new JoystickButton(driver, XboxController.Button.kRightStick.value);
+    private final Trigger resetR = new Trigger(() -> driver.getPOV() == 90);
+    
+    /* Mech Buttons */
+    private final JoystickButton manualShoot = new JoystickButton(mech, XboxController.Button.kX.value);
+    private final JoystickButton manualIntake = new JoystickButton(mech, XboxController.Button.kA.value);
+    private final JoystickButton shooterTo45 = new JoystickButton(mech, XboxController.Button.kB.value);
+    private final Trigger dynamicForward = new Trigger(() -> mech.getPOV() == 90);
+    private final Trigger dynamicBackward = new Trigger(() -> mech.getPOV() == 270);
+    private final Trigger quasistaticForward = new Trigger(() -> mech.getPOV() == 0);
+    private final Trigger quasistaticBackwards = new Trigger(() -> mech.getPOV() == 180);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -81,6 +97,7 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
+        
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -96,18 +113,26 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         Shoot.whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem));
-        zeroGyro.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()));
+        resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()))
+                .onTrue(new InstantCommand(() -> m_SwerveSubsystem.setPose(new Pose2d(1.35, 5.55, new Rotation2d(0)))));
         wristUp.whileTrue(new ManRizzt(m_Shoota, .05));
         wristDown.whileTrue(new ManRizzt(m_Shoota, -.05));
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder()));
+        shooterToIntake.onTrue(new RizzLevel(m_Shoota, 0.56));
+        shooterTo45.onTrue(new RizzLevel(m_Shoota, 0.785));
+        resetR.onTrue(new InstantCommand(() -> FiringSolutionsV2.resetR()));
 
-        /*intexer.onFalse(new InstantCommand(() -> m_IntexerSubsystem.setFrontIntake(0)));
-        intexer.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setFrontIntake(0.45)));
-        manualShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.75)));
-        manualShoot.onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));*/
         intexer.whileTrue(new IntexBestHex(m_IntexerSubsystem));
-        manualShoot.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(13))));
+        manualIntake.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
+        manualIntake.onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
+        manualShoot.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(30))));
         manualShoot.onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+
+        // Characterization tests
+        dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
+        dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
+        quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
+        quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
     }
 
     /**
