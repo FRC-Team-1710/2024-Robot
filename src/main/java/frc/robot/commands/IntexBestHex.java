@@ -11,9 +11,11 @@ import frc.robot.subsystems.IntexerSubsystem;
 public class IntexBestHex extends Command {
 
     IntexerSubsystem intexer;
+    boolean in;
 
     /** Creates a new IntexBestHex. */
-    public IntexBestHex(IntexerSubsystem intexer) {
+    public IntexBestHex(IntexerSubsystem intexer, boolean in) {
+        this.in = in;
         this.intexer = intexer;
         addRequirements(intexer);
     }
@@ -27,13 +29,18 @@ public class IntexBestHex extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (intexer.intakeBreak() && !intexer.shooterBreak()){
-            intexer.setALL(.35);
-        } else if (!intexer.intakeBreak() && intexer.shooterBreak()){
-            intexer.setALL(0);
+        if (in) {
+            if (intexer.intakeBreak() && !intexer.shooterBreak()) {
+                intexer.setALL(.35);
+            } else if (!intexer.intakeBreak() && intexer.shooterBreak()) {
+                intexer.setALL(0);
+            } else {
+                intexer.setFrontIntake(.75);
+            }
         } else {
-            intexer.setFrontIntake(.75);
+            intexer.setALL(-0.5);
         }
+
         //intexer.setALL(.75);
     }
 
