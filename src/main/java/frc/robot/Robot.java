@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import org.littletonrobotics.urcl.URCL;
 
@@ -12,6 +14,10 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -37,6 +43,8 @@ public class Robot extends TimedRobot {
 
     private boolean isZeroed = false;
 
+    PowerDistribution PDH = new PowerDistribution(1, ModuleType.kRev);
+
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
@@ -47,8 +55,10 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
+        DriverStation.silenceJoystickConnectionWarning(true);
+
         // Starts recording to data log
-        DataLogManager.start();
+        DataLogManager.start("/media/sda1/logs/", DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now())+".wpilog");
 
         // Record both DS control and joystick data
         DriverStation.startDataLog(DataLogManager.getLog());
@@ -76,7 +86,12 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-
+/* 
+        SmartDashboard.putNumber("Flywheel 1 Current", PDH.getCurrent(4));
+        SmartDashboard.putNumber("Flywheel 2 Current", PDH.getCurrent(5));
+        SmartDashboard.putNumber("Shooter Intake Current", PDH.getCurrent(6));
+        SmartDashboard.putNumber("Front Intake 1 Current", PDH.getCurrent(13));
+        SmartDashboard.putNumber("Front Intake 2 Current", PDH.getCurrent(12));*/
     }
 
     public static boolean getAlliance() {

@@ -30,6 +30,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
@@ -77,6 +78,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Logging
     private Field2d m_field = new Field2d();
     StructPublisher<Pose2d> posePublisher;
+    StructArrayPublisher<SwerveModuleState> swervePublisher;
 
     // Constructor
     public SwerveSubsystem(VisionSubsystem vision) {
@@ -125,6 +127,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // Logging
         posePublisher = NetworkTableInstance.getDefault().getStructTopic("Fused Pose", Pose2d.struct).publish();
+        swervePublisher = NetworkTableInstance.getDefault()
+        .getStructArrayTopic("Swerve Module States", SwerveModuleState.struct).publish();
 
         this.vision = vision;
     }
@@ -158,6 +162,7 @@ public class SwerveSubsystem extends SubsystemBase {
         for (SwerveModule mod : mSwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
+        swervePublisher.set(swerveModuleStates);
     }
 
     /** Used by SwerveControllerCommand in Auto */

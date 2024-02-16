@@ -54,7 +54,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private double setpointp = 0;
     private Boolean ENCFAIL = false;
     public boolean isZeroed = false;
-    private final double angleOffset = Units.degreesToRadians(53.5); // IN RADIANS
+    private final double angleOffset = Units.degreesToRadians(4.6); // IN RADIANS
     private final Timer speedTimer = new Timer();
 
     private SwerveSubsystem swerveSubsystem;
@@ -124,6 +124,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
         //wristManualSet(setpointp);
         //SetShooterVelocity(setpointv);
+
+        SmartDashboard.putNumber("Flywheel Left Current", m_ShootaL.getOutputCurrent());
+        SmartDashboard.putNumber("Flywheel 2 Current", m_ShootaR.getOutputCurrent());
+        SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
     }
 
     public boolean shooterAtSpeed() { // Copied from Hudson but made it better
@@ -137,7 +141,7 @@ public class ShooterSubsystem extends SubsystemBase {
             return false;
         }
 
-        if (speedTimer.get() > .25){
+        if (speedTimer.get() > .1){
             return true;
         } else {
             return false;
