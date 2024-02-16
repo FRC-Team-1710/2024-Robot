@@ -9,6 +9,7 @@ public class FiringSolutionsV2 {
     private static final double shooterTargetY = 5.55;
     private static final double shooterTargetZ = 2.04;
     private static final double slipPercent = .67;
+    private static final double maxShooterAngle = Math.toRadians(70);
 
     private static double shooterTargetX;
     private static double shooterVelocity = 13.0;
@@ -124,7 +125,7 @@ public class FiringSolutionsV2 {
                         + quarticD(distanceToSpeaker, robotVelocityTowardsSpeaker,
                                 C(distanceToSpeaker, robotVelocityTowardsSpeaker))));
 
-        if (R < .4 || Math.acos(R) > Math.toRadians(70.0)) {
+        if (R < .4 || getShooterAngle() > maxShooterAngle) {
             resetR();
         }
     }
