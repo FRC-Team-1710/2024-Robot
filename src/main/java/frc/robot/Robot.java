@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
 
     private boolean isZeroed = false;
 
-    PowerDistribution PDH = new PowerDistribution(1, ModuleType.kRev);
+    //PowerDistribution PDH = new PowerDistribution(1, ModuleType.kRev);
 
     /**
      * This function is run when the robot is first started up and should be used for any

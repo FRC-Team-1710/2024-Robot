@@ -17,7 +17,7 @@ import au.grapplerobotics.LaserCan.RangingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class elevatorSubsystem extends SubsystemBase {
+public class ElevatorSubsystem extends SubsystemBase {
 
     // Devices
     public TalonFX m_elevatorLeft = new TalonFX(20); // left leader
@@ -40,7 +40,7 @@ public class elevatorSubsystem extends SubsystemBase {
     private boolean laser;
     LaserCan.Measurement measurement;
     
-    public elevatorSubsystem() {
+    public ElevatorSubsystem() {
         // Falcon setup
         m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
         m_elevatorRight.setControl(m_requestFollower);
@@ -83,10 +83,12 @@ public class elevatorSubsystem extends SubsystemBase {
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
     }
 
+    /** Get height from motor encoder */
     public double getHeightEncoder() {
         return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI);
     }
 
+    /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
     public void setHeight(double height) {
         setHeight = height;
         if (!lasercanFailureCheck()) { // Run off LaserCan
@@ -113,6 +115,7 @@ public class elevatorSubsystem extends SubsystemBase {
         laser = laserCanOn;
     }
 
+    /** Get height from LaserCan IN METERS */
     public int getHeightLaserCan() {
         if (measurement != null) {
             return measurement.distance_mm / 1000; //UNITS MATTER!!!! METERS ONLY!!!!
@@ -120,6 +123,7 @@ public class elevatorSubsystem extends SubsystemBase {
         return 0;
     }
 
+    /** Check if LaserCan has a result */
     public boolean lasercanFailureCheck() {
         if (measurement == null) {
             return true;

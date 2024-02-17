@@ -29,19 +29,17 @@ public class IntexBestHex extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (in) {
-            if (intexer.intakeBreak() && !intexer.shooterBreak()) {
+        if (in) { // Hood logic to run forwards or backwards
+            if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
                 intexer.setALL(.35);
-            } else if (!intexer.intakeBreak() && intexer.shooterBreak()) {
+            } else if (!intexer.intakeBreak() && intexer.shooterBreak()) { // Stop note if at shooter
                 intexer.setALL(0);
-            } else {
+            } else { // Note is not in robot
                 intexer.setFrontIntake(.75);
             }
-        } else {
+        } else { // Outtake
             intexer.setALL(-0.5);
         }
-
-        //intexer.setALL(.75);
     }
 
     // Called once the command ends or is interrupted.

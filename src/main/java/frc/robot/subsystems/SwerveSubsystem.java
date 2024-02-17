@@ -77,8 +77,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Logging
     private Field2d m_field = new Field2d();
-    StructPublisher<Pose2d> posePublisher;
-    StructArrayPublisher<SwerveModuleState> swervePublisher;
+    private StructPublisher<Pose2d> posePublisher;
+    private StructArrayPublisher<SwerveModuleState> swervePublisher;
 
     // Constructor
     public SwerveSubsystem(VisionSubsystem vision) {
@@ -138,6 +138,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return () -> Robot.getAlliance();
     }
 
+    /** Teleop drive method */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         double translationX = translation.getX();
         double translationY = translation.getY();
@@ -174,6 +175,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
+    /** Drive method for Autos */
     public void setChassisSpeeds(ChassisSpeeds speed) {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speed, 0.02);
 
