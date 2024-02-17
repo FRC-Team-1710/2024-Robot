@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.math.FiringSolutions;
-import frc.lib.math.FiringSolutionsV2;
+import frc.lib.math.FiringSolutionsV3;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -119,7 +119,7 @@ public class RobotContainer {
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder())); // Set encodere to zero
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, 0.56)); // Move wrist to intake position
         shooterTo45.onTrue(new RizzLevel(m_Shoota, 0.785));
-        resetR.onTrue(new InstantCommand(() -> FiringSolutionsV2.resetR())); // Reset the R calculation incase it gets off
+        resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetR())); // Reset the R calculation incase it gets off
 
         // Drive
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()))
