@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV2;
-
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -54,8 +53,9 @@ public class ShooterSubsystem extends SubsystemBase {
     private double setpointp = 0;
     private Boolean ENCFAIL = false;
     public boolean isZeroed = false;
-    private final double angleOffset = Units.degreesToRadians(53.5); // IN RADIANS
+    private final double angleOffset = Units.degreesToRadians(4.6); // IN RADIANS
     private final Timer speedTimer = new Timer();
+    private final int m_Wrist_CurrentMax = 10; // TODO configure
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -124,8 +124,27 @@ public class ShooterSubsystem extends SubsystemBase {
 
         //wristManualSet(setpointp);
         //SetShooterVelocity(setpointv);
+
+        SmartDashboard.putNumber("Flywheel Left Current", m_ShootaL.getOutputCurrent());
+        SmartDashboard.putNumber("Flywheel 2 Current", m_ShootaR.getOutputCurrent());
+        SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
     }
 
+    /**Check if wrist motor is exceeding stall current, used for zeroing */
+    public boolean isWristMotorStalled() {
+        if (m_Wrist.getOutputCurrent() > (m_Wrist_CurrentMax - 1)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /** Reset wrist encoder to given value */
+    public void setWristEncoderPosition(double newPosition) {
+        m_WristEncoder.setPositionOffset(newPosition);
+    }
+
+    /** Get whether shooter is at target speed */
     public boolean shooterAtSpeed() { // Copied from Hudson but made it better
         //return (getVelocity() > (FiringSolutions.convertToRPM(shooterVelocity) - 50)) && (getVelocity() < FiringSolutions.convertToRPM(shooterVelocity)+50);
 
@@ -137,18 +156,20 @@ public class ShooterSubsystem extends SubsystemBase {
             return false;
         }
 
-        if (speedTimer.get() > .25){
+        if (speedTimer.get() > .1) {
             return true;
         } else {
             return false;
         }
     }
 
+    /** Shooter velocity in RPM */
     public double getVelocity() {
         return m_VelocityEncoder.getVelocity();
     }
 
-    public double getAngle() { // in RADIANs units MATTER
+    /** in RADIANs units MATTER */
+    public double getAngle() {
         if (!ENCFAIL) {
             return ((-m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
         } else {
@@ -167,6 +188,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
     }
 
+    /** In rotations per minute */
     public void SetShooterVelocity(double velocity) {
         if (velocity == 0) {
             m_ShootaR.stopMotor();
@@ -208,33 +230,6 @@ public class ShooterSubsystem extends SubsystemBase {
         FiringSolutionsV2.updateR(distanceToSpeaker, 0);
 
         shooterAngle = FiringSolutionsV2.getShooterAngle();
-        // Calculate angle
-        /*shooterAngle = FiringSolutions.getShooterAngle(
-                FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
-                velocityZ,
-                FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        //                        chassisSpeeds.vxMetersPerSecond,
-                        //                        chassisSpeeds.vyMetersPerSecond,
-                        0, 0,
-                        angleToSpeaker,
-                        pose.getRotation().getRadians()));*/
-
-        // Calculate velocity
-        /*shooterVelocity = FiringSolutions.getShooterVelocity(
-                FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()),
-                velocityZ,
-                FiringSolutions.getRobotVelocityTowardsSpeaker(
-                        //                        chassisSpeeds.vxMetersPerSecond,
-                        //                        chassisSpeeds.vyMetersPerSecond,
-                        0, 0,
-                        angleToSpeaker,
-                        pose.getRotation().getRadians()),
-                FiringSolutions.getRobotVelocityPerpendicularToSpeaker(
-                        //                    chassisSpeeds.vxMetersPerSecond,
-                        //                    chassisSpeeds.vyMetersPerSecond,
-                        0, 0,
-                        angleToSpeaker,
-                        pose.getRotation().getRadians()));*/
 
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngle);
         SmartDashboard.putNumber("Calculated Angle Degrees", Math.toDegrees(shooterAngle));
@@ -243,9 +238,12 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("C", FiringSolutionsV2.C(distanceToSpeaker, 0));
         SmartDashboard.putNumber("quarticA", FiringSolutionsV2.quarticA(distanceToSpeaker));
         SmartDashboard.putNumber("quarticB", FiringSolutionsV2.quarticB(distanceToSpeaker, 0));
-        SmartDashboard.putNumber("quarticC", FiringSolutionsV2.quarticC(distanceToSpeaker, 0, FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
-        SmartDashboard.putNumber("quarticD", FiringSolutionsV2.quarticD(distanceToSpeaker, 0, FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
-        SmartDashboard.putNumber("quarticE", FiringSolutionsV2.quarticE(distanceToSpeaker, 0, FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
+        SmartDashboard.putNumber("quarticC", FiringSolutionsV2.quarticC(distanceToSpeaker, 0,
+                FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
+        SmartDashboard.putNumber("quarticD", FiringSolutionsV2.quarticD(distanceToSpeaker, 0,
+                FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
+        SmartDashboard.putNumber("quarticE", FiringSolutionsV2.quarticE(distanceToSpeaker, 0,
+                FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
         //SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
         //SmartDashboard.putNumber("Vz", velocityZ);
     }

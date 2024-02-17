@@ -43,7 +43,7 @@ public class IntexerSubsystem extends SubsystemBase {
             shooterIntake.set(-speed);
         }
     }
-
+    
     public void setFrontIntake(double speed) {
         if (speed == 0) {
             left.stopMotor();
@@ -74,5 +74,9 @@ public class IntexerSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putBoolean("Intake Beam Break", intakeBreak());
         SmartDashboard.putBoolean("Shooter Beam Break", shooterBreak());
+
+        SmartDashboard.putNumber("Intake Left Current", left.getOutputCurrent());
+        SmartDashboard.putNumber("Intake Right Current", right.getOutputCurrent());
+        SmartDashboard.putNumber("Shooter Intake Current", shooterIntake.getOutputCurrent());
     }
 }

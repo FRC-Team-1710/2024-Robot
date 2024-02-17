@@ -83,10 +83,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
     }
 
+    /** Get height from motor encoder */
     public double getHeightEncoder() {
         return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI);
     }
 
+    /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
     public void setHeight(double height) {
         setHeight = height;
         if (!lasercanFailureCheck()) { // Run off LaserCan
@@ -113,6 +115,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         laser = laserCanOn;
     }
 
+    /** Get height from LaserCan IN METERS */
     public int getHeightLaserCan() {
         if (measurement != null) {
             return measurement.distance_mm / 1000; //UNITS MATTER!!!! METERS ONLY!!!!
@@ -120,6 +123,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         return 0;
     }
 
+    /** Check if LaserCan has a result */
     public boolean lasercanFailureCheck() {
         if (measurement == null) {
             return true;

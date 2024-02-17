@@ -4,15 +4,17 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class ManRizzt extends Command {
 
     ShooterSubsystem shooterSubsystem;
-    private double speed;
+    private DoubleSupplier speed;
 
-    public ManRizzt(ShooterSubsystem subsystem, double speed) {
+    public ManRizzt(ShooterSubsystem subsystem, DoubleSupplier speed) {
         // Use addRequirements() here to declare subsystem dependencies.
         shooterSubsystem = subsystem;
         this.speed = speed;
@@ -26,7 +28,11 @@ public class ManRizzt extends Command {
 
     @Override
     public void execute() {
-        shooterSubsystem.manualWristSpeed(speed);
+        double speedValue = speed.getAsDouble();
+        
+        speedValue = Math.pow(speed.getAsDouble(), 3);
+
+        shooterSubsystem.manualWristSpeed(speedValue);
     }
 
     @Override

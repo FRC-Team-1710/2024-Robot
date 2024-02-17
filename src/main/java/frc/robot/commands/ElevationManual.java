@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ElevationManual extends Command {
-    private ElevatorSubsystem mElevatorSubsystem;
+    private ElevatorSubsystem m_elevatorSubsystem;
     double m_speed;
     DoubleSupplier leftAxis;
     DoubleSupplier rightAxis;
 
     public ElevationManual(ElevatorSubsystem elevate, DoubleSupplier left, DoubleSupplier right) {
-        mElevatorSubsystem = elevate;
+        m_elevatorSubsystem = elevate;
         leftAxis = left;
         rightAxis = right;
         addRequirements(elevate);
@@ -31,7 +31,7 @@ public class ElevationManual extends Command {
     @Override
     public void execute() {
         double x = rightAxis.getAsDouble() - leftAxis.getAsDouble();
-        mElevatorSubsystem.ManSpin(x);
+        m_elevatorSubsystem.ManSpin(x);
     }
 
     // Called once the command ends or is interrupted.
