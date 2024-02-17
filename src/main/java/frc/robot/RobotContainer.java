@@ -35,11 +35,12 @@ public class RobotContainer {
     private final Joystick mech = new Joystick(1);
 
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
-    private final int elevatorUpTrigger = XboxController.Axis.kLeftTrigger.value;
-    private final int elevatorDownTrigger = XboxController.Axis.kRightTrigger.value;
+    private final int leftVerticalAxis = XboxController.Axis.kLeftY.value;
+    private final int leftHorizontalAxis = XboxController.Axis.kLeftX.value;
+    private final int rightHorizontalAxis = XboxController.Axis.kRightX.value;
+    private final int rightVerticalAxis = XboxController.Axis.kRightY.value;
+    private final int leftTrigger = XboxController.Axis.kLeftTrigger.value;
+    private final int rightTrigger = XboxController.Axis.kRightTrigger.value;
 
     /* Driver Buttons */
     private final JoystickButton resetOdom = new JoystickButton(driver, XboxController.Button.kStart.value);
@@ -77,19 +78,18 @@ public class RobotContainer {
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
                         m_SwerveSubsystem,
-                        () -> -driver.getRawAxis(translationAxis),
-                        () -> -driver.getRawAxis(strafeAxis),
-                        () -> -driver.getRawAxis(rotationAxis),
+                        () -> -driver.getRawAxis(leftVerticalAxis),
+                        () -> -driver.getRawAxis(leftHorizontalAxis),
+                        () -> -driver.getRawAxis(rightHorizontalAxis),
                         () -> robotCentric.getAsBoolean(),
                         () -> Shoot.getAsBoolean()));
 
         m_ElevatorSubsystem.setDefaultCommand(
                 new ElevationManual(
                         m_ElevatorSubsystem,
-                        () -> driver.getRawAxis(elevatorUpTrigger),
-                        () -> driver.getRawAxis(elevatorDownTrigger)));
+                        () -> -mech.getRawAxis(rightVerticalAxis)));
 
-        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, () -> mech.getRawAxis(translationAxis)));
+        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, () -> -mech.getRawAxis(leftVerticalAxis)));
 
         // m_LEDSubsystem.setAllianceColor();
 

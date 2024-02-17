@@ -15,6 +15,7 @@ import org.photonvision.EstimatedRobotPose;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -128,7 +129,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // Logging
         posePublisher = NetworkTableInstance.getDefault().getStructTopic("Fused Pose", Pose2d.struct).publish();
         swervePublisher = NetworkTableInstance.getDefault()
-        .getStructArrayTopic("Swerve Module States", SwerveModuleState.struct).publish();
+                .getStructArrayTopic("Swerve Module States", SwerveModuleState.struct).publish();
 
         this.vision = vision;
     }
@@ -286,6 +287,15 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
+    }
+
+    public Command pathfindToSource() { // TODO tune constraints
+        PathConstraints constraints = new PathConstraints(4, 3, 10, 10);
+        if (Robot.getAlliance()) {
+            return AutoBuilder.pathfindToPose(new Pose2d(1.167, 1.508, Rotation2d.fromRadians(-2.099)), constraints, 0);
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(15.373, 1.419, Rotation2d.fromRadians(-1.044)), constraints, 0);
+        }
     }
 
     public void sysidroutine(SysIdRoutineLog log) {

@@ -126,7 +126,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //SetShooterVelocity(setpointv);
 
         SmartDashboard.putNumber("Flywheel Left Current", m_ShootaL.getOutputCurrent());
-        SmartDashboard.putNumber("Flywheel 2 Current", m_ShootaR.getOutputCurrent());
+        SmartDashboard.putNumber("Flywheel Right Current", m_ShootaR.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
     }
 

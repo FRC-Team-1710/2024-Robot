@@ -12,13 +12,11 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ElevationManual extends Command {
     private ElevatorSubsystem m_elevatorSubsystem;
     double m_speed;
-    DoubleSupplier leftAxis;
-    DoubleSupplier rightAxis;
+    DoubleSupplier axis;
 
-    public ElevationManual(ElevatorSubsystem elevate, DoubleSupplier left, DoubleSupplier right) {
+    public ElevationManual(ElevatorSubsystem elevate, DoubleSupplier control) {
         m_elevatorSubsystem = elevate;
-        leftAxis = left;
-        rightAxis = right;
+        axis = control;
         addRequirements(elevate);
     }
 
@@ -30,8 +28,11 @@ public class ElevationManual extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double x = rightAxis.getAsDouble() - leftAxis.getAsDouble();
-        m_elevatorSubsystem.ManSpin(x);
+        double value = axis.getAsDouble();
+
+        value = Math.pow(value, 3);
+        
+        m_elevatorSubsystem.ManSpin(value);
     }
 
     // Called once the command ends or is interrupted.
