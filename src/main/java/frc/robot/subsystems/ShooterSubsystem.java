@@ -140,8 +140,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** Reset wrist encoder to given value */
-    public void setWristEncoderPosition(double newPosition) {
-        m_WristEncoder.setPositionOffset(newPosition);
+    public void setWristEncoderPosition() {
+        m_WristEncoder.reset();
     }
 
     /** Get whether shooter is at target speed */

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+//import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,15 +20,19 @@ public class IntexerSubsystem extends SubsystemBase {
     private CANSparkBase left = new CANSparkMax(30, MotorType.kBrushless);
     private CANSparkBase right = new CANSparkMax(31, MotorType.kBrushless);
     private CANSparkBase shooterIntake = new CANSparkMax(10, MotorType.kBrushless);
+    SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(0, 0, 0);
 
+    
     private DigitalInput breakingBeam = new DigitalInput(2);
     private DigitalInput beamKamen = new DigitalInput(1);
 
     public IntexerSubsystem() {
+        
         left.setIdleMode(IdleMode.kCoast);
         right.setIdleMode(IdleMode.kCoast);
         shooterIntake.setIdleMode(IdleMode.kCoast);
 
+       
         left.burnFlash();
         right.burnFlash();
         shooterIntake.burnFlash();
@@ -69,6 +75,9 @@ public class IntexerSubsystem extends SubsystemBase {
     public boolean shooterBreak() {
         return !beamKamen.get();
     }
+
+    public void runFeedForward(){
+        shooterIntake.set(feedForward.calculate(1,2)); }
 
     @Override
     public void periodic() {

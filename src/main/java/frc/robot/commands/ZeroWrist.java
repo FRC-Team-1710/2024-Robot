@@ -35,7 +35,7 @@ public class ZeroWrist extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.setWristEncoderPosition(0);
+        shooter.setWristEncoderPosition();
         shooter.setWristPosition(0.56); // Reset to intake position
     }
 
