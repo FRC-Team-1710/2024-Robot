@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import frc.lib.math.FiringSolutions;
+import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -13,17 +14,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-
-public class TeleopSwerve extends Command {    
-    private SwerveSubsystem swerveSubsystem;    
+public class TeleopSwerve extends Command {
+    private SwerveSubsystem swerveSubsystem;
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier shooterOverride;
-    private PIDController rotationPID = new PIDController(2,0,0);
+    private PIDController rotationPID = new PIDController(2, 0, 0);
 
-    public TeleopSwerve(SwerveSubsystem swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverride) {
+    public TeleopSwerve(SwerveSubsystem swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup,
+            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverride) {
         this.swerveSubsystem = swerve;
         addRequirements(swerve);
 
@@ -46,9 +47,13 @@ public class TeleopSwerve extends Command {
         /* Exponential Drive */
         translationVal = Math.copySign(Math.pow(translationVal, 2), translationVal);
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
-        
-        if (shooterOverride.getAsBoolean()){ // Lock robot angle to shooter
-            rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(), FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY()));
+
+        if (shooterOverride.getAsBoolean()) { // Lock robot angle to shooter
+            rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
+                    FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(),
+                            swerveSubsystem.getChassisSpeeds().vxMetersPerSecond,
+                            swerveSubsystem.getChassisSpeeds().vyMetersPerSecond,
+                            FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);
@@ -56,10 +61,9 @@ public class TeleopSwerve extends Command {
 
         /* Drive */
         swerveSubsystem.drive(
-            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-            rotationVal * Constants.Swerve.maxAngularVelocity, 
-            !robotCentricSup.getAsBoolean(), 
-            true
-        );
+                new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
+                rotationVal * Constants.Swerve.maxAngularVelocity,
+                !robotCentricSup.getAsBoolean(),
+                true);
     }
 }

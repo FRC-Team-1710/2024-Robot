@@ -6,7 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.FiringSolutions;
-import frc.lib.math.FiringSolutionsV2;
+import frc.lib.math.FiringSolutionsV3;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -122,15 +122,15 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
         updateShooterMath();
 
-        //wristManualSet(setpointp);
-        //SetShooterVelocity(setpointv);
+        // wristManualSet(setpointp);
+        // SetShooterVelocity(setpointv);
 
         SmartDashboard.putNumber("Flywheel Left Current", m_ShootaL.getOutputCurrent());
         SmartDashboard.putNumber("Flywheel 2 Current", m_ShootaR.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
     }
 
-    /**Check if wrist motor is exceeding stall current, used for zeroing */
+    /** Check if wrist motor is exceeding stall current, used for zeroing */
     public boolean isWristMotorStalled() {
         if (m_Wrist.getOutputCurrent() > (m_Wrist_CurrentMax - 1)) {
             return true;
@@ -146,7 +146,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Get whether shooter is at target speed */
     public boolean shooterAtSpeed() { // Copied from Hudson but made it better
-        //return (getVelocity() > (FiringSolutions.convertToRPM(shooterVelocity) - 50)) && (getVelocity() < FiringSolutions.convertToRPM(shooterVelocity)+50);
+        // return (getVelocity() > (FiringSolutions.convertToRPM(shooterVelocity) - 50))
+        // && (getVelocity() < FiringSolutions.convertToRPM(shooterVelocity)+50);
 
         // if error less than certain amount start the timer
         if (Math.abs(getVelocity() - FiringSolutions.convertToRPM(shooterVelocity)) < 50) {
@@ -220,31 +221,30 @@ public class ShooterSubsystem extends SubsystemBase {
     public void updateShooterMath() { // Shooter Math
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
-        double angleToSpeaker = FiringSolutionsV2.getAngleToSpeaker(pose.getX(), pose.getY());
-        double robotVelocityTowardsSpeaker = FiringSolutionsV2.getRobotVelocityTowardsSpeaker(
+        double angleToSpeaker = FiringSolutionsV3.getAngleToSpeaker(pose.getX(), pose.getY());
+        double angleToMovingTarget = FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(),
+                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, angleToSpeaker);
+        double robotVelocityTowardsSpeaker = FiringSolutionsV3.getRobotVelocityTowardsSpeaker(
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
                 angleToSpeaker,
                 pose.getRotation().getRadians());
-        double distanceToSpeaker = FiringSolutionsV2.getDistanceToSpeaker(pose.getX(), pose.getY());
+        double distanceToMovingTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
+                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, angleToSpeaker);
 
-        FiringSolutionsV2.updateR(distanceToSpeaker, 0);
+        FiringSolutionsV3.updateR(distanceToMovingTarget);
 
-        shooterAngle = FiringSolutionsV2.getShooterAngle();
+        shooterAngle = FiringSolutionsV3.getShooterAngle();
 
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngle);
         SmartDashboard.putNumber("Calculated Angle Degrees", Math.toDegrees(shooterAngle));
-        SmartDashboard.putNumber("distance", FiringSolutionsV2.getDistanceToSpeaker(pose.getX(), pose.getY()));
-        SmartDashboard.putNumber("R", FiringSolutionsV2.getR());
-        SmartDashboard.putNumber("C", FiringSolutionsV2.C(distanceToSpeaker, 0));
-        SmartDashboard.putNumber("quarticA", FiringSolutionsV2.quarticA(distanceToSpeaker));
-        SmartDashboard.putNumber("quarticB", FiringSolutionsV2.quarticB(distanceToSpeaker, 0));
-        SmartDashboard.putNumber("quarticC", FiringSolutionsV2.quarticC(distanceToSpeaker, 0,
-                FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
-        SmartDashboard.putNumber("quarticD", FiringSolutionsV2.quarticD(distanceToSpeaker, 0,
-                FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
-        SmartDashboard.putNumber("quarticE", FiringSolutionsV2.quarticE(distanceToSpeaker, 0,
-                FiringSolutionsV2.C(distanceToSpeaker, robotVelocityTowardsSpeaker)));
-        //SmartDashboard.putNumber("Vx", FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
-        //SmartDashboard.putNumber("Vz", velocityZ);
+        SmartDashboard.putNumber("distance", FiringSolutionsV3.getDistanceToSpeaker(pose.getX(), pose.getY()));
+        SmartDashboard.putNumber("R", FiringSolutionsV3.getR());
+        SmartDashboard.putNumber("C", FiringSolutionsV3.C(distanceToMovingTarget));
+        SmartDashboard.putNumber("quarticA", FiringSolutionsV3.quarticA(distanceToMovingTarget));
+        SmartDashboard.putNumber("quarticC", FiringSolutionsV3.quarticC(distanceToMovingTarget));
+        SmartDashboard.putNumber("quarticE", FiringSolutionsV3.quarticE(distanceToMovingTarget));
+        // SmartDashboard.putNumber("Vx",
+        // FiringSolutions.getShooterVelocityX(pose.getX(), pose.getY()));
+        // SmartDashboard.putNumber("Vz", velocityZ);
     }
 }

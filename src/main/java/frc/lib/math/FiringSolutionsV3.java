@@ -94,9 +94,9 @@ public class FiringSolutionsV3 {
         return 0;
     }
 
-    public static double quarticC(double distanceToSpeaker, double C) {
+    public static double quarticC(double distanceToSpeaker) {
         return 4 * Math.pow(shooterVelocity, 2)
-                * (C * (shooterTargetZ - shooterHeight)
+                * (C(distanceToSpeaker) * (shooterTargetZ - shooterHeight)
                         - Math.pow(shooterVelocity, 2) * Math.pow(distanceToSpeaker, 2));
     }
 
@@ -104,21 +104,19 @@ public class FiringSolutionsV3 {
         return 0;
     }
 
-    public static double quarticE(double C) {
-        return Math.pow(C, 2);
+    public static double quarticE(double distanceToSpeaker) {
+        return Math.pow(C(distanceToSpeaker), 2);
     }
 
     public static void updateR(double distanceToSpeaker) {
         R = R - ((quarticA(distanceToSpeaker) * Math.pow(R, 4)
                 + quarticB() * Math.pow(R, 3)
-                + quarticC(distanceToSpeaker,
-                        C(distanceToSpeaker)) * Math.pow(R, 2)
+                + quarticC(distanceToSpeaker) * Math.pow(R, 2)
                 + quarticD() * R
                 + quarticE(C(distanceToSpeaker)))
                 / (4 * quarticA(distanceToSpeaker) * Math.pow(R, 3)
                         + 3 * quarticB() * Math.pow(R, 2)
-                        + 2 * quarticC(distanceToSpeaker,
-                                C(distanceToSpeaker)) * R
+                        + 2 * quarticC(distanceToSpeaker) * R
                         + quarticD()));
 
         if (R < .4 || getShooterAngle() > maxShooterAngle) {
