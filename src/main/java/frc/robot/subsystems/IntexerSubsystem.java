@@ -76,8 +76,8 @@ public class IntexerSubsystem extends SubsystemBase {
         return !beamKamen.get();
     }
 
-    public void runFeedForward(){
-        shooterIntake.set(feedForward.calculate(1,2)); }
+    public void runFeedForward(double velocitySetPoint, double Acceleration){
+        shooterIntake.set(feedForward.calculate(velocitySetPoint, Acceleration)); }
 
     @Override
     public void periodic() {

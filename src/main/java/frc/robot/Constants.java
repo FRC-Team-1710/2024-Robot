@@ -165,6 +165,10 @@ public final class Constants {
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
     }
+     
+    public final double spoolCircumference = 0.0508;
+    public final double gearRatio = 17.33;
+    public final double maxHeight = 0; //TODO measure
 
     public static final class AutoConstants {
         public static final double kMaxSpeedMetersPerSecond = 3;
