@@ -80,9 +80,9 @@ public class FiringSolutionsV3 {
         }
     }
 
-    public static double C(double distanceToSpeaker, double robotVelocityTowardsSpeaker) {
+    public static double C(double distanceToSpeaker) {
         return noteFallAccel * Math.pow(distanceToSpeaker, 2)
-                + 2 * Math.pow(robotVelocityTowardsSpeaker, 2) * (shooterTargetZ - shooterHeight);
+                + 2 * (shooterTargetZ - shooterHeight);
     }
 
     public static double quarticA(double distanceToSpeaker) {
@@ -90,44 +90,36 @@ public class FiringSolutionsV3 {
                 * (Math.pow(shooterTargetZ - shooterHeight, 2) + Math.pow(distanceToSpeaker, 2));
     }
 
-    public static double quarticB(double distanceToSpeaker, double robotVelocityTowardsSpeaker) {
-        return 8 * Math.pow(shooterVelocity, 3) * robotVelocityTowardsSpeaker
-                * (2 * Math.pow(shooterTargetZ - shooterHeight, 2) + Math.pow(distanceToSpeaker, 2));
+    public static double quarticB() {
+        return 0;
     }
 
-    public static double quarticC(double distanceToSpeaker, double robotVelocityTowardsSpeaker, double C) {
+    public static double quarticC(double distanceToSpeaker, double C) {
         return 4 * Math.pow(shooterVelocity, 2)
-                * (4 * Math.pow(robotVelocityTowardsSpeaker, 2) * Math.pow(shooterTargetZ - shooterHeight, 2)
-                        + C * (shooterTargetZ - shooterHeight)
-                        - Math.pow(shooterVelocity, 2) * Math.pow(distanceToSpeaker, 2)
-                        + Math.pow(robotVelocityTowardsSpeaker, 2) * Math.pow(distanceToSpeaker, 2));
+                * (C * (shooterTargetZ - shooterHeight)
+                        - Math.pow(shooterVelocity, 2) * Math.pow(distanceToSpeaker, 2));
     }
 
-    public static double quarticD(double distanceToSpeaker, double robotVelocityTowardsSpeaker, double C) {
-        return 8 * shooterVelocity * robotVelocityTowardsSpeaker * (C * (shooterTargetZ - shooterHeight)
-                - Math.pow(shooterVelocity, 2) * Math.pow(distanceToSpeaker, 2));
+    public static double quarticD() {
+        return 0;
     }
 
-    public static double quarticE(double distanceToSpeaker, double robotVelocityTowardsSpeaker, double C) {
-        return Math.pow(C, 2) - 4 * Math.pow(shooterVelocity, 2) * Math.pow(robotVelocityTowardsSpeaker, 2)
-                * Math.pow(distanceToSpeaker, 2);
+    public static double quarticE(double C) {
+        return Math.pow(C, 2);
     }
 
-    public static void updateR(double distanceToSpeaker, double robotVelocityTowardsSpeaker) {
+    public static void updateR(double distanceToSpeaker) {
         R = R - ((quarticA(distanceToSpeaker) * Math.pow(R, 4)
-                + quarticB(distanceToSpeaker, robotVelocityTowardsSpeaker) * Math.pow(R, 3)
-                + quarticC(distanceToSpeaker, robotVelocityTowardsSpeaker,
-                        C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * Math.pow(R, 2)
-                + quarticD(distanceToSpeaker, robotVelocityTowardsSpeaker,
-                        C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * R
-                + quarticE(distanceToSpeaker, robotVelocityTowardsSpeaker,
-                        C(distanceToSpeaker, robotVelocityTowardsSpeaker)))
+                + quarticB() * Math.pow(R, 3)
+                + quarticC(distanceToSpeaker,
+                        C(distanceToSpeaker)) * Math.pow(R, 2)
+                + quarticD() * R
+                + quarticE(C(distanceToSpeaker)))
                 / (4 * quarticA(distanceToSpeaker) * Math.pow(R, 3)
-                        + 3 * quarticB(distanceToSpeaker, robotVelocityTowardsSpeaker) * Math.pow(R, 2)
-                        + 2 * quarticC(distanceToSpeaker, robotVelocityTowardsSpeaker,
-                                C(distanceToSpeaker, robotVelocityTowardsSpeaker)) * R
-                        + quarticD(distanceToSpeaker, robotVelocityTowardsSpeaker,
-                                C(distanceToSpeaker, robotVelocityTowardsSpeaker))));
+                        + 3 * quarticB() * Math.pow(R, 2)
+                        + 2 * quarticC(distanceToSpeaker,
+                                C(distanceToSpeaker)) * R
+                        + quarticD()));
 
         if (R < .4 || getShooterAngle() > maxShooterAngle) {
             resetR();
