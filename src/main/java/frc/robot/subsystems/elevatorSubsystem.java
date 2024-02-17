@@ -17,7 +17,7 @@ import au.grapplerobotics.LaserCan.RangingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class elevatorSubsystem extends SubsystemBase {
+public class ElevatorSubsystem extends SubsystemBase {
 
     // Devices
     public TalonFX m_elevatorLeft = new TalonFX(20); // left leader
@@ -40,7 +40,7 @@ public class elevatorSubsystem extends SubsystemBase {
     private boolean laser;
     LaserCan.Measurement measurement;
     
-    public elevatorSubsystem() {
+    public ElevatorSubsystem() {
         // Falcon setup
         m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
         m_elevatorRight.setControl(m_requestFollower);
@@ -68,8 +68,10 @@ public class elevatorSubsystem extends SubsystemBase {
         } catch (ConfigurationFailedException e){
 
         } */
-
+/*
+    old laser can toggle variable
         laser = false;
+        */
     }
 
     @Override
@@ -109,10 +111,13 @@ public class elevatorSubsystem extends SubsystemBase {
     }
 
     //lasercan methods
+
+  /* 
+  
     public void useLaserCan(boolean laserCanOn) {
         laser = laserCanOn;
     }
-
+*/
     public int getHeightLaserCan() {
         if (measurement != null) {
             return measurement.distance_mm / 1000; //UNITS MATTER!!!! METERS ONLY!!!!
