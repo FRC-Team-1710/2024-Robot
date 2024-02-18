@@ -28,7 +28,7 @@ public class ManRizzt extends Command {
 
     @Override
     public void execute() {
-        double speedValue = speed.getAsDouble();
+        double speedValue = speed.getAsDouble() * 0.5;
         
         speedValue = Math.pow(speed.getAsDouble(), 3);
 

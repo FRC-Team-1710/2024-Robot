@@ -112,10 +112,10 @@ public class SwerveSubsystem extends SubsystemBase {
                 checkRedAlliance(),
                 this // Reference to this subsystem to set requirements
         );
-
+        // TODO tune
         // Vision Standard Deviation - Smaller means trust more
-        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 0.1); // Encoder Odometry
-        Vector<N3> visionStdDevs = VecBuilder.fill(1, 1, 2); // Vision Odometry
+        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
+        Vector<N3> visionStdDevs = VecBuilder.fill(1.5, 1.5, 10); // Vision Odometry
 
         // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
@@ -264,9 +264,13 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Correct pose estimate with multiple vision measurements
-        Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
+        Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedGlobalPose();
         if (OptionalEstimatedPoseFront.isPresent()) {
+            
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
+
+            swerveOdomEstimator.setVisionMeasurementStdDevs(vision.getEstimationStdDevs(estimatedPose.estimatedPose.toPose2d()));
+
             swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
                     estimatedPose.timestampSeconds);
         }

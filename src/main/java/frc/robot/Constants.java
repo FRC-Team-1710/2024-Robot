@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.io.UncheckedIOException;
+
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DataLogManager;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
@@ -46,7 +49,8 @@ public final class Constants {
         try {
             AprilTagFieldLayout attemptedKTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
             return attemptedKTagLayout;
-        } catch (Exception e) {
+        } catch (UncheckedIOException e) {
+            DataLogManager.log(e.getMessage());
             return null;
         }
     }
@@ -59,7 +63,7 @@ public final class Constants {
         COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(26);
+        public static final double trackWidth = Units.inchesToMeters(26); //TODO CHANGE IMMEDIATELY
         public static final double wheelBase = Units.inchesToMeters(26);
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
@@ -164,6 +168,11 @@ public final class Constants {
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
+    }
+
+    public static final class Shooter {
+        public static final double intakeAngleRadians = 0.56;
+        public static final double shooterAngleOffset = Units.degreesToRadians(68.2);
     }
 
     public static final class AutoConstants {

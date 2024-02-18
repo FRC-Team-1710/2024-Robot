@@ -17,11 +17,11 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotToPosition extends Command {
 
     // Constants such as camera and target height stored
-    final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(16.5);
+    final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(13);
     final double TARGET_HEIGHT_METERS = Units.inchesToMeters(1.5);
 
     // Angle between horizontal and the camera.
-    final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);
+    final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(-22.5);
 
     // How far from the target we want to be
     final double GOAL_RANGE_METERS = Units.feetToMeters(1);

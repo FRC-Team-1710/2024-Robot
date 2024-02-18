@@ -11,6 +11,7 @@ import org.littletonrobotics.urcl.URCL;
 
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -70,7 +71,11 @@ public class Robot extends TimedRobot {
         URCL.start();
 
         // Log data from all CTRE devices
+        SignalLogger.setPath("/media/sda1/logs/");
         SignalLogger.start();
+
+        // Access PhotonVision dashboard when connected via usb TODO test
+        PortForwarder.add(5800, "10.17.10.2", 5800);
     }
 
     /**

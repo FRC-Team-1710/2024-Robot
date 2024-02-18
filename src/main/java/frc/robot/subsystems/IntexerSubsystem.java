@@ -19,7 +19,9 @@ public class IntexerSubsystem extends SubsystemBase {
     private CANSparkBase right = new CANSparkMax(31, MotorType.kBrushless);
     private CANSparkBase shooterIntake = new CANSparkMax(10, MotorType.kBrushless);
 
+    /** Front Intake */
     private DigitalInput breakingBeam = new DigitalInput(2);
+    /** Shooter Intake */
     private DigitalInput beamKamen = new DigitalInput(1);
 
     public IntexerSubsystem() {
