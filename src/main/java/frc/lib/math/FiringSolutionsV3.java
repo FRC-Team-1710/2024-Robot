@@ -13,7 +13,7 @@ public class FiringSolutionsV3 {
     private static final double shooterTargetY = 5.55;
     private static final double slipPercent = .67;
     private static final double maxShooterAngle = Math.toRadians(70);
-    public static double shooterTargetZ = 1.98;
+    public static double shooterTargetZ = 1.95;
 
     private static double shooterTargetX;
     private static double shooterVelocity = 10.0;

@@ -12,12 +12,14 @@ import org.littletonrobotics.urcl.URCL;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -57,6 +59,9 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
+        LiveWindow.disableAllTelemetry();
+        LiveWindow.setEnabled(false);
+
         DriverStation.silenceJoystickConnectionWarning(true);
 
         // Starts recording to data log
@@ -73,6 +78,8 @@ public class Robot extends TimedRobot {
         // Log data from all CTRE devices
         SignalLogger.setPath("/media/sda1/logs/");
         SignalLogger.start();
+
+        SmartDashboard.putData(CommandScheduler.getInstance());
 
         // Access PhotonVision dashboard when connected via usb TODO test
         PortForwarder.add(5800, "10.17.10.2", 5800);
@@ -92,12 +99,7 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-/* 
-        SmartDashboard.putNumber("Flywheel 1 Current", PDH.getCurrent(4));
-        SmartDashboard.putNumber("Flywheel 2 Current", PDH.getCurrent(5));
-        SmartDashboard.putNumber("Shooter Intake Current", PDH.getCurrent(6));
-        SmartDashboard.putNumber("Front Intake 1 Current", PDH.getCurrent(13));
-        SmartDashboard.putNumber("Front Intake 2 Current", PDH.getCurrent(12));*/
+        //SmartDashboard.putData(PDH);
     }
 
     public static boolean getAlliance() {
@@ -128,12 +130,12 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         redAlliance = checkRedAlliance();
-
+/* 
         if (!isZeroed){ // because the encoder doesn't zero on init, or in any of the contructors
              m_robotContainer.m_Shoota.resetWristEncoder();
              isZeroed = true;
         }
-        
+*/        
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         FiringSolutions.setAlliance(redAlliance);
@@ -154,12 +156,12 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         redAlliance = checkRedAlliance();
-        
+/*         
         if (!isZeroed){ // because the encoder doesn't zero in robotInit, or in any of the contructors
              m_robotContainer.m_Shoota.resetWristEncoder();
              isZeroed = true;
         }
-
+*/
         FiringSolutions.setAlliance(redAlliance);
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to

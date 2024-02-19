@@ -30,20 +30,19 @@ public class ZeroWrist extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.manualWristSpeed(.7);
+        shooter.manualWristSpeed(.45);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.resetWristEncoder();
-        //shooter.setWristPosition(Constants.ShooterConstants.intakeAngleRadians); // Reset to intake position
+        shooter.resetWristEncoder(Constants.Shooter.angleOffsetAuto);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() { // Shooter should be hitting hard stop or reach timeout
-        if (shooter.isWristMotorStalled() || timer.get() >= 1) {
+        if (shooter.isWristMotorStalled() || timer.get() >= 1.5) {
             return true;
         } else {
             return false;

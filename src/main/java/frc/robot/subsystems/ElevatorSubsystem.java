@@ -70,6 +70,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             DataLogManager.log(e.getMessage());
         }
 
+        SmartDashboard.putData(this);
+        SmartDashboard.putData(phoenixPID);
+
         laser = false;
     }
 

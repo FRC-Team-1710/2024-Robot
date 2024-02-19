@@ -12,6 +12,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class TeleopSwerve extends Command {
@@ -21,7 +23,7 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier shooterOverride;
-    private PIDController rotationPID = new PIDController(.5, 0, 0);
+    private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
 
     public TeleopSwerve(SwerveSubsystem swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup,
             DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverride) {
@@ -33,6 +35,7 @@ public class TeleopSwerve extends Command {
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
         this.shooterOverride = shooterOverride;
+        SmartDashboard.putData(rotationPID);
     }
 
     @Override
@@ -49,10 +52,12 @@ public class TeleopSwerve extends Command {
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverride.getAsBoolean()) { // Lock robot angle to shooter
+            ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
+
             rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
                     FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(),
-                            swerveSubsystem.getChassisSpeeds().vxMetersPerSecond,
-                            swerveSubsystem.getChassisSpeeds().vyMetersPerSecond,
+                            currentSpeed.vxMetersPerSecond,
+                            currentSpeed.vyMetersPerSecond,
                             FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);

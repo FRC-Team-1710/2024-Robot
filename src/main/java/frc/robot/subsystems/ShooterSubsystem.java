@@ -12,6 +12,7 @@ import frc.robot.Constants;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
@@ -27,8 +28,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Devices
     private CANSparkBase m_Wrist = new CANSparkMax(13, MotorType.kBrushless);
-    private CANSparkBase m_ShootaL = new CANSparkMax(11, MotorType.kBrushless); // leader
-    private CANSparkBase m_ShootaR = new CANSparkMax(12, MotorType.kBrushless);
+    private CANSparkBase shootaBot = new CANSparkMax(11, MotorType.kBrushless); // leader
+    private CANSparkBase shootaTop = new CANSparkMax(12, MotorType.kBrushless);
 
     private RelativeEncoder m_VelocityEncoder;
     private RelativeEncoder m_PositionEncoder;
@@ -40,24 +41,22 @@ public class ShooterSubsystem extends SubsystemBase {
     private SparkPIDController rightPID;
 
     // PID Constants
-    private double pidSpdP = .0000002;
-    private double pidSpdI = .0000002;
-    private double pidSpdD = .006;
+    private double pidSpdP = 0.00018;
+    private double pidSpdI = 5.2e-7;
+    private double pidSpdD = 1.5;
 
     private double pidPosP = 2;
     private double pidPosI = 0;
     private double pidPosD = 0;
 
     // Vars
-    private final double shooterVelocity = 10;
+    private double shooterVelocity = 12;
     private double shooterAngle;
-    private double setpointv = 0;
-    private double setpointp = 0;
     private Boolean ENCFAIL = false;
     public boolean isZeroed = false;
-    private final double angleOffset = Constants.Shooter.shooterAngleOffset; // IN RADIANS
+    private double angleOffset = 68.2; // IN RADIANS
     private final Timer speedTimer = new Timer();
-    private final int m_WristCurrentMax = 60; // TODO configure
+    private final int m_WristCurrentMax = 84;
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -65,25 +64,29 @@ public class ShooterSubsystem extends SubsystemBase {
         swerveSubsystem = swerve;
 
         // Encoders
-        m_VelocityEncoder = m_ShootaL.getEncoder();
+        m_VelocityEncoder = shootaBot.getEncoder();
         m_PositionEncoder = m_Wrist.getEncoder();
         m_WristEncoder = new DutyCycleEncoder(0);
 
         // Spark Max Setup
-        m_ShootaL.restoreFactoryDefaults();
-        m_ShootaR.restoreFactoryDefaults();
+        shootaBot.restoreFactoryDefaults();
+        shootaTop.restoreFactoryDefaults();
         m_Wrist.restoreFactoryDefaults();
+        m_Wrist.setIdleMode(IdleMode.kBrake);
         m_Wrist.setInverted(true);
         m_Wrist.burnFlash();
-        m_ShootaR.setInverted(false);
+        shootaTop.setInverted(false);
+        shootaTop.burnFlash();
 
         // PID
-        leftPID = m_ShootaL.getPIDController();
-        rightPID = m_ShootaR.getPIDController();
+        leftPID = shootaBot.getPIDController();
+        rightPID = shootaTop.getPIDController();
         m_pidWrist = new PIDController(pidPosP, pidPosI, pidPosD);
 
-        SmartDashboard.putNumber("set velocity", 0);
-        SmartDashboard.putNumber("set angle", 0);
+        SmartDashboard.putNumber("set velocity", shooterVelocity);
+
+        SmartDashboard.putData(m_pidWrist);
+        SmartDashboard.putData(this);
 
         SmartDashboard.putNumber("Set Slip Offset", FiringSolutions.slipPercent);
         SmartDashboard.putNumber("Set Target Z", FiringSolutionsV3.shooterTargetZ);
@@ -110,8 +113,9 @@ public class ShooterSubsystem extends SubsystemBase {
         rightPID.setI(pidSpdI, 0);
         rightPID.setD(pidSpdD, 0);
 
-        setpointv = SmartDashboard.getNumber("set velocity", setpointv);
-        setpointp = SmartDashboard.getNumber("set angle", setpointp);
+        //setpointv = SmartDashboard.getNumber("set velocity", setpointv);
+        shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
+
         FiringSolutions.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutions.slipPercent);
         FiringSolutionsV3.shooterTargetZ = SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.shooterTargetZ);
 
@@ -129,11 +133,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
         updateShooterMath();
 
-        // wristManualSet(setpointp);
-        // SetShooterVelocity(setpointv);
-
-        SmartDashboard.putNumber("Flywheel Left Current", m_ShootaL.getOutputCurrent());
-        SmartDashboard.putNumber("Flywheel Right Current", m_ShootaR.getOutputCurrent());
+        SmartDashboard.putNumber("Flywheel Left Current", shootaBot.getOutputCurrent());
+        SmartDashboard.putNumber("Flywheel Right Current", shootaTop.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
     }
@@ -154,18 +155,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Get whether shooter is at target speed */
     public boolean shooterAtSpeed() { // Copied from Hudson but made it better
-        // return (getVelocity() > (FiringSolutions.convertToRPM(shooterVelocity) - 50))
-        // && (getVelocity() < FiringSolutions.convertToRPM(shooterVelocity)+50);
 
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutions.convertToRPM(shooterVelocity)) < 30) {
+        if (Math.abs(getVelocity() - FiringSolutions.convertToRPM(shooterVelocity)) < 50) {
             speedTimer.start();
         } else {
             speedTimer.reset();
             return false;
         }
 
-        if (speedTimer.get() > .5) {
+        if (speedTimer.get() > .25) {
             return true;
         } else {
             return false;
@@ -186,7 +185,8 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    public void resetWristEncoder() {
+    public void resetWristEncoder(double newOffset) {
+        angleOffset = newOffset;
         m_WristEncoder.reset();
         m_PositionEncoder.setPosition(0);
         isZeroed = true;
@@ -200,8 +200,8 @@ public class ShooterSubsystem extends SubsystemBase {
     /** In rotations per minute */
     public void SetShooterVelocity(double velocity) {
         if (velocity == 0) {
-            m_ShootaR.stopMotor();
-            m_ShootaL.stopMotor();
+            shootaTop.stopMotor();
+            shootaBot.stopMotor();
         } else {
             leftPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
             rightPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
@@ -211,8 +211,8 @@ public class ShooterSubsystem extends SubsystemBase {
     /** In rotations per minute */
     public void SetOffsetVelocity(double velocity) {
         if (velocity == 0) {
-            m_ShootaR.stopMotor();
-            m_ShootaL.stopMotor();
+            shootaTop.stopMotor();
+            shootaBot.stopMotor();
         } else {
             leftPID.setReference(velocity - 200, CANSparkMax.ControlType.kVelocity);
             rightPID.setReference(velocity + 200, CANSparkMax.ControlType.kVelocity);
@@ -263,6 +263,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         shooterAngle = FiringSolutionsV3.getShooterAngle();
 
+        SmartDashboard.putNumber("Target Velocity RPM", FiringSolutions.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngle);
         SmartDashboard.putNumber("Calculated Angle Degrees", Math.toDegrees(shooterAngle));
         SmartDashboard.putNumber("distance", FiringSolutionsV3.getDistanceToSpeaker(pose.getX(), pose.getY()));

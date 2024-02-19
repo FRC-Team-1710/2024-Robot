@@ -63,8 +63,8 @@ public final class Constants {
         COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(26); //TODO CHANGE IMMEDIATELY
-        public static final double wheelBase = Units.inchesToMeters(26);
+        public static final double trackWidth = Units.inchesToMeters(20.75);
+        public static final double wheelBase = Units.inchesToMeters(20.75);
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
@@ -172,7 +172,9 @@ public final class Constants {
 
     public static final class Shooter {
         public static final double intakeAngleRadians = 0.56;
-        public static final double shooterAngleOffset = Units.degreesToRadians(68.2);
+        public static final double idleSpeedRPM = 1300;
+        public static final double angleOffsetManual = Units.degreesToRadians(68.2);
+        public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }
 
     public static final class AutoConstants {

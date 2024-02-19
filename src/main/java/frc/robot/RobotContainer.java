@@ -34,7 +34,7 @@ public class RobotContainer {
     private final Joystick driver = new Joystick(0);
     private final Joystick mech = new Joystick(1);
 
-    /* Drive Controls */
+    /* Analog */
     private final int leftVerticalAxis = XboxController.Axis.kLeftY.value;
     private final int leftHorizontalAxis = XboxController.Axis.kLeftX.value;
     private final int rightHorizontalAxis = XboxController.Axis.kRightX.value;
@@ -61,6 +61,7 @@ public class RobotContainer {
     private final JoystickButton shooterToIntake = new JoystickButton(mech, XboxController.Button.kA.value);
     private final Trigger resetR = new Trigger(() -> mech.getPOV() == 90);
     private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
+    private final JoystickButton shooterToZero = new JoystickButton(mech, XboxController.Button.kY.value);
 
     /* 
     private final Trigger dynamicForward = new Trigger(() -> mech.getPOV() == 90);
@@ -89,8 +90,8 @@ public class RobotContainer {
                         () -> -driver.getRawAxis(leftVerticalAxis),
                         () -> -driver.getRawAxis(leftHorizontalAxis),
                         () -> -driver.getRawAxis(rightHorizontalAxis),
-                        () -> robotCentric.getAsBoolean(),
-                        () -> Shoot.getAsBoolean()));
+                        () -> Shoot.getAsBoolean(),
+                        () -> robotCentric.getAsBoolean()));
 
         m_ElevatorSubsystem.setDefaultCommand(
                 new ElevationManual(
@@ -126,9 +127,10 @@ public class RobotContainer {
         Shoot.whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem)); // Main fire
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
         shooterTo45.onTrue(new RizzLevel(m_Shoota, 0.785));
+        shooterToZero.onTrue(new RizzLevel(m_Shoota, 0));
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetR())); // Reset the R calculation incase it gets off
 
-        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder())); // Set encoder to zero
+        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
         autoZeroShooter
                 .onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
 
@@ -140,11 +142,11 @@ public class RobotContainer {
         intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false)
                 .alongWith(new InstantCommand(() -> m_Shoota.SetShooterVelocity(-1200))))
-                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Amp Shot
         shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(5))))
-                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         /* Mech Buttons */
 
@@ -154,12 +156,14 @@ public class RobotContainer {
 
         // Shooter speed
         primeShooterSpeedSpeaker
-                .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(30))))
-                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+                .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
-        primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(1200)))
-                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+        /*primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(1200)))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));*/
 
+        primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(10))))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         // Characterization tests 
         /*dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));

@@ -30,9 +30,9 @@ public class FIREEE extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        /*if (shooter.shooterAtSpeed()){
+        if (shooter.shooterAtSpeed()){
             intexer.setShooterIntake(.9);
-        }*/
+        }
         shooter.PointShoot(shooter.getCalculatedAngle(), FiringSolutions.convertToRPM(shooter.getCalculatedVelocity()));
     }
 
@@ -40,8 +40,7 @@ public class FIREEE extends Command {
     @Override
     public void end(boolean interrupted) {
         intexer.setShooterIntake(0);
-        shooter.SetShooterVelocity(0);
-        //m_shootaTest.manualWristSpeed(0);
+        shooter.SetShooterVelocity(Constants.Shooter.idleSpeedRPM);
         shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
     }
 

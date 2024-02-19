@@ -55,10 +55,10 @@ public class VisionSubsystem extends SubsystemBase {
         noteCamera = new PhotonCamera(Constants.Vision.kNoteCamera);
 
         photonEstimatorFront = new PhotonPoseEstimator(
-                Constants.Vision.kTagLayout, PoseStrategy.CLOSEST_TO_LAST_POSE, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
+                Constants.Vision.kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
         //photonEstimatorBack = new PhotonPoseEstimator(
         //        kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, kRobotToCamBack);
-        photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
+        photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         //photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 

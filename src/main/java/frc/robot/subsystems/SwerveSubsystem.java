@@ -122,7 +122,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
-                new Pose2d(1.35, 5.55, new Rotation2d(0)), //TODO change based on auto
+                new Pose2d(1.35, 5.55, new Rotation2d(0)),
                 stateStdDevs,
                 visionStdDevs);
 
@@ -131,6 +131,8 @@ public class SwerveSubsystem extends SubsystemBase {
         swervePublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("Swerve Module States", SwerveModuleState.struct).publish();
 
+        SmartDashboard.putData(gyro);
+        SmartDashboard.putData(this);
         this.vision = vision;
     }
 
@@ -149,16 +151,21 @@ public class SwerveSubsystem extends SubsystemBase {
             translationY *= -1;
         }
 
-        SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        translationX,
-                        translationY,
-                        rotation,
-                        getHeading())
-                        : new ChassisSpeeds(
-                                translationX,
-                                translationY,
-                                rotation));
+        SwerveModuleState[] swerveModuleStates;
+
+        if (fieldRelative) {
+            swerveModuleStates = Constants.Swerve.swerveKinematics
+                    .toSwerveModuleStates(ChassisSpeeds.discretize(ChassisSpeeds.fromFieldRelativeSpeeds(
+                            translationX,
+                            translationY,
+                            rotation,
+                            getHeading()), 0.02));
+        } else {
+            swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(new ChassisSpeeds(translationX,
+                    translationY,
+                    rotation));
+        }
+
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
         for (SwerveModule mod : mSwerveMods) {
@@ -257,19 +264,20 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        for (SwerveModule mod : mSwerveMods) {
+       /*  for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
-        }
+        }*/
 
         // Correct pose estimate with multiple vision measurements
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedGlobalPose();
         if (OptionalEstimatedPoseFront.isPresent()) {
-            
+
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
 
-            swerveOdomEstimator.setVisionMeasurementStdDevs(vision.getEstimationStdDevs(estimatedPose.estimatedPose.toPose2d()));
+            swerveOdomEstimator
+                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevs(estimatedPose.estimatedPose.toPose2d()));
 
             swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
                     estimatedPose.timestampSeconds);

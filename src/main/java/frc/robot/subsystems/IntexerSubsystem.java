@@ -32,6 +32,8 @@ public class IntexerSubsystem extends SubsystemBase {
         left.burnFlash();
         right.burnFlash();
         shooterIntake.burnFlash();
+
+        SmartDashboard.putData(this);
     }
 
     public void setALL(double speed) {
