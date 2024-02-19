@@ -85,7 +85,7 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("set velocity", 0);
         SmartDashboard.putNumber("set angle", 0);
 
-        SmartDashboard.putNumber("Set Slip Offset", FiringSolutions.slipPercent);
+        SmartDashboard.putNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
         SmartDashboard.putNumber("Set Target Z", FiringSolutionsV3.shooterTargetZ);
 
         SmartDashboard.putNumber("Velo P", pidSpdP);
@@ -112,7 +112,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         setpointv = SmartDashboard.getNumber("set velocity", setpointv);
         setpointp = SmartDashboard.getNumber("set angle", setpointp);
-        FiringSolutions.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutions.slipPercent);
+        FiringSolutionsV3.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
         FiringSolutionsV3.shooterTargetZ = SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.shooterTargetZ);
 
         SmartDashboard.putNumber("Current Angle Radians", getAngle());
@@ -154,11 +154,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Get whether shooter is at target speed */
     public boolean shooterAtSpeed() { // Copied from Hudson but made it better
-        // return (getVelocity() > (FiringSolutions.convertToRPM(shooterVelocity) - 50))
-        // && (getVelocity() < FiringSolutions.convertToRPM(shooterVelocity)+50);
+        // return (getVelocity() > (FiringSolutionsV3.convertToRPM(shooterVelocity) - 50))
+        // && (getVelocity() < FiringSolutionsV3.convertToRPM(shooterVelocity)+50);
 
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutions.convertToRPM(shooterVelocity)) < 30) {
+        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 30) {
             speedTimer.start();
         } else {
             speedTimer.reset();

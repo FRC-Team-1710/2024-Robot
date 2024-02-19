@@ -11,8 +11,8 @@ public class FiringSolutionsV3 {
     private static final double shooterTargetXBlue = 0.24;
     private static final double shooterTargetXRed = 16.3;
     private static final double shooterTargetY = 5.55;
-    private static final double slipPercent = .67;
     private static final double maxShooterAngle = Math.toRadians(70);
+    public static double slipPercent = .22;
     public static double shooterTargetZ = 1.98;
 
     private static double shooterTargetX;
@@ -228,6 +228,11 @@ public class FiringSolutionsV3 {
                                         getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
                                                 getAngleToSpeaker(robotX, robotY), robotHeading)).get().getY() - robotY,
                                 2)));
+    }
+    
+    /** Convert meters per second to rotations per minute */
+    public static double convertToRPM(double velocity) {
+        return (60 * velocity)/(slipPercent * Math.PI * .1016);
     }
 
 }

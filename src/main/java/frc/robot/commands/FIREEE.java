@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.math.FiringSolutions;
+import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -33,7 +33,7 @@ public class FIREEE extends Command {
         /*if (shooter.shooterAtSpeed()){
             intexer.setShooterIntake(.9);
         }*/
-        shooter.PointShoot(shooter.getCalculatedAngle(), FiringSolutions.convertToRPM(shooter.getCalculatedVelocity()));
+        shooter.PointShoot(shooter.getCalculatedAngle(), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
     }
 
     // Called once the command ends or is interrupted.
