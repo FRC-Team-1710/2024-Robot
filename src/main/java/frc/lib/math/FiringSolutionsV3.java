@@ -169,9 +169,6 @@ public class FiringSolutionsV3 {
         Translation2d speakPos = new Translation2d(shooterTargetX, shooterTargetY); // P0
         Translation2d speakVel = new Translation2d(-robotVelocityTowardsSpeaker, -robotVelocityPerpendicularToSpeaker); // V0
 
-        // the inputs are intended to be relative to the robot in terms of position and
-        // velocity, (ie if the robot was moving towards the speaker the speaker would
-        // have a velocity going towards the origin)
         // uses code from: https://stackoverflow.com/a/22117046/21621189, look in
         // comments for errors and edge cases accounted for
 

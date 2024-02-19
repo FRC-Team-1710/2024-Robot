@@ -62,7 +62,7 @@ public class IntexerSubsystem extends SubsystemBase {
         }
     }
 
-    public boolean intakeBreak () {
+    public boolean intakeBreak() {
         return !breakingBeam.get();
     }
 
