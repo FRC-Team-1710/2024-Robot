@@ -11,12 +11,12 @@ public class FiringSolutionsV3 {
     private static final double shooterTargetXBlue = 0.24;
     private static final double shooterTargetXRed = 16.3;
     private static final double shooterTargetY = 5.55;
-    private static final double shooterTargetZ = 2.04;
     private static final double slipPercent = .67;
     private static final double maxShooterAngle = Math.toRadians(70);
+    public static double shooterTargetZ = 1.98;
 
     private static double shooterTargetX;
-    private static double shooterVelocity = 13.0;
+    private static double shooterVelocity = 10.0;
     private static double R = 1.0;
 
     private FiringSolutionsV3() {
@@ -81,8 +81,7 @@ public class FiringSolutionsV3 {
     }
 
     public static double C(double distanceToSpeaker) {
-        return noteFallAccel * Math.pow(distanceToSpeaker, 2)
-                + 2 * (shooterTargetZ - shooterHeight);
+        return noteFallAccel * Math.pow(distanceToSpeaker, 2);
     }
 
     public static double quarticA(double distanceToSpeaker) {
@@ -110,18 +109,15 @@ public class FiringSolutionsV3 {
 
     public static void updateR(double distanceToSpeaker) {
         R = R - ((quarticA(distanceToSpeaker) * Math.pow(R, 4)
-                + quarticB() * Math.pow(R, 3)
                 + quarticC(distanceToSpeaker) * Math.pow(R, 2)
-                + quarticD() * R
-                + quarticE(C(distanceToSpeaker)))
+                + quarticE(distanceToSpeaker))
                 / (4 * quarticA(distanceToSpeaker) * Math.pow(R, 3)
-                        + 3 * quarticB() * Math.pow(R, 2)
-                        + 2 * quarticC(distanceToSpeaker) * R
-                        + quarticD()));
+                        + 2 * quarticC(distanceToSpeaker) * R));
 
-        if (R < .4 || getShooterAngle() > maxShooterAngle) {
+        /*if (R < 0) {
             resetR();
-        }
+        }*/
+
     }
 
     public static void resetR() {
@@ -208,11 +204,13 @@ public class FiringSolutionsV3 {
         return Math.atan((movingTarget(robotX, robotY,
                 getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
                         getAngleToSpeaker(robotX, robotY), robotHeading),
-                robotY).get().getY() - robotY)
+                getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
+                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getY() - robotY)
                 / (movingTarget(robotX, robotY,
                         getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
                                 getAngleToSpeaker(robotX, robotY), robotHeading),
-                        robotY).get().getX() - robotX));
+                        getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
+                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getX() - robotX));
     }
 
     public static double getDistanceToMovingTarget(double robotX, double robotY, double robotVelocityX,
@@ -221,12 +219,14 @@ public class FiringSolutionsV3 {
                 Math.pow(movingTarget(robotX, robotY,
                         getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
                                 getAngleToSpeaker(robotX, robotY), robotHeading),
-                        robotY).get().getX() - robotX, 2)
+                        getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
+                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getX() - robotX, 2)
                         + Math.pow(
                                 movingTarget(robotX, robotY,
                                         getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
                                                 getAngleToSpeaker(robotX, robotY), robotHeading),
-                                        robotY).get().getY() - robotY,
+                                        getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
+                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getY() - robotY,
                                 2)));
     }
 

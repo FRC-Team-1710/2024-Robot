@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -32,7 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
     private final double gearRatio = 17.33;
-    private final double maxHeight = 0; //TODO measure
+    private final double maxHeight = .5; //TODO measure
     
     // Vars
     private double revolutionCount;
@@ -63,11 +64,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         phoenixPID.setI(0);
         phoenixPID.setD(0);
 
-        /*try {
+        try {
             lasercan.setRangingMode(RangingMode.SHORT);
         } catch (ConfigurationFailedException e){
-
-        } */
+            DataLogManager.log(e.getMessage());
+        }
 
         laser = false;
     }
@@ -80,6 +81,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Set Height", setHeight);
         SmartDashboard.putNumber("LaserCan Meters", getHeightLaserCan());
         SmartDashboard.putBoolean("LaserCan failure", lasercanFailureCheck());
+        SmartDashboard.putNumber("Elevator Left Supply Current", m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Elevator Right Supply Current", m_elevatorRight.getSupplyCurrent().getValueAsDouble());
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
     }
 

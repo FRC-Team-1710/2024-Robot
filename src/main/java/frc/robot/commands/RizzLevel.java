@@ -41,6 +41,6 @@ public class RizzLevel extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return shooter.getAngle() >= (angle) && shooter.getAngle() < (angle);
+        return shooter.getAngle() >= (angle - Math.toRadians(.5)) && shooter.getAngle() < (angle + Math.toRadians(.5));
     }
 }

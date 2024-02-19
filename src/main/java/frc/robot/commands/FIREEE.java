@@ -6,19 +6,20 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.FiringSolutions;
+import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class FIREEE extends Command {
-    private ShooterSubsystem m_shootaTest;
+    private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
 
-    public FIREEE(ShooterSubsystem shootaTest, IntexerSubsystem intex) {
-        m_shootaTest = shootaTest;
+    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
+        shooter = shooterSub;
         intexer = intex;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shootaTest, intex);
+        addRequirements(shooterSub, intex);
     }
 
     // Called when the command is initially scheduled.
@@ -29,18 +30,19 @@ public class FIREEE extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (m_shootaTest.shooterAtSpeed()){
+        /*if (shooter.shooterAtSpeed()){
             intexer.setShooterIntake(.9);
-        }
-        m_shootaTest.PointShoot(m_shootaTest.getCalculatedAngle(), FiringSolutions.convertToRPM(m_shootaTest.getCalculatedVelocity()));
+        }*/
+        shooter.PointShoot(shooter.getCalculatedAngle(), FiringSolutions.convertToRPM(shooter.getCalculatedVelocity()));
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         intexer.setShooterIntake(0);
-        m_shootaTest.SetShooterVelocity(0);
-        m_shootaTest.manualWristSpeed(0);
+        shooter.SetShooterVelocity(0);
+        //m_shootaTest.manualWristSpeed(0);
+        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
     }
 
     // Returns true when the command should end.

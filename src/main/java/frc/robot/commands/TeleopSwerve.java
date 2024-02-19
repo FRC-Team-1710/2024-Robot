@@ -21,7 +21,7 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier shooterOverride;
-    private PIDController rotationPID = new PIDController(2, 0, 0);
+    private PIDController rotationPID = new PIDController(.5, 0, 0);
 
     public TeleopSwerve(SwerveSubsystem swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup,
             DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverride) {

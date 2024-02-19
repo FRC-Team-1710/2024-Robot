@@ -35,30 +35,39 @@ public class RobotContainer {
     private final Joystick mech = new Joystick(1);
 
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
-    private final int elevatorUpTrigger = XboxController.Axis.kLeftTrigger.value;
-    private final int elevatorDownTrigger = XboxController.Axis.kRightTrigger.value;
+    private final int leftVerticalAxis = XboxController.Axis.kLeftY.value;
+    private final int leftHorizontalAxis = XboxController.Axis.kLeftX.value;
+    private final int rightHorizontalAxis = XboxController.Axis.kRightX.value;
+    private final int rightVerticalAxis = XboxController.Axis.kRightY.value;
+    private final int leftTrigger = XboxController.Axis.kLeftTrigger.value;
+    private final int rightTrigger = XboxController.Axis.kRightTrigger.value;
 
     /* Driver Buttons */
     private final JoystickButton resetOdom = new JoystickButton(driver, XboxController.Button.kStart.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton zeroShooter = new JoystickButton(driver, XboxController.Button.kBack.value);
     private final JoystickButton intex = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton outex = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton shooterToIntake = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final Trigger resetR = new Trigger(() -> driver.getPOV() == 90);
+    private final JoystickButton shootAmp = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton forceShoot = new JoystickButton(driver, XboxController.Button.kA.value);
 
     /* Mech Buttons */
-    private final JoystickButton manualShoot = new JoystickButton(mech, XboxController.Button.kX.value);
-    private final JoystickButton manualIntake = new JoystickButton(mech, XboxController.Button.kA.value);
+    private final JoystickButton zeroShooter = new JoystickButton(mech, XboxController.Button.kBack.value);
+    private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech,
+            XboxController.Button.kRightBumper.value);
+    private final JoystickButton primeShooterSpeedAmp = new JoystickButton(mech,
+            XboxController.Button.kLeftBumper.value);
     private final JoystickButton shooterTo45 = new JoystickButton(mech, XboxController.Button.kB.value);
+    private final JoystickButton shooterToIntake = new JoystickButton(mech, XboxController.Button.kA.value);
+    private final Trigger resetR = new Trigger(() -> mech.getPOV() == 90);
+    private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
+
+    /* 
     private final Trigger dynamicForward = new Trigger(() -> mech.getPOV() == 90);
     private final Trigger dynamicBackward = new Trigger(() -> mech.getPOV() == 270);
     private final Trigger quasistaticForward = new Trigger(() -> mech.getPOV() == 0);
     private final Trigger quasistaticBackwards = new Trigger(() -> mech.getPOV() == 180);
+    */
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -77,19 +86,18 @@ public class RobotContainer {
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
                         m_SwerveSubsystem,
-                        () -> -driver.getRawAxis(translationAxis),
-                        () -> -driver.getRawAxis(strafeAxis),
-                        () -> -driver.getRawAxis(rotationAxis),
+                        () -> -driver.getRawAxis(leftVerticalAxis),
+                        () -> -driver.getRawAxis(leftHorizontalAxis),
+                        () -> -driver.getRawAxis(rightHorizontalAxis),
                         () -> robotCentric.getAsBoolean(),
                         () -> Shoot.getAsBoolean()));
 
         m_ElevatorSubsystem.setDefaultCommand(
                 new ElevationManual(
                         m_ElevatorSubsystem,
-                        () -> driver.getRawAxis(elevatorUpTrigger),
-                        () -> driver.getRawAxis(elevatorDownTrigger)));
+                        () -> -mech.getRawAxis(leftVerticalAxis)));
 
-        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, () -> mech.getRawAxis(translationAxis)));
+        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, () -> -mech.getRawAxis(rightVerticalAxis)));
 
         // m_LEDSubsystem.setAllianceColor();
 
@@ -116,28 +124,41 @@ public class RobotContainer {
 
         // Shooter
         Shoot.whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem)); // Main fire
-        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder())); // Set encodere to zero
-        shooterToIntake.onTrue(new RizzLevel(m_Shoota, 0.56)); // Move wrist to intake position
+        shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
         shooterTo45.onTrue(new RizzLevel(m_Shoota, 0.785));
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetR())); // Reset the R calculation incase it gets off
 
+        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder())); // Set encoder to zero
+        autoZeroShooter
+                .onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
+
         // Drive
-        resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()))
-                .onTrue(new InstantCommand(() -> m_SwerveSubsystem.setPose(new Pose2d(1.35, 5.55, new Rotation2d(0)))));
+        resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
+                new InstantCommand(() -> m_SwerveSubsystem.setPose(new Pose2d(1.35, 5.55, new Rotation2d(0))))));
 
         // Intexer
         intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true));
-        outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false));
+        outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false)
+                .alongWith(new InstantCommand(() -> m_Shoota.SetShooterVelocity(-1200))))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+
+        // Amp Shot
+        shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(5))))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
 
         /* Mech Buttons */
 
         // Shooter intake
-        manualIntake.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
-        manualIntake.onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
+        forceShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
+                .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
         // Shooter speed
-        manualShoot.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(30))));
-        manualShoot.onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+        primeShooterSpeedSpeaker
+                .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(30))))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
+
+        primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(1200)))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));
 
         // Characterization tests 
         /*dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
