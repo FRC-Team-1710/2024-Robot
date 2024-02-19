@@ -11,9 +11,9 @@ public class FiringSolutionsV3 {
     private static final double shooterTargetXBlue = 0.24;
     private static final double shooterTargetXRed = 16.3;
     private static final double shooterTargetY = 5.55;
-    private static final double slipPercent = .67;
     private static final double maxShooterAngle = Math.toRadians(70);
     public static double shooterTargetZ = 1.95;
+    public static double slipPercent = .66;
 
     private static double shooterTargetX;
     private static double shooterVelocity = 10.0;
@@ -165,9 +165,6 @@ public class FiringSolutionsV3 {
         Translation2d speakPos = new Translation2d(shooterTargetX, shooterTargetY); // P0
         Translation2d speakVel = new Translation2d(-robotVelocityTowardsSpeaker, -robotVelocityPerpendicularToSpeaker); // V0
 
-        // the inputs are intended to be relative to the robot in terms of position and
-        // velocity, (ie if the robot was moving towards the speaker the speaker would
-        // have a velocity going towards the origin)
         // uses code from: https://stackoverflow.com/a/22117046/21621189, look in
         // comments for errors and edge cases accounted for
 
@@ -231,6 +228,11 @@ public class FiringSolutionsV3 {
                                         getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
                                                 getAngleToSpeaker(robotX, robotY), robotHeading)).get().getY() - robotY,
                                 2)));
+    }
+    
+    /** Convert meters per second to rotations per minute */
+    public static double convertToRPM(double velocity) {
+        return (60 * velocity)/(slipPercent * Math.PI * .1016);
     }
 
 }
