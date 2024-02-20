@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.subsystems.IntexerSubsystem;
@@ -12,11 +14,13 @@ public class IntexBestHex extends Command {
 
     IntexerSubsystem intexer;
     boolean in;
+    Joystick controller;
 
     /** Creates a new IntexBestHex. */
-    public IntexBestHex(IntexerSubsystem intexer, boolean in) {
+    public IntexBestHex(IntexerSubsystem intexer, boolean in, Joystick controller) {
         this.in = in;
         this.intexer = intexer;
+        this.controller = controller;
         addRequirements(intexer);
     }
 
@@ -33,6 +37,7 @@ public class IntexBestHex extends Command {
             if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
                 intexer.setALL(.35);
             } else if (!intexer.intakeBreak() && intexer.shooterBreak()) { // Stop note if at shooter
+                controller.setRumble(RumbleType.kBothRumble, 0.75);
                 intexer.setALL(0);
             } else { // Note is not in robot
                 intexer.setFrontIntake(.75);
@@ -46,6 +51,7 @@ public class IntexBestHex extends Command {
     @Override
     public void end(boolean interrupted) {
         intexer.setALL(0);
+        controller.setRumble(RumbleType.kBothRumble, 0);
     }
 
     // Returns true when the command should end.

@@ -53,15 +53,14 @@ public class RobotContainer {
 
     /* Mech Buttons */
     private final JoystickButton zeroShooter = new JoystickButton(mech, XboxController.Button.kBack.value);
-    private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech,
-            XboxController.Button.kRightBumper.value);
-    private final JoystickButton primeShooterSpeedAmp = new JoystickButton(mech,
-            XboxController.Button.kLeftBumper.value);
+    private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
+    private final JoystickButton primeShooterSpeedAmp = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
     private final JoystickButton shooterTo45 = new JoystickButton(mech, XboxController.Button.kB.value);
     private final JoystickButton shooterToIntake = new JoystickButton(mech, XboxController.Button.kA.value);
     private final Trigger resetR = new Trigger(() -> mech.getPOV() == 90);
     private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
     private final JoystickButton shooterToZero = new JoystickButton(mech, XboxController.Button.kY.value);
+    private final JoystickButton xButton = new JoystickButton(mech, XboxController.Button.kX.value);
 
     /* 
     private final Trigger dynamicForward = new Trigger(() -> mech.getPOV() == 90);
@@ -130,7 +129,7 @@ public class RobotContainer {
         shooterToZero.onTrue(new RizzLevel(m_Shoota, 0));
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetR())); // Reset the R calculation incase it gets off
 
-        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoder(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
+        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
         autoZeroShooter
                 .onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
 
@@ -139,10 +138,10 @@ public class RobotContainer {
                 new InstantCommand(() -> m_SwerveSubsystem.setPose(new Pose2d(1.35, 5.55, new Rotation2d(0))))));
 
         // Intexer
-        intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true));
-        outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false)
-                .alongWith(new InstantCommand(() -> m_Shoota.SetShooterVelocity(-1200))))
-                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
+        outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
+//                .alongWith(new InstantCommand(() -> m_Shoota.SetShooterVelocity(-1200))))
+//                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Amp Shot
         shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(5))))
@@ -159,11 +158,12 @@ public class RobotContainer {
                 .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
                 .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
-        /*primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(1200)))
-                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(0)));*/
+        xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
+                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(10))))
                 .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        
         // Characterization tests 
         /*dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));

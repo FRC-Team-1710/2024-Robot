@@ -12,12 +12,10 @@ import org.littletonrobotics.urcl.URCL;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -65,7 +63,7 @@ public class Robot extends TimedRobot {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         // Starts recording to data log
-        DataLogManager.start("/media/sda1/logs/", DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now())+".wpilog");
+        DataLogManager.start("/media/sda1/logs/", DateTimeFormatter.ofPattern("yyyy-MM-dd__HH-mm-ss").format(LocalDateTime.now())+".wpilog");
 
         // Record both DS control and joystick data
         DriverStation.startDataLog(DataLogManager.getLog());
@@ -83,6 +81,8 @@ public class Robot extends TimedRobot {
 
         // Access PhotonVision dashboard when connected via usb TODO test
         PortForwarder.add(5800, "10.17.10.2", 5800);
+
+        System.gc();
     }
 
     /**

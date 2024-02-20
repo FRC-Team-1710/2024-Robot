@@ -28,6 +28,7 @@ public class IntexerSubsystem extends SubsystemBase {
         left.setIdleMode(IdleMode.kCoast);
         right.setIdleMode(IdleMode.kCoast);
         shooterIntake.setIdleMode(IdleMode.kCoast);
+        shooterIntake.setInverted(true);
 
         left.burnFlash();
         right.burnFlash();
@@ -44,7 +45,7 @@ public class IntexerSubsystem extends SubsystemBase {
         } else {
             left.set(speed);
             right.set(speed);
-            shooterIntake.set(-speed);
+            shooterIntake.set(speed);
         }
     }
     
@@ -62,7 +63,7 @@ public class IntexerSubsystem extends SubsystemBase {
         if (speed == 0){
             shooterIntake.stopMotor();
         } else {
-            shooterIntake.set(-speed);
+            shooterIntake.set(speed);
         }
     }
 

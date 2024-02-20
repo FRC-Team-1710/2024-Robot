@@ -61,6 +61,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Vars
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
+    SwerveModuleState[] swerveModuleStates;
 
     // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -94,6 +95,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 new SwerveModule(1, Constants.Swerve.Mod1.constants),
                 new SwerveModule(2, Constants.Swerve.Mod2.constants),
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
+        };
+
+        swerveModuleStates = new SwerveModuleState[] {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
         };
 
         // Auto setup
@@ -146,13 +154,6 @@ public class SwerveSubsystem extends SubsystemBase {
         double translationX = translation.getX();
         double translationY = translation.getY();
 
-        if (Robot.getAlliance()) {
-            translationX *= -1;
-            translationY *= -1;
-        }
-
-        SwerveModuleState[] swerveModuleStates;
-
         if (fieldRelative) {
             swerveModuleStates = Constants.Swerve.swerveKinematics
                     .toSwerveModuleStates(ChassisSpeeds.discretize(ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -171,7 +172,6 @@ public class SwerveSubsystem extends SubsystemBase {
         for (SwerveModule mod : mSwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
-        swervePublisher.set(swerveModuleStates);
     }
 
     /** Used by SwerveControllerCommand in Auto */
@@ -183,6 +183,17 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
+    public SwerveModuleState[] getModuleStates() {
+        /* 
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for (SwerveModule mod : mSwerveMods) {
+            states[mod.moduleNumber] = mod.getState();
+        }
+        return states;
+        */
+        return swerveModuleStates;
+    }
+
     /** Drive method for Autos */
     public void setChassisSpeeds(ChassisSpeeds speed) {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speed, 0.02);
@@ -191,12 +202,8 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStates(targetStates);
     }
 
-    public SwerveModuleState[] getModuleStates() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        for (SwerveModule mod : mSwerveMods) {
-            states[mod.moduleNumber] = mod.getState();
-        }
-        return states;
+    public ChassisSpeeds getChassisSpeeds() {
+        return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
     public SwerveModulePosition[] getModulePositions() {
@@ -205,10 +212,6 @@ public class SwerveSubsystem extends SubsystemBase {
             positions[mod.moduleNumber] = mod.getPosition();
         }
         return positions;
-    }
-
-    public ChassisSpeeds getChassisSpeeds() {
-        return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
     public Pose2d getPose() {
@@ -233,9 +236,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void zeroHeading() {
-        double radians = Robot.getAlliance() ? Math.PI : 0;
         swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
+                new Pose2d(getPose().getTranslation(), new Rotation2d(Robot.getAlliance() ? Math.PI : 0)));
     }
 
     public Rotation2d getGyroYaw() {
@@ -270,6 +272,12 @@ public class SwerveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         }*/
 
+        for (SwerveModule mod : mSwerveMods) {
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", swerveModuleStates[mod.moduleNumber].angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
+        }
+
         // Correct pose estimate with multiple vision measurements
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedGlobalPose();
         if (OptionalEstimatedPoseFront.isPresent()) {
@@ -294,6 +302,7 @@ public class SwerveSubsystem extends SubsystemBase {
         m_field.setRobotPose(getEstimatedPosition());
 
         posePublisher.set(getPose());
+        swervePublisher.set(swerveModuleStates);
 
         SmartDashboard.putData("field", m_field);
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());

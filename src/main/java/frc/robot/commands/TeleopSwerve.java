@@ -3,6 +3,7 @@ package frc.robot.commands;
 import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.util.function.BooleanSupplier;
@@ -62,6 +63,11 @@ public class TeleopSwerve extends Command {
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);
+        }
+
+        if (Robot.getAlliance() && !robotCentricSup.getAsBoolean()){ // Invert field oriented for always blue origin
+            translationVal = -translationVal;
+            strafeVal = -strafeVal;
         }
 
         /* Drive */

@@ -7,8 +7,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
-import frc.robot.Constants;
-
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -37,17 +35,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // PID
     private PIDController m_pidWrist;
-    private SparkPIDController leftPID;
-    private SparkPIDController rightPID;
+    private SparkPIDController botPID;
+    private SparkPIDController topPID;
 
     // PID Constants
-    private double pidSpdP = 0.00018;
-    private double pidSpdI = 5.2e-7;
-    private double pidSpdD = 1.5;
+    private double velocityP = 0.00018;
+    private double velocityI = 5.2e-7;
+    private double velocityD = 1.5;
 
-    private double pidPosP = 2;
-    private double pidPosI = 0;
-    private double pidPosD = 0;
+    private double positionP = 2;
+    private double positionI = 0;
+    private double positionD = 0;
 
     // Vars
     private double shooterVelocity = 12;
@@ -74,14 +72,23 @@ public class ShooterSubsystem extends SubsystemBase {
         m_Wrist.restoreFactoryDefaults();
         m_Wrist.setIdleMode(IdleMode.kBrake);
         m_Wrist.setInverted(true);
-        m_Wrist.burnFlash();
         shootaTop.setInverted(false);
+        m_Wrist.burnFlash();
         shootaTop.burnFlash();
 
         // PID
-        leftPID = shootaBot.getPIDController();
-        rightPID = shootaTop.getPIDController();
-        m_pidWrist = new PIDController(pidPosP, pidPosI, pidPosD);
+        botPID = shootaBot.getPIDController();
+        topPID = shootaTop.getPIDController();
+
+        botPID.setP(velocityP, 0);
+        botPID.setI(velocityI, 0);
+        botPID.setD(velocityD, 0);
+
+        topPID.setP(velocityP, 0);
+        topPID.setI(velocityI, 0);
+        topPID.setD(velocityD, 0);
+        
+        m_pidWrist = new PIDController(positionP, positionI, positionD);
 
         SmartDashboard.putNumber("set velocity", shooterVelocity);
 
@@ -91,29 +98,27 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
         SmartDashboard.putNumber("Set Target Z", FiringSolutionsV3.shooterTargetZ);
 
-        SmartDashboard.putNumber("Velo P", pidSpdP);
-        SmartDashboard.putNumber("Velo I", pidSpdI);
-        SmartDashboard.putNumber("Velo D", pidSpdD);
+        SmartDashboard.putNumber("Velo P", velocityP);
+        SmartDashboard.putNumber("Velo I", velocityI);
+        SmartDashboard.putNumber("Velo D", velocityD);
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
-        // TODO Remove when done tuning
+/*
         pidSpdP = SmartDashboard.getNumber("Velo P", pidSpdP);
         pidSpdI = SmartDashboard.getNumber("Velo I", pidSpdI);
         pidSpdD = SmartDashboard.getNumber("Velo D", pidSpdD);
+Minor whoopsie if these guys were causing loop overruns
+        botPID.setP(pidSpdP, 0);
+        botPID.setI(pidSpdI, 0);
+        botPID.setD(pidSpdD, 0);
 
-        leftPID.setP(pidSpdP, 0);
-        leftPID.setI(pidSpdI, 0);
-        leftPID.setD(pidSpdD, 0);
-
-        rightPID.setP(pidSpdP, 0);
-        rightPID.setI(pidSpdI, 0);
-        rightPID.setD(pidSpdD, 0);
-
-        //setpointv = SmartDashboard.getNumber("set velocity", setpointv);
+        topPID.setP(pidSpdP, 0);
+        topPID.setI(pidSpdI, 0);
+        topPID.setD(pidSpdD, 0);
+*/
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
 
         FiringSolutionsV3.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
@@ -185,7 +190,7 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    public void resetWristEncoder(double newOffset) {
+    public void resetWristEncoders(double newOffset) {
         angleOffset = newOffset;
         m_WristEncoder.reset();
         m_PositionEncoder.setPosition(0);
@@ -203,8 +208,8 @@ public class ShooterSubsystem extends SubsystemBase {
             shootaTop.stopMotor();
             shootaBot.stopMotor();
         } else {
-            leftPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
-            rightPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+            botPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+            topPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
         }
     }
 
@@ -214,15 +219,15 @@ public class ShooterSubsystem extends SubsystemBase {
             shootaTop.stopMotor();
             shootaBot.stopMotor();
         } else {
-            leftPID.setReference(velocity - 200, CANSparkMax.ControlType.kVelocity);
-            rightPID.setReference(velocity + 200, CANSparkMax.ControlType.kVelocity);
+            botPID.setReference(velocity - 400, CANSparkMax.ControlType.kVelocity);
+            topPID.setReference(velocity + 400, CANSparkMax.ControlType.kVelocity);
         }
     }
 
     public void PointShoot(double PointAngle, double launchVelocity) {
         m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
-        leftPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
-        rightPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
+        botPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
+        topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
     }
 
     public void manualWristSpeed(double speed) {
