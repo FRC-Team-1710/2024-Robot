@@ -145,7 +145,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.schedule();
         }
 
-        FiringSolutionsV3.resetR();
+        FiringSolutionsV3.resetAllR();
     }
 
     /** This function is called periodically during autonomous. */
@@ -171,7 +171,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
 
-        FiringSolutionsV3.resetR();
+        FiringSolutionsV3.resetAllR();
     }
 
     /** This function is called periodically during operator control. */

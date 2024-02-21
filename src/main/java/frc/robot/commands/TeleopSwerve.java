@@ -27,12 +27,13 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
-    private BooleanSupplier shooterOverride;
+    private BooleanSupplier shooterOverrideAmp;
+    private BooleanSupplier shooterOverrideSpeaker;
     private BooleanSupplier intakeOverride;
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
 
     public TeleopSwerve(SwerveSubsystem swerve, VisionSubsystem vision, DoubleSupplier translationSup, DoubleSupplier strafeSup,
-            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverride, BooleanSupplier intake) {
+            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverrideAmp, BooleanSupplier shooterOverrideSpeaker, BooleanSupplier intake) {
         this.swerveSubsystem = swerve;
         this.vision = vision;
         addRequirements(swerve);
@@ -41,7 +42,8 @@ public class TeleopSwerve extends Command {
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
-        this.shooterOverride = shooterOverride;
+        this.shooterOverrideAmp = shooterOverrideAmp;
+        this.shooterOverrideSpeaker = shooterOverrideSpeaker;
         this.intakeOverride = intake;
         SmartDashboard.putData(rotationPID);
     }
@@ -61,11 +63,20 @@ public class TeleopSwerve extends Command {
         translationVal = Math.copySign(Math.pow(translationVal, 2), translationVal);
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
-        if (shooterOverride.getAsBoolean()) { // Lock robot angle to shooter
+        if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
             rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
-                    FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(),
+                    FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
+                            currentSpeed.vxMetersPerSecond,
+                            currentSpeed.vyMetersPerSecond,
+                            FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
+                            
+        } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
+            ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
+
+            rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
+                    FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
                             currentSpeed.vxMetersPerSecond,
                             currentSpeed.vyMetersPerSecond,
                             FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));

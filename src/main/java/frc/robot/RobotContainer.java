@@ -50,6 +50,7 @@ public class RobotContainer {
     private final JoystickButton outex = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton shootAmp = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton forceShoot = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final Trigger targetAmp = new Trigger(() -> driver.getRawAxis(leftTrigger) > .5);
     private final Trigger targetSpeaker = new Trigger(() -> driver.getRawAxis(rightTrigger) > .5);
 
     /* Mech Buttons */
@@ -91,6 +92,7 @@ public class RobotContainer {
                         () -> -driver.getRawAxis(leftHorizontalAxis),
                         () -> -driver.getRawAxis(rightHorizontalAxis),
                         () -> robotCentric.getAsBoolean(),
+                        () -> targetAmp.getAsBoolean(),
                         () -> targetSpeaker.getAsBoolean(),
                         () -> intex.getAsBoolean()));
 
@@ -125,7 +127,8 @@ public class RobotContainer {
         /* Driver Buttons */
 
         // Shooter
-        Shoot.whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem)); // Main fire
+        //Shoot.and(targetAmp).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "amp")); // Amp fire TODO: FIGURE OUT THE LOGIC HERE
+        Shoot.and(targetSpeaker).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "speaker")); // Main fire
 
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
         autoZeroShooter
@@ -167,7 +170,7 @@ public class RobotContainer {
         primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(800)))
         .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         
-        resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetR())); // Reset the R calculation incase it gets off
+        resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR())); // Reset the R calculation incase it gets off
 
         // Characterization tests 
         /*dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));

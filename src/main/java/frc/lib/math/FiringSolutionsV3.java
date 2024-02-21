@@ -8,61 +8,70 @@ public class FiringSolutionsV3 {
 
     private static final double shooterHeight = 0.371;
     private static final double noteFallAccel = 9.8;
-    public static double shooterTargetXOffset = .24;
-    private static final double shooterTargetXBlue = 0.0 + shooterTargetXOffset;
-    private static final double shooterTargetXRed = 16.54 - shooterTargetXOffset;
-    private static final double shooterTargetY = 5.55;
     private static final double maxShooterAngle = Math.toRadians(70);
-    public static double shooterTargetZ = 1.95;
+    private static final double ampTargetXBlue = 1.84;
+    private static final double ampTargetXRed = 14.7;
+    
+    public static final double speakerTargetY = 5.55;
+    public static final double ampTargetY = 8.0;
+    public static final double ampTargetZ = .125;
+
+    public static double speakerTargetXOffset = .24;
+    public static double speakerTargetZ = 1.95;
     public static double slipPercent = .66;
 
-    private static double shooterTargetX;
+    private static double speakerTargetXBlue = 0.0 + speakerTargetXOffset;
+    private static double speakerTargetXRed = 16.54 - speakerTargetXOffset;
+    public static double speakerTargetX;
+    public static double ampTargetX;
     private static double shooterVelocity = 10.0;
-    private static double R = 1.0;
+    private static double speakerR, ampR, customR = 1.0;
 
     private FiringSolutionsV3() {
     }
 
     public static void setAlliance(boolean redAlliance) {
         if (redAlliance) {
-            shooterTargetX = shooterTargetXRed;
+            speakerTargetX = speakerTargetXRed;
+            ampTargetX = ampTargetXRed;
         } else {
-            shooterTargetX = shooterTargetXBlue;
+            speakerTargetX = speakerTargetXBlue;
+            ampTargetX = ampTargetXBlue;
         }
     }
 
-    public static double getAngleToSpeaker(double robotX, double robotY) {
-        return Math.atan((shooterTargetY - robotY) / (shooterTargetX - robotX));
+    public static double getAngleToTarget(double robotX, double robotY, double targetX, double targetY) {
+        return Math.atan((targetY - robotY) / (targetX - robotX));
     }
 
-    public static double getDistanceToSpeaker(double robotX, double robotY) {
-        return Math.abs(Math.sqrt(Math.pow(shooterTargetX - robotX, 2) + Math.pow(shooterTargetY - robotY, 2)));
+    public static double getDistanceToTarget(double robotX, double robotY, double targetX, double targetY) {
+        return Math.abs(Math.sqrt(Math.pow(targetX - robotX, 2) + Math.pow(targetY - robotY, 2)));
     }
 
-    public static double getRobotVelocityTowardsSpeaker(double robotVelocityX, double robotVelocityY,
-            double angleToSpeaker, double robotHeading) {
-        if (shooterTargetX == shooterTargetXRed) {
+    public static double getRobotVelocityTowardsTarget(double robotX, double targetX, double robotVelocityX, double robotVelocityY,
+            double angleToTarget, double robotHeading) {
+        if (robotX <= targetX) {
             if (robotVelocityX == 0) {
                 return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2))
-                        * Math.cos(-angleToSpeaker - robotHeading);
+                        * Math.cos(-angleToTarget - robotHeading);
             } else {
                 return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2))
-                        * Math.cos(Math.atan(robotVelocityY / robotVelocityX) - angleToSpeaker - robotHeading);
+                        * Math.cos(Math.atan(robotVelocityY / robotVelocityX) - angleToTarget - robotHeading);
             }
         } else {
             if (robotVelocityX == 0) {
                 return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2))
-                        * Math.cos(angleToSpeaker + robotHeading);
+                        * Math.cos(angleToTarget + robotHeading);
             } else {
                 return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2))
-                        * Math.cos(Math.atan(robotVelocityY / robotVelocityX) + angleToSpeaker + robotHeading);
+                        * Math.cos(Math.atan(robotVelocityY / robotVelocityX) + angleToTarget + robotHeading);
             }
         }
     }
 
-    public static double getRobotVelocityPerpendicularToSpeaker(double robotVelocityX, double robotVelocityY,
+    public static double getRobotVelocityPerpendicularToTarget(double robotX, double targetX, double robotVelocityX, double robotVelocityY,
             double angleToSpeaker, double robotHeading) {
-        if (shooterTargetX == shooterTargetXRed) {
+        if (robotX <= targetX) {
             if (robotVelocityX == 0) {
                 return Math.sqrt(Math.pow(robotVelocityX, 2) + Math.pow(robotVelocityY, 2))
                         * Math.sin(-angleToSpeaker - robotHeading);
@@ -81,56 +90,97 @@ public class FiringSolutionsV3 {
         }
     }
 
-    public static double C(double distanceToSpeaker) {
-        return noteFallAccel * Math.pow(distanceToSpeaker, 2);
+    public static double C(double distanceToTarget) {
+        return noteFallAccel * Math.pow(distanceToTarget, 2);
     }
 
-    public static double quarticA(double distanceToSpeaker) {
+    public static double quarticA(double distanceToTarget, double targetZ) {
         return 4 * Math.pow(shooterVelocity, 4)
-                * (Math.pow(shooterTargetZ - shooterHeight, 2) + Math.pow(distanceToSpeaker, 2));
+                * (Math.pow(targetZ - shooterHeight, 2) + Math.pow(distanceToTarget, 2));
     }
 
     public static double quarticB() {
         return 0;
     }
 
-    public static double quarticC(double distanceToSpeaker) {
+    public static double quarticC(double distanceToTarget, double targetZ) {
         return 4 * Math.pow(shooterVelocity, 2)
-                * (C(distanceToSpeaker) * (shooterTargetZ - shooterHeight)
-                        - Math.pow(shooterVelocity, 2) * Math.pow(distanceToSpeaker, 2));
+                * (C(distanceToTarget) * (targetZ - shooterHeight)
+                        - Math.pow(shooterVelocity, 2) * Math.pow(distanceToTarget, 2));
     }
 
     public static double quarticD() {
         return 0;
     }
 
-    public static double quarticE(double distanceToSpeaker) {
-        return Math.pow(C(distanceToSpeaker), 2);
+    public static double quarticE(double distanceToTarget) {
+        return Math.pow(C(distanceToTarget), 2);
     }
 
-    public static void updateR(double distanceToSpeaker) {
-        R = R - ((quarticA(distanceToSpeaker) * Math.pow(R, 4)
-                + quarticC(distanceToSpeaker) * Math.pow(R, 2)
+    public static void updateSpeakerR(double distanceToSpeaker) {
+        speakerR = speakerR - ((quarticA(distanceToSpeaker, speakerTargetZ) * Math.pow(speakerR, 4)
+                + quarticC(distanceToSpeaker, speakerTargetZ) * Math.pow(speakerR, 2)
                 + quarticE(distanceToSpeaker))
-                / (4 * quarticA(distanceToSpeaker) * Math.pow(R, 3)
-                        + 2 * quarticC(distanceToSpeaker) * R));
-
-        /*if (R < 0) {
-            resetR();
-        }*/
-
+                / (4 * quarticA(distanceToSpeaker, speakerTargetZ) * Math.pow(speakerR, 3)
+                        + 2 * quarticC(distanceToSpeaker, speakerTargetZ) * speakerR));
     }
 
-    public static void resetR() {
-        R = 1.0;
+    public static void resetSpeakerR() {
+        speakerR = 1.0;
     }
 
-    public static double getR() {
-        return R;
+    public static double getSpeakerR() {
+        return speakerR;
     }
 
-    public static double getShooterAngle() {
-        return Math.acos(R);
+    public static double getShooterAngleFromSpeakerR() {
+        return Math.acos(speakerR);
+    }
+
+    public static void updateAmpR(double distanceToAmp) {
+        ampR = ampR - ((quarticA(distanceToAmp, speakerTargetZ) * Math.pow(ampR, 4)
+                + quarticC(distanceToAmp, speakerTargetZ) * Math.pow(ampR, 2)
+                + quarticE(distanceToAmp))
+                / (4 * quarticA(distanceToAmp, speakerTargetZ) * Math.pow(ampR, 3)
+                        + 2 * quarticC(distanceToAmp, speakerTargetZ) * ampR));
+    }
+
+    public static void resetAmpR() {
+        ampR = 1.0;
+    }
+
+    public static double getAmpR() {
+        return ampR;
+    }
+
+    public static double getShooterAngleFromAmpR() {
+        return Math.acos(ampR);
+    }
+
+    public static void updateCustomR(double distanceToTarget, double targetZ) {
+        customR = customR - ((quarticA(distanceToTarget, targetZ) * Math.pow(customR, 4)
+                + quarticC(distanceToTarget, targetZ) * Math.pow(customR, 2)
+                + quarticE(distanceToTarget))
+                / (4 * quarticA(distanceToTarget, targetZ) * Math.pow(customR, 3)
+                        + 2 * quarticC(distanceToTarget, targetZ) * customR));
+    }
+
+    public static void resetCustomR() {
+        customR = 1.0;
+    }
+
+    public static double getCustomR() {
+        return customR;
+    }
+
+    public static double getShooterAngleFromCustomR() {
+        return Math.acos(customR);
+    }
+
+    public static void resetAllR(){
+        resetSpeakerR();
+        resetAmpR();
+        resetCustomR();
     }
 
     public static double smallestWhichIsntNegativeOrNan(double t1, double t2) {
@@ -160,23 +210,25 @@ public class FiringSolutionsV3 {
     public static Optional<Translation2d> movingTarget(
             double robotX,
             double robotY,
+            double targetX,
+            double targetY,
             double robotVelocityTowardsSpeaker,
             double robotVelocityPerpendicularToSpeaker) {
         Translation2d robotPos = new Translation2d(robotX, robotY); // P1
-        Translation2d speakPos = new Translation2d(shooterTargetX, shooterTargetY); // P0
-        Translation2d speakVel = new Translation2d(-robotVelocityTowardsSpeaker, -robotVelocityPerpendicularToSpeaker); // V0
+        Translation2d targetVel = new Translation2d(-robotVelocityTowardsSpeaker, -robotVelocityPerpendicularToSpeaker); // V0
+        Translation2d targetPos = new Translation2d(targetX, targetY); // P0
 
         // uses code from: https://stackoverflow.com/a/22117046/21621189, look in
         // comments for errors and edge cases accounted for
 
         // a desmos visualization: https://www.desmos.com/calculator/ejg6jrsodq
 
-        double a = pow(speakVel.getX()) + pow(speakVel.getY()) - pow(shooterVelocity);
-        double b = 2 * ((speakPos.getX() * speakVel.getX()) + (speakPos.getY()
-                * speakVel.getY()) - (robotPos.getX() * speakVel.getX()) - (robotPos.getY() * speakVel.getY()));
-        double c = pow(speakPos.getX()) + pow(speakPos.getY())
+        double a = pow(targetVel.getX()) + pow(targetVel.getY()) - pow(shooterVelocity);
+        double b = 2 * ((targetPos.getX() * targetVel.getX()) + (targetPos.getY()
+                * targetVel.getY()) - (robotPos.getX() * targetVel.getX()) - (robotPos.getY() * targetVel.getY()));
+        double c = pow(targetPos.getX()) + pow(targetPos.getY())
                 + pow(robotPos.getX()) + pow(robotPos.getY())
-                - (2 * robotPos.getX() * speakPos.getX()) - (2 * robotPos.getY() * speakPos.getY());
+                - (2 * robotPos.getX() * targetPos.getX()) - (2 * robotPos.getY() * targetPos.getY());
 
         if (a == 0)
             return Optional.empty();
@@ -194,46 +246,46 @@ public class FiringSolutionsV3 {
             t = Math.min(t1, t2);
         }
 
-        Translation2d out = speakPos.plus(speakVel.times(t));
+        Translation2d out = targetPos.plus(targetVel.times(t));
 
         return Optional.of(out); // outputs the speakerPos at the collision time relative to the robot, (rotation
                                  // is based on the same as the input translate2ds)
     }
 
-    public static double getAngleToMovingTarget(double robotX, double robotY, double robotVelocityX,
+    public static double getAngleToMovingTarget(double robotX, double robotY, double targetX, double targetY, double robotVelocityX,
             double robotVelocityY, double robotHeading) {
-        return Math.atan((movingTarget(robotX, robotY,
-                getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
-                        getAngleToSpeaker(robotX, robotY), robotHeading),
-                getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
-                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getY() - robotY)
-                / (movingTarget(robotX, robotY,
-                        getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
-                                getAngleToSpeaker(robotX, robotY), robotHeading),
-                        getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
-                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getX() - robotX));
+        return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
+                getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                        getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getY() - robotY)
+                / (movingTarget(robotX, robotY, targetX, targetY,
+                        getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                        getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getX() - robotX));
     }
 
-    public static double getDistanceToMovingTarget(double robotX, double robotY, double robotVelocityX,
+    public static double getDistanceToMovingTarget(double robotX, double robotY, double targetX, double targetY, double robotVelocityX,
             double robotVelocityY, double robotHeading) {
         return Math.abs(Math.sqrt(
-                Math.pow(movingTarget(robotX, robotY,
-                        getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
-                                getAngleToSpeaker(robotX, robotY), robotHeading),
-                        getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
-                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getX() - robotX, 2)
+                Math.pow(movingTarget(robotX, robotY, targetX, targetY, 
+                        getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                        getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getX() - robotX, 2)
                         + Math.pow(
-                                movingTarget(robotX, robotY,
-                                        getRobotVelocityTowardsSpeaker(robotVelocityX, robotVelocityY,
-                                                getAngleToSpeaker(robotX, robotY), robotHeading),
-                                        getRobotVelocityPerpendicularToSpeaker(robotVelocityX, robotVelocityY,
-                                                getAngleToSpeaker(robotX, robotY), robotHeading)).get().getY() - robotY,
+                                movingTarget(robotX, robotY, targetX, targetY,
+                                        getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                                        getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getY() - robotY,
                                 2)));
     }
     
     /** Convert meters per second to rotations per minute */
     public static double convertToRPM(double velocity) {
-        return (60 * velocity)/(slipPercent * Math.PI * .1016);
+        return (60 * velocity) / (slipPercent * Math.PI * .1016);
     }
 
 }

@@ -13,10 +13,12 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class FIREEE extends Command {
     private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
+    private String target;
 
-    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
+    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex, String Target) {
         shooter = shooterSub;
         intexer = intex;
+        this.target = target;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSub, intex);
@@ -33,7 +35,11 @@ public class FIREEE extends Command {
         if (shooter.shooterAtSpeed()){
             intexer.setShooterIntake(.9);
         }
-        shooter.PointShoot(shooter.getCalculatedAngle(), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+        if (target == "amp"){
+            shooter.PointShoot(shooter.getCalculatedAngle("amp"), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+        } else {
+            shooter.PointShoot(shooter.getCalculatedAngle("speaker"), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+        }
     }
 
     // Called once the command ends or is interrupted.

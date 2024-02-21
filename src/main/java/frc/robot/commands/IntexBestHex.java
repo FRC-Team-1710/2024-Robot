@@ -27,7 +27,7 @@ public class IntexBestHex extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        FiringSolutionsV3.resetR();
+        FiringSolutionsV3.resetAllR();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
