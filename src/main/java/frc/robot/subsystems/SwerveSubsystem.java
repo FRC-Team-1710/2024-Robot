@@ -141,6 +141,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         SmartDashboard.putData(gyro);
         SmartDashboard.putData(this);
+        SmartDashboard.putData("field", m_field);
+
         this.vision = vision;
     }
 
@@ -304,7 +306,7 @@ public class SwerveSubsystem extends SubsystemBase {
         posePublisher.set(getPose());
         swervePublisher.set(swerveModuleStates);
 
-        SmartDashboard.putData("field", m_field);
+        //SmartDashboard.putData("field", m_field);
         SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());

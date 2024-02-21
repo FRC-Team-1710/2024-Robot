@@ -5,9 +5,12 @@ import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -19,16 +22,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class TeleopSwerve extends Command {
     private SwerveSubsystem swerveSubsystem;
+    private VisionSubsystem vision;
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier shooterOverride;
+    private BooleanSupplier intakeOverride;
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
 
-    public TeleopSwerve(SwerveSubsystem swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup,
-            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverride) {
+    public TeleopSwerve(SwerveSubsystem swerve, VisionSubsystem vision, DoubleSupplier translationSup, DoubleSupplier strafeSup,
+            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverride, BooleanSupplier intake) {
         this.swerveSubsystem = swerve;
+        this.vision = vision;
         addRequirements(swerve);
 
         this.translationSup = translationSup;
@@ -36,12 +42,15 @@ public class TeleopSwerve extends Command {
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
         this.shooterOverride = shooterOverride;
+        this.intakeOverride = intake;
         SmartDashboard.putData(rotationPID);
     }
 
     @Override
     public void execute() {
         Pose2d pose = swerveSubsystem.getPose();
+        boolean robotCentric = robotCentricSup.getAsBoolean();
+        PhotonPipelineResult result = vision.getLatestResultN();
 
         /* Get Values, Deadband */
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
@@ -60,12 +69,23 @@ public class TeleopSwerve extends Command {
                             currentSpeed.vxMetersPerSecond,
                             currentSpeed.vyMetersPerSecond,
                             FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
+
+        } else if (intakeOverride.getAsBoolean() && result.hasTargets()) { // Lock robot towards detected note
+            double yawToNote = Math.toRadians(result.getBestTarget().getYaw()) + swerveSubsystem.getGyroYaw().getRadians();
+
+            SmartDashboard.putNumber("Note Yaw", yawToNote);
+
+            rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
+
+            strafeVal = 0;
+
+            robotCentric = true;
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);
         }
 
-        if (Robot.getAlliance() && !robotCentricSup.getAsBoolean()){ // Invert field oriented for always blue origin
+        if (Robot.getAlliance() && !robotCentric){ // Invert field oriented for always blue origin
             translationVal = -translationVal;
             strafeVal = -strafeVal;
         }
@@ -74,7 +94,7 @@ public class TeleopSwerve extends Command {
         swerveSubsystem.drive(
                 new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
                 rotationVal * Constants.Swerve.maxAngularVelocity,
-                !robotCentricSup.getAsBoolean(),
+                !robotCentric,
                 true);
     }
 }

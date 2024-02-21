@@ -8,8 +8,9 @@ public class FiringSolutionsV3 {
 
     private static final double shooterHeight = 0.371;
     private static final double noteFallAccel = 9.8;
-    private static final double shooterTargetXBlue = 0.24;
-    private static final double shooterTargetXRed = 16.3;
+    public static double shooterTargetXOffset = .24;
+    private static final double shooterTargetXBlue = 0.0 + shooterTargetXOffset;
+    private static final double shooterTargetXRed = 16.54 - shooterTargetXOffset;
     private static final double shooterTargetY = 5.55;
     private static final double maxShooterAngle = Math.toRadians(70);
     public static double shooterTargetZ = 1.95;

@@ -26,8 +26,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Devices
     private CANSparkBase m_Wrist = new CANSparkMax(13, MotorType.kBrushless);
-    private CANSparkBase shootaBot = new CANSparkMax(11, MotorType.kBrushless); // leader
-    private CANSparkBase shootaTop = new CANSparkMax(12, MotorType.kBrushless);
+    private CANSparkBase shootaTop = new CANSparkMax(11, MotorType.kBrushless); // leader
+    private CANSparkBase shootaBot = new CANSparkMax(12, MotorType.kBrushless);
 
     private RelativeEncoder m_VelocityEncoder;
     private RelativeEncoder m_PositionEncoder;
@@ -62,19 +62,19 @@ public class ShooterSubsystem extends SubsystemBase {
         swerveSubsystem = swerve;
 
         // Encoders
-        m_VelocityEncoder = shootaBot.getEncoder();
+        m_VelocityEncoder = shootaTop.getEncoder();
         m_PositionEncoder = m_Wrist.getEncoder();
         m_WristEncoder = new DutyCycleEncoder(0);
 
         // Spark Max Setup
-        shootaBot.restoreFactoryDefaults();
         shootaTop.restoreFactoryDefaults();
+        shootaBot.restoreFactoryDefaults();
         m_Wrist.restoreFactoryDefaults();
+
         m_Wrist.setIdleMode(IdleMode.kBrake);
         m_Wrist.setInverted(true);
-        shootaTop.setInverted(false);
-        m_Wrist.burnFlash();
-        shootaTop.burnFlash();
+
+        shootaBot.setInverted(false);
 
         // PID
         botPID = shootaBot.getPIDController();
@@ -87,6 +87,10 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setP(velocityP, 0);
         topPID.setI(velocityI, 0);
         topPID.setD(velocityD, 0);
+
+        m_Wrist.burnFlash();
+        shootaBot.burnFlash();
+        shootaTop.burnFlash();
         
         m_pidWrist = new PIDController(positionP, positionI, positionD);
 
@@ -101,6 +105,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Velo P", velocityP);
         SmartDashboard.putNumber("Velo I", velocityI);
         SmartDashboard.putNumber("Velo D", velocityD);
+
+        SmartDashboard.putNumber("Top Bottom Offset", 400);
     }
 
     @Override
@@ -136,10 +142,11 @@ Minor whoopsie if these guys were causing loop overruns
             ENCFAIL = true;
         }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
+
         updateShooterMath();
 
-        SmartDashboard.putNumber("Flywheel Left Current", shootaBot.getOutputCurrent());
-        SmartDashboard.putNumber("Flywheel Right Current", shootaTop.getOutputCurrent());
+        SmartDashboard.putNumber("Flywheel Left Current", shootaTop.getOutputCurrent());
+        SmartDashboard.putNumber("Flywheel Right Current", shootaBot.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
     }
@@ -205,8 +212,8 @@ Minor whoopsie if these guys were causing loop overruns
     /** In rotations per minute */
     public void SetShooterVelocity(double velocity) {
         if (velocity == 0) {
-            shootaTop.stopMotor();
             shootaBot.stopMotor();
+            shootaTop.stopMotor();
         } else {
             botPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
             topPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
@@ -216,11 +223,11 @@ Minor whoopsie if these guys were causing loop overruns
     /** In rotations per minute */
     public void SetOffsetVelocity(double velocity) {
         if (velocity == 0) {
-            shootaTop.stopMotor();
             shootaBot.stopMotor();
+            shootaTop.stopMotor();
         } else {
-            botPID.setReference(velocity - 400, CANSparkMax.ControlType.kVelocity);
-            topPID.setReference(velocity + 400, CANSparkMax.ControlType.kVelocity);
+            botPID.setReference(velocity - SmartDashboard.getNumber("Top Bottom Offset", 400), CANSparkMax.ControlType.kVelocity);
+            topPID.setReference(velocity + SmartDashboard.getNumber("Top Bottom Offset", 400), CANSparkMax.ControlType.kVelocity);
         }
     }
 
