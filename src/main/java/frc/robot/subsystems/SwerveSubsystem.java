@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import java.sql.Driver;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
@@ -15,6 +16,7 @@ import org.photonvision.EstimatedRobotPose;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -37,7 +39,9 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -53,48 +57,48 @@ import static edu.wpi.first.units.MutableMeasure.mutable;
 public class SwerveSubsystem extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
+    public
 
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
-      private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
-  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+    private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
 
-  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(),
-      new SysIdRoutine.Mechanism(
-          (Measure<Voltage> volts) -> {
-            voltage(volts.in(Units.Volts));
-          },
-          this::sysidroutine,
-          this));
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                    (Measure<Voltage> volts) -> {
+                        voltage(volts.in(Units.Volts));
+                    },
+                    this::sysidroutine,
+                    this));
 
     private Field2d m_field = new Field2d();
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Fused Pose", Pose2d.struct).publish();
+            .getStructTopic("Fused Pose", Pose2d.struct).publish();
 
-    public void sysidroutine(SysIdRoutineLog log){
-            log.motor("drive-left")
+    public void sysidroutine(SysIdRoutineLog log) {
+        log.motor("drive-left")
                 .voltage(
-                    m_appliedVoltage.mut_replace(
-                        mSwerveMods[3].getMotorVoltage(), Volts))
+                        m_appliedVoltage.mut_replace(
+                                mSwerveMods[3].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
                 .linearVelocity(
-                    m_velocity.mut_replace(mSwerveMods[3].getVelocity(), MetersPerSecond));
-            log.motor("drive-right")
+                        m_velocity.mut_replace(mSwerveMods[3].getVelocity(), MetersPerSecond));
+        log.motor("drive-right")
                 .voltage(
-                    m_appliedVoltage.mut_replace(
-                        mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                        m_appliedVoltage.mut_replace(
+                                mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
                 .linearVelocity(
-                    m_velocity.mut_replace(mSwerveMods[0].getVelocity(), MetersPerSecond));
+                        m_velocity.mut_replace(mSwerveMods[0].getVelocity(), MetersPerSecond));
 
     }
 
-
     public SwerveSubsystem(VisionSubsystem vision) {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");   
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, "carnivorous rex");
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -137,7 +141,10 @@ public class SwerveSubsystem extends SubsystemBase {
         this.vision = vision;
     }
 
-    /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
+    /**
+     * Check alliance for the AutoBuilder. Returns true when red. Using a method for
+     * better readability
+     */
     public BooleanSupplier checkRedAlliance() {
         return () -> Robot.getAlliance();
     }
@@ -146,7 +153,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double translationX = translation.getX();
         double translationY = translation.getY();
 
-        if (Robot.getAlliance()){
+        if (Robot.getAlliance()) {
             translationX *= -1;
             translationY *= -1;
         }
@@ -221,12 +228,14 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setHeading(Rotation2d heading) {
-        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(),
+                new Pose2d(getPose().getTranslation(), heading));
     }
 
     public void zeroHeading() {
         double radians = Robot.getAlliance() ? Math.PI : 0;
-        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(),
+                new Pose2d(getPose().getTranslation(), new Rotation2d(radians)));
     }
 
     public Rotation2d getGyroYaw() {
@@ -247,10 +256,10 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdomEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 
-    public void voltage(double Voltage ){
-         for (SwerveModule mod : mSwerveMods) {
+    public void voltage(double Voltage) {
+        for (SwerveModule mod : mSwerveMods) {
             mod.voltagedrive(Voltage);
-         }
+        }
     }
 
     @Override
@@ -262,16 +271,18 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Correct pose estimate with multiple vision measurements
-        Optional <EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
+        Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.photonEstimatorFront.update();
         if (OptionalEstimatedPoseFront.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
-            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
+                    estimatedPose.timestampSeconds);
         }
 
-        Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
+        Optional<EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
         if (OptionalEstimatedPoseBack.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
-            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
+                    estimatedPose.timestampSeconds);
         }
 
         swerveOdomEstimator.update(getGyroYaw(), getModulePositions());
@@ -285,14 +296,64 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
 
-        
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-  return m_sysIdRoutine.quasistatic(direction);
-}
+        return m_sysIdRoutine.quasistatic(direction);
+    }
 
-public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-  return m_sysIdRoutine.dynamic(direction);
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+    }
+
+    public Command pathToSource() { // TODO NEEDS Tuning
+        if (Robot.getAlliance() == true) {
+            return AutoBuilder.pathfindToPose(new Pose2d(1.21, 0.96, Rotation2d.fromDegrees(58.79)),
+                    new PathConstraints(4, 10, 10, 4));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(15.47, 1.50, Rotation2d.fromDegrees(-59.53)),
+                    new PathConstraints(4, 10, 10, 4));
+        }
+    }
+
+    public Command pathToAmp() { // TODO NEEDS Tuning
+        if (Robot.getAlliance() == true) {
+            return AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.59, Rotation2d.fromDegrees(90.37)),
+                    new PathConstraints(4, 10, 10, 4));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(14.74, 7.52, Rotation2d.fromDegrees(90.37)),
+                    new PathConstraints(4, 10, 10, 4));
+        }
+    }
+
+    public Command pathToMidfieldChain() { // TODO NEEDS Tuning
+        if (Robot.getAlliance() == true) {
+            return AutoBuilder.pathfindToPose(new Pose2d(6.29, 4.08, Rotation2d.fromDegrees(180)),
+                    new PathConstraints(4, 10, 10, 4));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(10.26, 4.10, Rotation2d.fromDegrees(0)),
+                    new PathConstraints(4, 10, 10, 4));
+        }
+    }
+
+    public Command pathToSourceChain() { // TODO NEEDS Tuning
+        if (Robot.getAlliance() == true) {
+            return AutoBuilder.pathfindToPose(new Pose2d(4.18, 2.79, Rotation2d.fromDegrees(59.47)),
+                    new PathConstraints(4, 10, 10, 4));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(12.43, 2.90, Rotation2d.fromDegrees(121.26)),
+                    new PathConstraints(4, 10, 10, 4));
+        }
+    }
+
+    public Command pathToAmpChain() { // TODO NEEDS Tuning
+        if (Robot.getAlliance() == true) {
+            return AutoBuilder.pathfindToPose(new Pose2d(4.20, 5.30, Rotation2d.fromDegrees(-58.21)),
+                    new PathConstraints(4, 10, 10, 4));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(12.50, 5.25, Rotation2d.fromDegrees(-120.96)),
+                    new PathConstraints(4, 10, 10, 4));
+        }
+    }
+
 }
-} 
