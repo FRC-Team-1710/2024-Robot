@@ -18,7 +18,7 @@ public class FIREEE extends Command {
     public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex, String Target) {
         shooter = shooterSub;
         intexer = intex;
-        this.target = target;
+        this.target = Target;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSub, intex);

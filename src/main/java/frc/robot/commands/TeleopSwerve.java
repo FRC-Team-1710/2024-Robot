@@ -87,10 +87,6 @@ public class TeleopSwerve extends Command {
             SmartDashboard.putNumber("Note Yaw", yawToNote);
 
             rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
-
-            strafeVal = 0;
-
-            robotCentric = true;
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);

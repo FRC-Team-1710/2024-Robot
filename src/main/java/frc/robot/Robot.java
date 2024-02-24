@@ -41,9 +41,7 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
-    public static boolean redAlliance;
-
-    private boolean isZeroed = false;
+    private static boolean redAlliance;
 
     //PowerDistribution PDH = new PowerDistribution(1, ModuleType.kRev);
 
@@ -80,7 +78,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData(CommandScheduler.getInstance());
 
         // Access PhotonVision dashboard when connected via usb TODO test
-        PortForwarder.add(5800, "10.17.10.2", 5800);
+       // PortForwarder.add(5800, "10.17.10.11", 5800);
 
         System.gc();
     }
@@ -130,12 +128,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         redAlliance = checkRedAlliance();
-/* 
-        if (!isZeroed){ // because the encoder doesn't zero on init, or in any of the contructors
-             m_robotContainer.m_Shoota.resetWristEncoder();
-             isZeroed = true;
-        }
-*/        
+    
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         FiringSolutions.setAlliance(redAlliance);
@@ -156,12 +149,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         redAlliance = checkRedAlliance();
-/*         
-        if (!isZeroed){ // because the encoder doesn't zero in robotInit, or in any of the contructors
-             m_robotContainer.m_Shoota.resetWristEncoder();
-             isZeroed = true;
-        }
-*/
+
         FiringSolutions.setAlliance(redAlliance);
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to

@@ -5,48 +5,42 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntexerSubsystem;
 
-public class RizzLevel extends Command {
+public class ToBreakOrNotToBreak extends Command {
+    IntexerSubsystem intexer;
 
-    ShooterSubsystem shooter;
-    double angle;
-
-    /** Creates a new RizzLevel. */
-    public RizzLevel(ShooterSubsystem noteAccelerator, double angleInRADIANS) {
-        shooter = noteAccelerator;
-        angle = angleInRADIANS;
-        addRequirements(noteAccelerator);
+    /** Creates a new ToBreakOrNotToBreak. */
+    public ToBreakOrNotToBreak(IntexerSubsystem intexer) {
         // Use addRequirements() here to declare subsystem dependencies.
+        this.intexer = intexer;
+        addRequirements(intexer);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (shooter.isZeroed){
-            shooter.setWristPosition(angle);
+        if (!intexer.shooterBreak()){
+            intexer.setShooterIntake(.5);
+        } else {
+            intexer.setShooterIntake(0);
         }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        //shooter.manualWristSpeed(0);
+        intexer.setShooterIntake(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (shooter.isZeroed){
-            return shooter.getAngle() >= (angle - Math.toRadians(.5)) && shooter.getAngle() < (angle + Math.toRadians(.5));
-        } else {
-            return true;
-        }
+        return false;
     }
 }

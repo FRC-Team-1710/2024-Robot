@@ -30,6 +30,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private CANSparkBase shootaBot = new CANSparkMax(12, MotorType.kBrushless);
 
     private RelativeEncoder m_VelocityEncoder;
+    private RelativeEncoder m_VelocityEncoder2;
     private RelativeEncoder m_PositionEncoder;
     private DutyCycleEncoder m_WristEncoder;
 
@@ -48,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private double positionD = 0;
 
     // Vars
-    private double shooterVelocity = 12;
+    private double shooterVelocity = 15;
     private double shooterAngleToSpeaker, shooterAngleToAmp;
     private Boolean ENCFAIL = false;
     public boolean isZeroed = false;
@@ -63,6 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // Encoders
         m_VelocityEncoder = shootaTop.getEncoder();
+        m_VelocityEncoder2 = shootaBot.getEncoder();
         m_PositionEncoder = m_Wrist.getEncoder();
         m_WristEncoder = new DutyCycleEncoder(0);
 
@@ -93,6 +95,9 @@ public class ShooterSubsystem extends SubsystemBase {
         shootaTop.burnFlash();
         
         m_pidWrist = new PIDController(positionP, positionI, positionD);
+
+       // m_VelocityEncoder.setAverageDepth(m_WristCurrentMax);
+        m_VelocityEncoder.setMeasurementPeriod(20);
 
         SmartDashboard.putNumber("set velocity", shooterVelocity);
 
@@ -130,6 +135,7 @@ Minor whoopsie if these guys were causing loop overruns
         FiringSolutionsV3.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
         FiringSolutionsV3.speakerTargetZ = SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.speakerTargetZ);
 
+        SmartDashboard.putNumber("Top - Bottom error", m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
         SmartDashboard.putNumber("Current Angle Radians", getAngle());
         SmartDashboard.putNumber("Current Velocity", getVelocity());
         SmartDashboard.putBoolean("shooter at speed", shooterAtSpeed());
@@ -193,7 +199,7 @@ Minor whoopsie if these guys were causing loop overruns
         if (!ENCFAIL) {
             return ((-m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
         } else {
-            return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100) + angleOffset;
+            return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
         }
     }
 

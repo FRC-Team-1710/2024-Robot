@@ -60,8 +60,9 @@ public class RobotContainer {
     private final JoystickButton shooterTo45 = new JoystickButton(mech, XboxController.Button.kB.value);
     private final JoystickButton shooterToIntake = new JoystickButton(mech, XboxController.Button.kA.value);
     private final Trigger resetR = new Trigger(() -> mech.getPOV() == 90);
+    private final Trigger intakeToBeamBreak = new Trigger(() -> mech.getPOV() == 0);
     private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
-    private final JoystickButton shooterToZero = new JoystickButton(mech, XboxController.Button.kY.value);
+    private final JoystickButton shooterToAmp = new JoystickButton(mech, XboxController.Button.kY.value);
     private final JoystickButton xButton = new JoystickButton(mech, XboxController.Button.kX.value);
 
     /* 
@@ -101,7 +102,7 @@ public class RobotContainer {
                         m_ElevatorSubsystem,
                         () -> -mech.getRawAxis(leftVerticalAxis)));
 
-        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, () -> -mech.getRawAxis(rightVerticalAxis)));
+        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, () -> -mech.getRawAxis(rightVerticalAxis), () -> shooterTo45.getAsBoolean()));
 
         // m_LEDSubsystem.setAllianceColor();
 
@@ -141,8 +142,7 @@ public class RobotContainer {
         // Intexer
         intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
-//                .alongWith(new InstantCommand(() -> m_Shoota.SetShooterVelocity(-1200))))
-//                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        intakeToBeamBreak.whileTrue(new ToBreakOrNotToBreak(m_IntexerSubsystem));
 
         // Amp Shot
         shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(5))))
@@ -152,8 +152,8 @@ public class RobotContainer {
 
         // Wrist
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
-        shooterTo45.onTrue(new RizzLevel(m_Shoota, 0.785));
-        shooterToZero.onTrue(new RizzLevel(m_Shoota, 0));
+        //shooterTo45.onTrue(new RizzLevel(m_Shoota, 0.785));
+        shooterToAmp.onTrue(new RizzLevel(m_Shoota, -0.5));
         
         // Shooter intake
         forceShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
@@ -167,8 +167,9 @@ public class RobotContainer {
         xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
         .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         
-        primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(800)))
-        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        /*primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(3417.8)))
+        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));*/
+        //primeShooterSpeedAmp.onTrue(new ElevatorSet(m_ElevatorSubsystem, .45));
         
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR())); // Reset the R calculation incase it gets off
 

@@ -31,7 +31,7 @@ public final class Constants {
         public static final String kAprilTagCameraFront = "ChristiansThirdEye";
         public static final String kAprilTagCameraBack = "ChristiansFourthEye";
         public static final String kNoteCamera = "OnionRing";
-        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        
         public static final Transform3d kRobotToCamFront =
                 new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
         public static final Transform3d kRobotToCamBack = 
@@ -42,7 +42,7 @@ public final class Constants {
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(1, 1, 1);
     }
 
     private static AprilTagFieldLayout errorWrapper() {
@@ -120,7 +120,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.5; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 4.5;
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
@@ -172,7 +172,7 @@ public final class Constants {
 
     public static final class Shooter {
         public static final double intakeAngleRadians = 0.56;
-        public static final double idleSpeedRPM = 1300;
+        public static final double idleSpeedRPM = 650;
         public static final double angleOffsetManual = Units.degreesToRadians(68.2);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }

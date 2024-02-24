@@ -4,8 +4,10 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -13,11 +15,14 @@ public class ManRizzt extends Command {
 
     ShooterSubsystem shooterSubsystem;
     private DoubleSupplier speed;
+    BooleanSupplier setAngle;
 
-    public ManRizzt(ShooterSubsystem subsystem, DoubleSupplier speed) {
+    public ManRizzt(ShooterSubsystem subsystem, DoubleSupplier speed, BooleanSupplier setAngle) {
         // Use addRequirements() here to declare subsystem dependencies.
         shooterSubsystem = subsystem;
+        this.setAngle = setAngle;
         this.speed = speed;
+        SmartDashboard.putNumber("Set Wrist Angle", 0);
         addRequirements(shooterSubsystem);
     }
 
@@ -31,8 +36,11 @@ public class ManRizzt extends Command {
         double speedValue = speed.getAsDouble() * 0.5;
         
         speedValue = Math.pow(speed.getAsDouble(), 3);
-
-        shooterSubsystem.manualWristSpeed(speedValue);
+        if (setAngle.getAsBoolean()){
+            shooterSubsystem.setWristPosition(SmartDashboard.getNumber("Set Wrist Angle", 0));
+        } else {
+            shooterSubsystem.manualWristSpeed(speedValue);
+        }
     }
 
     @Override

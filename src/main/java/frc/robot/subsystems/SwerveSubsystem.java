@@ -98,10 +98,10 @@ public class SwerveSubsystem extends SubsystemBase {
         };
 
         swerveModuleStates = new SwerveModuleState[] {
-            new SwerveModuleState(),
-            new SwerveModuleState(),
-            new SwerveModuleState(),
-            new SwerveModuleState()
+                new SwerveModuleState(),
+                new SwerveModuleState(),
+                new SwerveModuleState(),
+                new SwerveModuleState()
         };
 
         // Auto setup
@@ -268,16 +268,17 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-       /*  for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
-        }*/
-
+        SwerveModulePosition[] modulePositions = getModulePositions();
+        /*for (SwerveModule mod : mSwerveMods) {
+           SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
+           SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
+           SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
+        } TODO Fix
+*/
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", swerveModuleStates[mod.moduleNumber].angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", modulePositions[mod.moduleNumber].angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         }
 
         // Correct pose estimate with multiple vision measurements

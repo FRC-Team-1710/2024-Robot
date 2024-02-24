@@ -14,7 +14,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,17 +28,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     public LaserCan lasercan = new LaserCan(22);
     
     // Falcon stuff
-    private final Follower m_requestFollower = new Follower(20, true);
     private final PositionDutyCycle m_requestPosition = new PositionDutyCycle(0);
     private final PhoenixPIDController phoenixPID = new PhoenixPIDController(0, 0, 0);
     
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
     private final double gearRatio = 17.33;
-    private final double maxHeight = .5; //TODO measure
+    private final double maxHeight = .71; //TODO measure
     
     // Vars
     private double revolutionCount;
+    private double currentHeight;
     private double setHeight;
     private boolean laser;
     LaserCan.Measurement measurement;
@@ -44,7 +46,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         // Falcon setup
         m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
-        m_elevatorRight.setControl(m_requestFollower);
+        m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
         // PID
         Slot0Configs encoderConfig = new Slot0Configs();
@@ -71,7 +73,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         SmartDashboard.putData(this);
-        SmartDashboard.putData(phoenixPID);
+        SmartDashboard.putData("Elevator PID", phoenixPID);
 
         laser = false;
     }
@@ -79,6 +81,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        updateHeightLaserCan();
         SmartDashboard.putNumber("Encoder Height", getHeightEncoder());
         SmartDashboard.putNumber("Encoder Raw", revolutionCount);
         SmartDashboard.putNumber("Set Height", setHeight);
@@ -98,14 +101,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void setHeight(double height) {
         setHeight = height;
         if (!lasercanFailureCheck()) { // Run off LaserCan
-            m_elevatorLeft.set(phoenixPID.calculate(getHeightLaserCan(), height, .1));
-            m_elevatorRight.set(phoenixPID.calculate(getHeightLaserCan(), height, .1));
+            m_elevatorLeft.set(phoenixPID.calculate(getHeightLaserCan(), height, RobotController.getFPGATime()));
         } else { // Run off encoder
             double rot = (height / (spoolCircumference * Math.PI)) * gearRatio;
             if (getHeightEncoder() < maxHeight) {
                 m_elevatorLeft.setControl(m_requestPosition.withPosition(rot));
             }
         }
+    }
+
+    public boolean atHeight () {
+        return phoenixPID.atSetpoint();
     }
 
     public void ManSpin(double percent) {
@@ -122,11 +128,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /** Get height from LaserCan IN METERS */
-    public int getHeightLaserCan() {
-        if (measurement != null) {
-            return measurement.distance_mm / 1000; //UNITS MATTER!!!! METERS ONLY!!!!
+    public double getHeightLaserCan() {
+        return currentHeight;
+    }
+
+    public void updateHeightLaserCan () {
+        measurement = lasercan.getMeasurement();
+        if (measurement != null){
+            currentHeight = Double.valueOf(measurement.distance_mm) / 1000;
         }
-        return 0;
     }
 
     /** Check if LaserCan has a result */
