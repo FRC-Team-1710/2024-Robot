@@ -212,7 +212,9 @@ Minor whoopsie if these guys were causing loop overruns
 
     /** IN RADIANS */
     public void setWristPosition(double angle) {
-        m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
+        if (isZeroed){
+            m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
+        }
     }
 
     /** In rotations per minute */
@@ -238,7 +240,7 @@ Minor whoopsie if these guys were causing loop overruns
     }
 
     public void PointShoot(double PointAngle, double launchVelocity) {
-        m_Wrist.set(m_pidWrist.calculate(getAngle(), PointAngle));
+        setWristPosition(PointAngle);
         botPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
         topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
     }
