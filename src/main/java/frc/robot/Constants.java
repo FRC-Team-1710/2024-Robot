@@ -25,13 +25,13 @@ import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
-    public static final double stickDeadband = 0.05;
+    public static final double stickDeadband = 0.07;
 
     public static class Vision {
         public static final String kAprilTagCameraFront = "ChristiansThirdEye";
         public static final String kAprilTagCameraBack = "ChristiansFourthEye";
         public static final String kNoteCamera = "OnionRing";
-        
+
         public static final Transform3d kRobotToCamFront =
                 new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
         public static final Transform3d kRobotToCamBack = 

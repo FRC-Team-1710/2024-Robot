@@ -282,6 +282,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Correct pose estimate with multiple vision measurements
+        /* 
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedGlobalPose();
         if (OptionalEstimatedPoseFront.isPresent()) {
 
@@ -293,7 +294,7 @@ public class SwerveSubsystem extends SubsystemBase {
             swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
                     estimatedPose.timestampSeconds);
         }
-
+*/
         /*  Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
         if (OptionalEstimatedPoseBack.isPresent()) {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();

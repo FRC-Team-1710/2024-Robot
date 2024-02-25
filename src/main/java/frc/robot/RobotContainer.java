@@ -130,6 +130,7 @@ public class RobotContainer {
         // Shooter
         //Shoot.and(targetAmp).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "amp")); // Amp fire TODO: FIGURE OUT THE LOGIC HERE
         Shoot.and(targetSpeaker).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "speaker")); // Main fire
+        //targetSpeaker.whileTrue(new RizzLevel(m_Shoota, m_Shoota.getCalculatedAngle("speaker")));
 
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
         autoZeroShooter

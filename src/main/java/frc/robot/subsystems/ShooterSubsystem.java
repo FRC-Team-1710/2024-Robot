@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
+import frc.lib.math.Interpolations;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 
@@ -56,6 +58,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private double angleOffset = 68.2; // IN RADIANS
     private final Timer speedTimer = new Timer();
     private final int m_WristCurrentMax = 84;
+    private final Interpolations interpolation = new Interpolations();
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -285,7 +288,8 @@ Minor whoopsie if these guys were causing loop overruns
 
         FiringSolutionsV3.updateSpeakerR(distanceToMovingSpeakerTarget);
 
-        shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
+        //shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
+        shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
 
         SmartDashboard.putNumber("Target Velocity RPM", FiringSolutions.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);
