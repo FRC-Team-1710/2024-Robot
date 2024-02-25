@@ -224,10 +224,6 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
-    public Pose2d getEstimatedPosition() {
-        return swerveOdomEstimator.getEstimatedPosition();
-    }
-
     public Rotation2d getHeading() {
         return getPose().getRotation();
     }
@@ -303,13 +299,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
         swerveOdomEstimator.update(getGyroYaw(), getModulePositions());
 
-        m_field.setRobotPose(getEstimatedPosition());
+        m_field.setRobotPose(getPose());
 
         posePublisher.set(getPose());
         swervePublisher.set(swerveModuleStates);
 
-        //SmartDashboard.putData("field", m_field);
-        SmartDashboard.putString("Obodom", getEstimatedPosition().toString());
+        SmartDashboard.putString("Obodom", getPose().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
     }
