@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
+        // Disable LiveWindow since we don't use it
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
 
@@ -75,11 +76,13 @@ public class Robot extends TimedRobot {
         SignalLogger.setPath("/media/sda1/logs/");
         SignalLogger.start();
 
+        // Output command scheduler to dashboard
         SmartDashboard.putData(CommandScheduler.getInstance());
 
-        // Access PhotonVision dashboard when connected via usb TODO test
+        // Access PhotonVision dashboard when connected via usb TODO make work
        // PortForwarder.add(5800, "10.17.10.11", 5800);
 
+       // idk if this is useful
         System.gc();
     }
 

@@ -15,6 +15,7 @@ import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -41,6 +42,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double setHeight;
     private boolean laser;
     LaserCan.Measurement measurement;
+    MedianFilter filter = new MedianFilter(5);
 
     public ElevatorSubsystem() {
         // Falcon setup
@@ -135,7 +137,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void updateHeightLaserCan() {
         measurement = lasercan.getMeasurement();
         if (measurement != null) {
-            currentHeight = Double.valueOf(measurement.distance_mm) / 1000;
+            currentHeight = filter.calculate(Double.valueOf(measurement.distance_mm) / 1000);
         }
     }
 

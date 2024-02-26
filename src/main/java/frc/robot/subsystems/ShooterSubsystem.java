@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 
@@ -99,7 +98,6 @@ public class ShooterSubsystem extends SubsystemBase {
         
         m_pidWrist = new PIDController(positionP, positionI, positionD);
 
-       // m_VelocityEncoder.setAverageDepth(m_WristCurrentMax);
         m_VelocityEncoder.setMeasurementPeriod(20);
 
         SmartDashboard.putNumber("set velocity", shooterVelocity);
