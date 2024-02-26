@@ -36,9 +36,9 @@ public class FIREEE extends Command {
             intexer.setShooterIntake(.9);
         }
         if (target == "amp"){
-            shooter.PointShoot(shooter.getCalculatedAngle("amp"), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+            shooter.PointShoot(shooter.getCalculatedAngleToAmp(), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
         } else {
-            shooter.PointShoot(shooter.getCalculatedAngle("speaker"), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+            shooter.PointShoot(shooter.getCalculatedAngleToSpeaker(), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
         }
     }
 

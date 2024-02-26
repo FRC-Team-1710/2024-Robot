@@ -125,8 +125,14 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /* Driver Buttons */
+        /* DRIVER BUTTONS */
 
+        // Shooter speed
+        targetSpeaker
+        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
+        .whileTrue(new MissileLock(m_Shoota, "speaker"))
+        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        
         // Shooter
         //Shoot.and(targetAmp).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "amp")); // Amp fire TODO: FIGURE OUT THE LOGIC HERE
         Shoot.and(targetSpeaker).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "speaker")); // Main fire
@@ -149,7 +155,12 @@ public class RobotContainer {
         shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(5))))
                 .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
-        /* Mech Buttons */
+        /* MECH BUTTONS */
+
+        //Prime Speaker
+        primeShooterSpeedSpeaker
+        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
+        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Wrist
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
@@ -159,11 +170,6 @@ public class RobotContainer {
         // Shooter intake
         forceShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
         .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
-        
-        // Shooter speed
-        primeShooterSpeedSpeaker
-        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
-        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         
         xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
         .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
