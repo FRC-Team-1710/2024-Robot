@@ -50,7 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private double positionD = 0;
 
     // Vars
-    private double shooterVelocity = 15;
+    private double shooterVelocity = 12.7;
     private double shooterAngleToSpeaker, shooterAngleToAmp;
     private Boolean ENCFAIL = false;
     public boolean isZeroed = false;
@@ -254,32 +254,17 @@ Minor whoopsie if these guys were causing loop overruns
         return shooterVelocity;
     }
 
-    public double getCalculatedAngle(String target) {
-        if (target == "amp"){
-            return shooterAngleToAmp;
-        } else{
-            return shooterAngleToSpeaker;
-        }
+    public double getCalculatedAngleToAmp() {
+        return shooterAngleToAmp;
+    }
+
+    public double getCalculatedAngleToSpeaker() {
+        return shooterAngleToSpeaker;
     }
 
     public void updateShooterMath() { // Shooter Math
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
-
-        double angleToSpeaker = FiringSolutionsV3.getAngleToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY);
-
-        double angleToMovingSpeakerTarget = FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
-
-        double robotVelocityTowardsSpeaker = FiringSolutionsV3.getRobotVelocityTowardsTarget(pose.getX(), FiringSolutionsV3.speakerTargetX,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                angleToSpeaker,
-                pose.getRotation().getRadians());
-
-        double robotVelocityPerpendicularToSpeaker = FiringSolutionsV3.getRobotVelocityPerpendicularToTarget(pose.getX(), FiringSolutionsV3.speakerTargetX,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                angleToSpeaker,
-                pose.getRotation().getRadians());
 
         double distanceToMovingSpeakerTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
@@ -293,37 +278,14 @@ Minor whoopsie if these guys were causing loop overruns
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);
         SmartDashboard.putNumber("Calculated Angle Degrees", Math.toDegrees(shooterAngleToSpeaker));
         SmartDashboard.putNumber("distance", FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
-        SmartDashboard.putNumber("angle to speaker", angleToSpeaker);
         SmartDashboard.putNumber("R", FiringSolutionsV3.getSpeakerR());
         SmartDashboard.putNumber("C", FiringSolutionsV3.C(distanceToMovingSpeakerTarget));
         SmartDashboard.putNumber("quarticA", FiringSolutionsV3.quarticA(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
         SmartDashboard.putNumber("quarticC", FiringSolutionsV3.quarticC(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
         SmartDashboard.putNumber("quarticE", FiringSolutionsV3.quarticE(distanceToMovingSpeakerTarget));
-        SmartDashboard.putNumber("Angle to Moving Target", angleToMovingSpeakerTarget);
         SmartDashboard.putNumber("Distance to Moving Target", distanceToMovingSpeakerTarget);
-        SmartDashboard.putNumber("Robot Velocity Towards Speaker", robotVelocityTowardsSpeaker);
-        SmartDashboard.putNumber("Robot Velocity Perpendicular to Speaker", robotVelocityPerpendicularToSpeaker);
-        SmartDashboard.putNumber("target x", FiringSolutionsV3.movingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
-                robotVelocityTowardsSpeaker, robotVelocityPerpendicularToSpeaker).get().getX());
-        SmartDashboard.putNumber("target y",
-                FiringSolutionsV3.movingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY, robotVelocityTowardsSpeaker, robotVelocityPerpendicularToSpeaker).get().getY());
         SmartDashboard.putNumber("robot vx", chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("robot vy", chassisSpeeds.vyMetersPerSecond);
-
-        double angleToAmp = FiringSolutionsV3.getAngleToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY);
-
-        double angleToMovingAmpTarget = FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
-
-        double robotVelocityTowardsAmp = FiringSolutionsV3.getRobotVelocityTowardsTarget(pose.getX(), FiringSolutionsV3.ampTargetX,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                angleToAmp,
-                pose.getRotation().getRadians());
-
-        double robotVelocityPerpendicularToAmp = FiringSolutionsV3.getRobotVelocityPerpendicularToTarget(pose.getX(), FiringSolutionsV3.ampTargetX,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                angleToAmp,
-                pose.getRotation().getRadians());
 
         double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
