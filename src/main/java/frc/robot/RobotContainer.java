@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -129,7 +128,7 @@ public class RobotContainer {
 
         // Shooter speed
         targetSpeaker
-        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
+        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))))
         .whileTrue(new MissileLock(m_Shoota, "speaker"))
         .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         
@@ -152,14 +151,14 @@ public class RobotContainer {
         intakeToBeamBreak.whileTrue(new ToBreakOrNotToBreak(m_IntexerSubsystem));
 
         // Amp Shot
-        shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(5))))
+        shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutionsV3.convertToRPM(5))))
                 .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         /* MECH BUTTONS */
 
         //Prime Speaker
         primeShooterSpeedSpeaker
-        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
+        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))))
         .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Wrist
