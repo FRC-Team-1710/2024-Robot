@@ -10,45 +10,45 @@ import frc.robot.Constants;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class MissileLock extends Command {
-  private ShooterSubsystem shooter;
-  private String target;
+    private ShooterSubsystem shooter;
+    private String target;
 
-  /** Creates a new MissileLock. */
-  public MissileLock(ShooterSubsystem shooterSub, String target) {
-    shooter = shooterSub;
-    this.target = target;
+    /** Creates a new MissileLock. */
+    public MissileLock(ShooterSubsystem shooterSub, String target) {
+        shooter = shooterSub;
+        this.target = target;
 
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooterSub);
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    if (target == "amp") {
-      shooter.PointShoot(shooter.getCalculatedAngleToSpeaker(),
-          FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
-    } else {
-      shooter.PointShoot(shooter.getCalculatedAngleToAmp(),
-          FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(shooterSub);
     }
-  }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    shooter.SetShooterVelocity(Constants.Shooter.idleSpeedRPM);
-    shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
-  }
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        if (target == "amp") {
+            shooter.PointShoot(shooter.getCalculatedAngleToAmp(),
+                    FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+        } else {
+            shooter.PointShoot(shooter.getCalculatedAngleToSpeaker(),
+                    FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+        }
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        shooter.SetShooterVelocity(Constants.Shooter.idleSpeedRPM);
+        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

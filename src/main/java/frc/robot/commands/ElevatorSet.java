@@ -21,6 +21,7 @@ public class ElevatorSet extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        //m_elevator.setManualOverride(true);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -32,7 +33,7 @@ public class ElevatorSet extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_elevator.ManSpin(0);
+        m_elevator.stopHere();
     }
 
     // Returns true when the command should end.

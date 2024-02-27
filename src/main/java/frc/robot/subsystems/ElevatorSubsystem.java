@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,7 +16,6 @@ import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,12 +29,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // Falcon stuff
     private final PositionDutyCycle m_requestPosition = new PositionDutyCycle(0);
+    private final PositionDutyCycle lockPosition = new PositionDutyCycle(0);
     private final PIDController elevatorPID = new PIDController(0, 0, 0);
+    private final Slot1Configs encoderConfigSlot1 = new Slot1Configs();
 
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
     private final double gearRatio = 17.33;
-    private final double maxHeight = .71; //TODO measure
+    private final double maxHeight = .8;
 
     // Vars
     private double revolutionCount;
@@ -42,7 +44,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double setHeight;
     private boolean laser;
     LaserCan.Measurement measurement;
-    MedianFilter filter = new MedianFilter(5);
+
+    public boolean manualOverride = false;
+    public boolean locked = false;
 
     public ElevatorSubsystem() {
         // Falcon setup
@@ -50,22 +54,28 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
         // PID
-        Slot0Configs encoderConfig = new Slot0Configs();
+        Slot0Configs encoderConfigSlot0 = new Slot0Configs();
         ClosedLoopRampsConfigs closedloop = new ClosedLoopRampsConfigs();
 
-        closedloop.withDutyCycleClosedLoopRampPeriod(.2);
-        encoderConfig.kP = 0.015;
-        encoderConfig.kI = .0;
-        encoderConfig.kD = 0.;
-        encoderConfig.kV = .01;
+        closedloop.withDutyCycleClosedLoopRampPeriod(.5).withTorqueClosedLoopRampPeriod(0.5);
+        encoderConfigSlot0.kP = .075;
+        encoderConfigSlot0.kI = .0;
+        encoderConfigSlot0.kD = .0;
+        encoderConfigSlot0.kV = .0;
 
-        m_elevatorLeft.getConfigurator().apply(encoderConfig, 0.050);
+        encoderConfigSlot1.kP = 1;
+        encoderConfigSlot1.kI = .0;
+        encoderConfigSlot1.kD = .0;
+        encoderConfigSlot1.kV = .01;
+
+        m_elevatorLeft.getConfigurator().apply(encoderConfigSlot0, 0.050);
         m_elevatorLeft.getConfigurator().apply(closedloop);
 
         // laser can pid shenanigans
-        elevatorPID.setP(0);
+        elevatorPID.setP(2.5);
         elevatorPID.setI(0);
         elevatorPID.setD(0);
+        elevatorPID.setTolerance(0.02);
 
         try {
             lasercan.setRangingMode(RangingMode.SHORT);
@@ -75,6 +85,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         SmartDashboard.putData(this);
         SmartDashboard.putData("Elevator PID", elevatorPID);
+
+        m_elevatorLeft.setPosition(0);
 
         laser = false;
     }
@@ -90,13 +102,38 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("LaserCan failure", lasercanFailureCheck());
         SmartDashboard.putNumber("Elevator Left Supply Current", m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Elevator Right Supply Current",
-                m_elevatorRight.getSupplyCurrent().getValueAsDouble());
+        m_elevatorRight.getSupplyCurrent().getValueAsDouble());
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
+
+        if (!manualOverride){ // Flagitious logic
+            if (!locked){
+                stopHere();
+                locked = true;
+            }
+        } else {
+            locked = false;
+        }
+    }
+
+    public void setManualOverride(boolean value){
+        manualOverride = value;
+    }
+
+    public double getEncoderValue(){
+        return revolutionCount;
+    }
+
+    public void setToEncoder(double value){
+        m_elevatorLeft.setControl(lockPosition.withPosition(value));
+    }
+
+    public void stopHere(){
+        m_elevatorLeft.setControl(lockPosition.withPosition(revolutionCount).withSlot(0));
     }
 
     /** Get height from motor encoder */
     public double getHeightEncoder() {
-        return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI);
+        return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI) + 0.2;
     }
 
     /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
@@ -107,7 +144,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         } else { // Run off encoder
             double rot = (height / (spoolCircumference * Math.PI)) * gearRatio;
             if (getHeightEncoder() < maxHeight) {
-                m_elevatorLeft.setControl(m_requestPosition.withPosition(rot));
+                m_elevatorLeft.setControl(m_requestPosition.withPosition(rot).withSlot(1));
             }
         }
     }
@@ -137,7 +174,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void updateHeightLaserCan() {
         measurement = lasercan.getMeasurement();
         if (measurement != null) {
-            currentHeight = filter.calculate(Double.valueOf(measurement.distance_mm) / 1000);
+            currentHeight = Double.valueOf(measurement.distance_mm) / 1000;
         }
     }
 

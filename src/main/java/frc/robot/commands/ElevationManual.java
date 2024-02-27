@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 
@@ -13,6 +14,8 @@ public class ElevationManual extends Command {
     private ElevatorSubsystem m_elevatorSubsystem;
     double m_speed;
     DoubleSupplier axis;
+    Boolean locked = false;
+    double lockedValue = 0.0;
 
     public ElevationManual(ElevatorSubsystem elevate, DoubleSupplier control) {
         m_elevatorSubsystem = elevate;
@@ -31,8 +34,17 @@ public class ElevationManual extends Command {
         double value = axis.getAsDouble();
 
         value = Math.pow(value, 3);
-        
-        m_elevatorSubsystem.ManSpin(value);
+
+        if (Math.abs(value) > .05) { // Crime zone
+            m_elevatorSubsystem.setManualOverride(true);
+            m_elevatorSubsystem.ManSpin(value);
+        } else {
+            m_elevatorSubsystem.setManualOverride(false);
+            lockedValue = m_elevatorSubsystem.getEncoderValue();
+        }
+
+        SmartDashboard.putBoolean("locked", locked);
+        SmartDashboard.putNumber("locked value", lockedValue);
     }
 
     // Called once the command ends or is interrupted.

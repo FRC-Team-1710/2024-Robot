@@ -48,7 +48,7 @@ public class RobotContainer {
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton intex = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton outex = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton shootAmp = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton xButtonDriver = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton forceShoot = new JoystickButton(driver, XboxController.Button.kY.value);
     private final Trigger targetAmp = new Trigger(() -> driver.getRawAxis(leftTrigger) > .5);
     private final Trigger targetSpeaker = new Trigger(() -> driver.getRawAxis(rightTrigger) > .5);
@@ -60,10 +60,12 @@ public class RobotContainer {
     private final JoystickButton shooterTo45 = new JoystickButton(mech, XboxController.Button.kB.value);
     private final JoystickButton shooterToIntake = new JoystickButton(mech, XboxController.Button.kA.value);
     private final Trigger resetR = new Trigger(() -> mech.getPOV() == 90);
-    private final Trigger intakeToBeamBreak = new Trigger(() -> mech.getPOV() == 0);
+    private final Trigger elevatorDown = new Trigger(() -> mech.getPOV() == 180);
+    private final Trigger elevatorUp = new Trigger(() -> mech.getPOV() == 0);
     private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
     private final JoystickButton shooterToAmp = new JoystickButton(mech, XboxController.Button.kY.value);
-    private final JoystickButton xButton = new JoystickButton(mech, XboxController.Button.kX.value);
+    private final JoystickButton xButtonMech = new JoystickButton(mech, XboxController.Button.kX.value);
+    private final JoystickButton rightStick = new JoystickButton(mech, XboxController.Button.kRightStick.value);
 
     /* 
     private final Trigger dynamicForward = new Trigger(() -> mech.getPOV() == 90);
@@ -127,58 +129,53 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* DRIVER BUTTONS */
 
-        // Shooter speed
-        targetSpeaker
-        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
-        .whileTrue(new MissileLock(m_Shoota, "speaker"))
-        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        // Lock on to speaker
+        targetSpeaker.whileTrue(new MissileLock(m_Shoota, "speaker"));
         
         // Shooter
         //Shoot.and(targetAmp).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "amp")); // Amp fire TODO: FIGURE OUT THE LOGIC HERE
         Shoot.and(targetSpeaker).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "speaker")); // Main fire
-        //targetSpeaker.whileTrue(new RizzLevel(m_Shoota, m_Shoota.getCalculatedAngle("speaker")));
 
-        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
-        autoZeroShooter
-                .onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
-
-        // Drive
+        // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
                 new InstantCommand(() -> m_SwerveSubsystem.setPose(new Pose2d(1.35, 5.55, new Rotation2d(0))))));
 
         // Intexer
         intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
-        intakeToBeamBreak.whileTrue(new ToBreakOrNotToBreak(m_IntexerSubsystem));
 
-        // Amp Shot
-        shootAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(5))))
-                .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
-
-        /* MECH BUTTONS */
-
-        //Prime Speaker
-        primeShooterSpeedSpeaker
-        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
-        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
-
-        // Wrist
-        shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
-        //shooterTo45.onTrue(new RizzLevel(m_Shoota, 0.785));
-        shooterToAmp.onTrue(new RizzLevel(m_Shoota, -0.5));
-        
         // Shooter intake
         forceShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
         .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
         
-        xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
+        /* MECH BUTTONS */
+        
+        // Prime for Speaker
+        primeShooterSpeedSpeaker
+        .whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(FiringSolutions.convertToRPM(m_Shoota.getCalculatedVelocity()))))
         .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         
-        /*primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(3417.8)))
-        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));*/
-        //primeShooterSpeedAmp.onTrue(new ElevatorSet(m_ElevatorSubsystem, .45));
+        // Prime for Amp
+        primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.SetShooterVelocity(3417.8)))
+        .onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+
+        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
+        autoZeroShooter.onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
+        
+        // Elevator
+        elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem, 0.03));
+
+        // Wrist
+        shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
+
+        // Amp Preset
+        shooterToAmp.onTrue(new RizzLevel(m_Shoota, -0.5)).onTrue(new ElevatorSet(m_ElevatorSubsystem, .8));
+        
+        //xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
+        //.onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR())); // Reset the R calculation incase it gets off
+        rightStick.onTrue(new InstantCommand(()-> m_Shoota.SetShooterVelocity(0)));
 
         // Characterization tests 
         /*dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));

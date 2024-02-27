@@ -5,23 +5,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.math.FiringSolutionsV3;
-import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class FIREEE extends Command {
     private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
-    private String target;
 
     public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex, String Target) {
         shooter = shooterSub;
         intexer = intex;
-        this.target = Target;
-
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shooterSub, intex);
+        addRequirements(intex);
     }
 
     // Called when the command is initially scheduled.
@@ -35,19 +30,12 @@ public class FIREEE extends Command {
         if (shooter.shooterAtSpeed()){
             intexer.setShooterIntake(.9);
         }
-        if (target == "amp"){
-            shooter.PointShoot(shooter.getCalculatedAngleToAmp(), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
-        } else {
-            shooter.PointShoot(shooter.getCalculatedAngleToSpeaker(), FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
-        }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         intexer.setShooterIntake(0);
-        shooter.SetShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
     }
 
     // Returns true when the command should end.
