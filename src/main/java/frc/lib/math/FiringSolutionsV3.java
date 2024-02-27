@@ -18,7 +18,7 @@ public class FiringSolutionsV3 {
 
     public static double speakerTargetXOffset = .24;
     public static double speakerTargetZ = 1.95;
-    public static double slipPercent = 0.66;
+    public static double slipPercent = 0.5588;
 
     private static double speakerTargetXBlue = 0.0 + speakerTargetXOffset;
     private static double speakerTargetXRed = 16.54 - speakerTargetXOffset;
