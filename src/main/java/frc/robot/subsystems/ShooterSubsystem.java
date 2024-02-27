@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
 import frc.lib.math.Interpolations;
 import com.revrobotics.CANSparkBase;
@@ -274,7 +273,7 @@ Minor whoopsie if these guys were causing loop overruns
         //shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
         shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
 
-        SmartDashboard.putNumber("Target Velocity RPM", FiringSolutions.convertToRPM(shooterVelocity));
+        SmartDashboard.putNumber("Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);
         SmartDashboard.putNumber("Calculated Angle Degrees", Math.toDegrees(shooterAngleToSpeaker));
         SmartDashboard.putNumber("distance", FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
