@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
@@ -14,10 +16,13 @@ public class IntakeThroughShooterPart2 extends Command {
     private IntexerSubsystem intexer;
     private boolean finishPlease = false;
 
+    Joystick controller;
+
     /** Creates a new IntakeFromShooterPart2. */
-    public IntakeThroughShooterPart2(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
+    public IntakeThroughShooterPart2(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
         shooter = shooterSub;
         intexer = intex;
+        this.controller = controller;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSub, intex);
     }
@@ -43,6 +48,7 @@ public class IntakeThroughShooterPart2 extends Command {
     public void end(boolean interrupted) {
         shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
         intexer.setALL(0);
+        controller.setRumble(RumbleType.kBothRumble, 0);
     }
 
     // Returns true when the command should end.
