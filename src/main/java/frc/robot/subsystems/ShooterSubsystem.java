@@ -57,6 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final Timer speedTimer = new Timer();
     private final int m_WristCurrentMax = 84;
     private final Interpolations interpolation = new Interpolations();
+    private double distanceToMovingSpeakerTarget = .94;
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -218,7 +219,7 @@ Minor whoopsie if these guys were causing loop overruns
     }
 
     /** In rotations per minute */
-    public void SetShooterVelocity(double velocity) {
+    public void setShooterVelocity(double velocity) {
         if (velocity == 0) {
             shootaBot.stopMotor();
             shootaTop.stopMotor();
@@ -261,11 +262,15 @@ Minor whoopsie if these guys were causing loop overruns
         return shooterAngleToSpeaker;
     }
 
+    public double getDistanceToSpeaker () {
+        return distanceToMovingSpeakerTarget;
+    }
+
     public void updateShooterMath() { // Shooter Math
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
 
-        double distanceToMovingSpeakerTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
+        distanceToMovingSpeakerTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
 
         FiringSolutionsV3.updateSpeakerR(distanceToMovingSpeakerTarget);

@@ -172,9 +172,14 @@ public final class Constants {
 
     public static final class Shooter {
         public static final double intakeAngleRadians = 0.56;
-        public static final double idleSpeedRPM = 650;
+        public static final double idleSpeedRPM = 1300;
         public static final double angleOffsetManual = Units.degreesToRadians(68.2);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
+    }
+
+    public static final class Elevator {
+        public static final double maxHeightMeters = 0.81;
+        public static final double minHeightMeters = 0.015;
     }
 
     public static final class AutoConstants {

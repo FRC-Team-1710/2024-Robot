@@ -42,7 +42,7 @@ public class MissileLock extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.SetShooterVelocity(Constants.Shooter.idleSpeedRPM);
+        shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
         shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
     }
 

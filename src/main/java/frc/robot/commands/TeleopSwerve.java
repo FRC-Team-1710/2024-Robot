@@ -4,6 +4,7 @@ import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -17,25 +18,34 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class TeleopSwerve extends Command {
     private SwerveSubsystem swerveSubsystem;
     private VisionSubsystem vision;
+    private ShooterSubsystem shooterSubsystem;
+
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
+
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier shooterOverrideAmp;
     private BooleanSupplier shooterOverrideSpeaker;
     private BooleanSupplier intakeOverride;
+
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
 
-    public TeleopSwerve(SwerveSubsystem swerve, VisionSubsystem vision, DoubleSupplier translationSup, DoubleSupplier strafeSup,
-            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverrideAmp, BooleanSupplier shooterOverrideSpeaker, BooleanSupplier intake) {
+    private Joystick controller;
+
+    public TeleopSwerve(SwerveSubsystem swerve, VisionSubsystem vision, ShooterSubsystem shooter, DoubleSupplier translationSup, DoubleSupplier strafeSup,
+            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverrideAmp, BooleanSupplier shooterOverrideSpeaker, BooleanSupplier intake, Joystick controller) {
         this.swerveSubsystem = swerve;
         this.vision = vision;
+        this.shooterSubsystem = shooter;
         addRequirements(swerve);
 
         this.translationSup = translationSup;
@@ -45,6 +55,7 @@ public class TeleopSwerve extends Command {
         this.shooterOverrideAmp = shooterOverrideAmp;
         this.shooterOverrideSpeaker = shooterOverrideSpeaker;
         this.intakeOverride = intake;
+        this.controller = controller;
         SmartDashboard.putData(rotationPID);
     }
 
@@ -64,6 +75,11 @@ public class TeleopSwerve extends Command {
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
+            if (shooterSubsystem.getDistanceToSpeaker() >= 3.5){
+                controller.setRumble(RumbleType.kBothRumble, 0.5);
+            } else {
+                controller.setRumble(RumbleType.kBothRumble, 0);
+            }
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
             rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
@@ -90,6 +106,7 @@ public class TeleopSwerve extends Command {
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);
+            controller.setRumble(RumbleType.kBothRumble, 0);
         }
 
         if (Robot.getAlliance() && !robotCentric){ // Invert field oriented for always blue origin

@@ -58,7 +58,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         ClosedLoopRampsConfigs closedloop = new ClosedLoopRampsConfigs();
 
         closedloop.withDutyCycleClosedLoopRampPeriod(.5).withTorqueClosedLoopRampPeriod(0.5);
-        encoderConfigSlot0.kP = .075;
+        encoderConfigSlot0.kP = .09;
         encoderConfigSlot0.kI = .0;
         encoderConfigSlot0.kD = .0;
         encoderConfigSlot0.kV = .0;
@@ -103,6 +103,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Left Supply Current", m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Elevator Right Supply Current",
         m_elevatorRight.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("LaserCan Ambient", measurement.ambient);
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
 
         if (!manualOverride){ // Flagitious logic

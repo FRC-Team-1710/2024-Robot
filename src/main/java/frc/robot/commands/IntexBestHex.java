@@ -45,6 +45,7 @@ public class IntexBestHex extends Command {
         } else { // Outtake
             intexer.setALL(-0.5);
         }
+        
     }
 
     // Called once the command ends or is interrupted.
