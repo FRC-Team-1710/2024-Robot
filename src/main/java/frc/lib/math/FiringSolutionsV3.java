@@ -6,7 +6,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public class FiringSolutionsV3 {
 
-    private static final double shooterHeight = 0.371;
+    private static final double defaultShooterHeight = 0.42672;
+    private static final double laserCANOffset = 0;
+    private static double shooterHeight = 0.42672;
+
     private static final double noteFallAccel = 9.8;
     private static final double maxShooterAngle = Math.toRadians(70);
     private static final double ampTargetXBlue = 1.84;
@@ -18,7 +21,7 @@ public class FiringSolutionsV3 {
 
     public static double speakerTargetXOffset = .24;
     public static double speakerTargetZ = 1.95;
-    public static double slipPercent = 0.5588;
+    public static double slipPercent = 0.5324;
 
     private static double speakerTargetXBlue = 0.0 + speakerTargetXOffset;
     private static double speakerTargetXRed = 16.54 - speakerTargetXOffset;
@@ -38,6 +41,10 @@ public class FiringSolutionsV3 {
             speakerTargetX = speakerTargetXBlue;
             ampTargetX = ampTargetXBlue;
         }
+    }
+
+    public static void updateHeight(double laserCANValue){
+        shooterHeight = defaultShooterHeight + (laserCANValue - laserCANOffset);
     }
 
     public static double getAngleToTarget(double robotX, double robotY, double targetX, double targetY) {

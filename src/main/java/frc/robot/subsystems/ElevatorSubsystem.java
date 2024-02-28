@@ -19,6 +19,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.math.FiringSolutionsV3;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -114,6 +115,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         } else {
             locked = false;
         }
+        
+        //FiringSolutionsV3.updateHeight(getHeight()); TODO: test this
     }
 
     public void setManualOverride(boolean value){
@@ -147,6 +150,15 @@ public class ElevatorSubsystem extends SubsystemBase {
             if (getHeightEncoder() < maxHeight) {
                 m_elevatorLeft.setControl(m_requestPosition.withPosition(rot).withSlot(1));
             }
+        }
+    }
+
+    /** Get height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
+    public double getHeight(){
+        if (!lasercanFailureCheck()) { // Run off LaserCan
+            return getHeightLaserCan();
+        } else { // Run off encoder
+            return getHeightEncoder();
         }
     }
 

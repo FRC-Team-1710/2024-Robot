@@ -49,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private double positionD = 0;
 
     // Vars
-    private double shooterVelocity = 12.7;
+    private double shooterVelocity = 12.1;
     private double shooterAngleToSpeaker, shooterAngleToAmp;
     private Boolean ENCFAIL = false;
     public boolean isZeroed = false;
