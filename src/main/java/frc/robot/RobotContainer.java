@@ -179,7 +179,8 @@ public class RobotContainer {
         rightStick.onTrue(new InstantCommand(()-> m_Shoota.setShooterVelocity(0)));
 
         //Intake Through Shooter
-        intakeThroughShooter.whileTrue(new IntakeThroughShooter(m_Shoota, m_IntexerSubsystem));
+        intakeThroughShooter.whileTrue(new IntakeThroughShooter(m_Shoota, m_IntexerSubsystem))
+        .onFalse(new IntakeThroughShooterPart2(m_Shoota, m_IntexerSubsystem));
 
         // Characterization tests 
         /*dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
