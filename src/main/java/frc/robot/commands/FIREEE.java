@@ -12,7 +12,7 @@ public class FIREEE extends Command {
     private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
 
-    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex, String Target) {
+    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
         shooter = shooterSub;
         intexer = intex;
         // Use addRequirements() here to declare subsystem dependencies.

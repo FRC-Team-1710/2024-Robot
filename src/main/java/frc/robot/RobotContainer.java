@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.lang.annotation.Target;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -131,10 +133,10 @@ public class RobotContainer {
 
         // Lock on to speaker
         targetSpeaker.whileTrue(new MissileLock(m_Shoota, "speaker"));
+        targetAmp.whileTrue(new MissileLock(m_Shoota, "amp"));
         
         // Shooter
-        //Shoot.and(targetAmp).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "amp")); // Amp fire TODO: FIGURE OUT THE LOGIC HERE
-        Shoot.and(targetSpeaker).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, "speaker")); // Main fire
+        targetSpeaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem)); // Main fire
 
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
@@ -158,24 +160,28 @@ public class RobotContainer {
         // Prime for Amp
         primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.setShooterVelocity(3417.8)))
         .onFalse(new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
-
-        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
-        autoZeroShooter.onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
         
         // Elevator
         elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
         elevatorUp.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters));
-
+        
+        // Zero wrist
+        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
+        autoZeroShooter.onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
+        
         // Wrist
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
-
+        
         // Amp Preset
         shooterToAmp.onTrue(new RizzLevel(m_Shoota, -0.48)).onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters));
         
         //xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
         //.onFalse(new InstantCommand(() -> m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         
+        // Reset R
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR())); // Reset the R calculation incase it gets off
+
+        // Kill Shooter
         rightStick.onTrue(new InstantCommand(()-> m_Shoota.setShooterVelocity(0)));
 
         //Intake Through Shooter
