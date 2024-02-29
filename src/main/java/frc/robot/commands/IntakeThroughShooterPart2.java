@@ -30,16 +30,14 @@ public class IntakeThroughShooterPart2 extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (!intexer.intakeBreak()) {
-            finishPlease = true;
-        }
+        controller.setRumble(RumbleType.kBothRumble, 0);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        intexer.setALL(.5);
+        shooter.setShooterVelocity(0);
+        intexer.setALL(.35);
         shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
     }
 
@@ -48,13 +46,13 @@ public class IntakeThroughShooterPart2 extends Command {
     public void end(boolean interrupted) {
         shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
         intexer.setALL(0);
-        controller.setRumble(RumbleType.kBothRumble, 0);
+        intexer.setIntakeThroughShooterPart2Status(false);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (finishPlease || intexer.shooterBreak()) {
+        if (!intexer.intakeThroughShooterPart2isReady || intexer.shooterBreak()) {
             return true;
         } else {
             return false;
