@@ -35,14 +35,14 @@ public final class Constants {
         public static final Transform3d kRobotToCamFront =
                 new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
         public static final Transform3d kRobotToCamBack = 
-                new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
+                new Transform3d(new Translation3d(Units.inchesToMeters(-7), 0, Units.inchesToMeters(12)), new Rotation3d(0, 0, Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = errorWrapper();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(1, 1, 1);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 15);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(2, 2, 10);
     }
 
     private static AprilTagFieldLayout errorWrapper() {

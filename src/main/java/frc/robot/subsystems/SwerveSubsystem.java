@@ -123,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // TODO tune
         // Vision Standard Deviation - Smaller means trust more
         Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
-        Vector<N3> visionStdDevs = VecBuilder.fill(1.5, 1.5, 10); // Vision Odometry
+        Vector<N3> visionStdDevs = VecBuilder.fill(2, 2, 10); // Vision Odometry
 
         // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
@@ -273,24 +273,28 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Correct pose estimate with multiple vision measurements
-        /* 
-        Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedGlobalPose();
+        
+        Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedPoseFront();
         if (OptionalEstimatedPoseFront.isPresent()) {
 
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
 
             swerveOdomEstimator
-                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevs(estimatedPose.estimatedPose.toPose2d()));
+                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevsFront(estimatedPose.estimatedPose.toPose2d()));
 
-            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
-                    estimatedPose.timestampSeconds);
-        }
-*/
-        /*  Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.photonEstimatorBack.update();
-        if (OptionalEstimatedPoseBack.isPresent()) {
-            final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
             swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
-        }*/
+        }
+
+        Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
+        if (OptionalEstimatedPoseBack.isPresent()) {
+
+            final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
+
+            swerveOdomEstimator
+                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevsBack(estimatedPose.estimatedPose.toPose2d()));
+
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+        }
 
         swerveOdomEstimator.update(getGyroYaw(), modulePositions);
 
