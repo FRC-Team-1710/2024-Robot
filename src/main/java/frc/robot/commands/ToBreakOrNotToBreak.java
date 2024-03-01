@@ -6,17 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntexerSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
-public class FIREEE extends Command {
-    private ShooterSubsystem shooter;
-    private IntexerSubsystem intexer;
+public class ToBreakOrNotToBreak extends Command {
+    IntexerSubsystem intexer;
 
-    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
-        shooter = shooterSub;
-        intexer = intex;
+    /** Creates a new ToBreakOrNotToBreak. */
+    public ToBreakOrNotToBreak(IntexerSubsystem intexer) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(intex);
+        this.intexer = intexer;
+        addRequirements(intexer);
     }
 
     // Called when the command is initially scheduled.
@@ -27,8 +25,10 @@ public class FIREEE extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (shooter.shooterAtSpeed()){
-            intexer.setShooterIntake(.9);
+        if (!intexer.shooterBreak()){
+            intexer.setShooterIntake(.5);
+        } else {
+            intexer.setShooterIntake(0);
         }
     }
 

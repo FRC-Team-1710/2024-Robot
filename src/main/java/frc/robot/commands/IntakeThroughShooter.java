@@ -4,19 +4,26 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class FIREEE extends Command {
+public class IntakeThroughShooter extends Command {
     private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
 
-    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
+    Joystick controller;
+
+    /** Creates a new IntakeFromShooter. */
+    public IntakeThroughShooter(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
         shooter = shooterSub;
         intexer = intex;
+        this.controller = controller;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(intex);
+        addRequirements(shooterSub, intex);
     }
 
     // Called when the command is initially scheduled.
@@ -27,20 +34,28 @@ public class FIREEE extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (shooter.shooterAtSpeed()){
-            intexer.setShooterIntake(.9);
-        }
+        shooter.setShooterVelocity(-1000);
+        intexer.setALL(-.5);
+        shooter.setWristPosition(.66);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        intexer.setShooterIntake(0);
+        shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
+        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
+        intexer.setALL(0);
     }
-
+    
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        if (intexer.intakeBreak()) {
+            controller.setRumble(RumbleType.kBothRumble, 0.75);
+            intexer.setIntakeThroughShooterPart2Status(true);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

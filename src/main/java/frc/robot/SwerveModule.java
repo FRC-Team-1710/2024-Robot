@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -26,6 +27,7 @@ public class SwerveModule {
     /* drive motor control requests */
     private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0);
     private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
+    private VoltageOut driveCharacteriztionControl = new VoltageOut(0);
 
     /* angle motor control requests */
     private final PositionVoltage anglePosition = new PositionVoltage(0);
@@ -35,16 +37,16 @@ public class SwerveModule {
         this.angleOffset = moduleConstants.angleOffset;
         
         /* Angle Encoder Config */
-        angleEncoder = new CANcoder(moduleConstants.cancoderID, "carnivorous rex");
+        angleEncoder = new CANcoder(moduleConstants.cancoderID, Constants.Swerve.canivore);
         angleEncoder.getConfigurator().apply(Robot.ctreConfigs.swerveCANcoderConfig);
 
         /* Angle Motor Config */
-        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, "carnivorous rex");
+        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, Constants.Swerve.canivore);
         mAngleMotor.getConfigurator().apply(Robot.ctreConfigs.swerveAngleFXConfig);
         resetToAbsolute();
 
         /* Drive Motor Config */
-        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, "carnivorous rex");
+        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, Constants.Swerve.canivore);
         mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
     }
@@ -88,5 +90,17 @@ public class SwerveModule {
             Conversions.rotationsToMeters(mDriveMotor.getPosition().getValue(), Constants.Swerve.wheelCircumference), 
             Rotation2d.fromRotations(mAngleMotor.getPosition().getValue())
         );
+    }
+
+    public void voltageDrive(double Volts){
+        mDriveMotor.setControl(driveCharacteriztionControl.withOutput(Volts));
+    }
+
+    public double getMotorVoltage(){
+        return mDriveMotor.getMotorVoltage().getValue();
+    }
+
+    public double getMotorVelocity(){
+        return mDriveMotor.getVelocity().getValue();
     }
 }

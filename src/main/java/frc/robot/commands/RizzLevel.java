@@ -5,42 +5,48 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class FIREEE extends Command {
-    private ShooterSubsystem shooter;
-    private IntexerSubsystem intexer;
+public class RizzLevel extends Command {
 
-    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
-        shooter = shooterSub;
-        intexer = intex;
+    ShooterSubsystem shooter;
+    double angle;
+
+    /** Creates a new RizzLevel. */
+    public RizzLevel(ShooterSubsystem noteAccelerator, double angleInRADIANS) {
+        shooter = noteAccelerator;
+        angle = angleInRADIANS;
+        addRequirements(noteAccelerator);
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(intex);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (shooter.shooterAtSpeed()){
-            intexer.setShooterIntake(.9);
+        if (shooter.isZeroed){
+            shooter.setWristPosition(angle);
         }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        intexer.setShooterIntake(0);
+        //shooter.manualWristSpeed(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        if (shooter.isZeroed){
+            return shooter.getAngle() >= (angle - Math.toRadians(.5)) && shooter.getAngle() < (angle + Math.toRadians(.5));
+        } else {
+            return true;
+        }
     }
 }

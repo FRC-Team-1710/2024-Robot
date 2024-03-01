@@ -5,42 +5,40 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntexerSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
-public class FIREEE extends Command {
-    private ShooterSubsystem shooter;
-    private IntexerSubsystem intexer;
+public class ElevatorSet extends Command {
+    private ElevatorSubsystem m_elevator;
+    double m_position;
+    double setpoint;
 
-    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
-        shooter = shooterSub;
-        intexer = intex;
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(intex);
+    public ElevatorSet(ElevatorSubsystem elevator, double position) {
+        addRequirements(elevator);
+        m_elevator = elevator;
+        m_position = position;
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        //m_elevator.setManualOverride(true);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (shooter.shooterAtSpeed()){
-            intexer.setShooterIntake(.9);
-        }
+        m_elevator.setHeight(m_position);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        intexer.setShooterIntake(0);
+        m_elevator.stopHere();
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return m_elevator.atHeight();
     }
 }

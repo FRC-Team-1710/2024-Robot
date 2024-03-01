@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.io.UncheckedIOException;
+
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -18,19 +20,20 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DataLogManager;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
-    public static final double stickDeadband = 0.05;
+    public static final double stickDeadband = 0.07;
 
     public static class Vision {
         public static final String kAprilTagCameraFront = "ChristiansThirdEye";
         public static final String kAprilTagCameraBack = "ChristiansFourthEye";
         public static final String kNoteCamera = "OnionRing";
-        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+
         public static final Transform3d kRobotToCamFront =
-                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+                new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
         public static final Transform3d kRobotToCamBack = 
                 new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
 
@@ -39,27 +42,29 @@ public final class Constants {
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(1, 1, 1);
     }
 
     private static AprilTagFieldLayout errorWrapper() {
         try {
             AprilTagFieldLayout attemptedKTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
             return attemptedKTagLayout;
-        } catch (Exception e) {
+        } catch (UncheckedIOException e) {
+            DataLogManager.log(e.getMessage());
             return null;
         }
     }
 
     public static final class Swerve {
+        public static final String canivore = "uno";
         public static final int pigeonID = 13;
 
         public static final COTSTalonFXSwerveConstants chosenModule = 
         COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(26);
-        public static final double wheelBase = Units.inchesToMeters(26);
+        public static final double trackWidth = Units.inchesToMeters(20.75);
+        public static final double wheelBase = Units.inchesToMeters(20.75);
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
@@ -109,18 +114,18 @@ public final class Constants {
         public static final double driveKF = 0.0;
 
         /* Drive Motor Characterization Values From SYSID */
-        public static final double driveKS = 0.32; //TODO: This must be tuned to specific robot
-        public static final double driveKV = 1.51;
-        public static final double driveKA = 0.27;
+        public static final double driveKS = 0.080723;
+        public static final double driveKV = 0.73696;
+        public static final double driveKA = 0.073127;
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.5; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 4.5;
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
-        public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
+        public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Brake;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
         /* Module Specific Constants */
@@ -129,7 +134,7 @@ public final class Constants {
             public static final int driveMotorID = 1;
             public static final int angleMotorID = 3;
             public static final int canCoderID = 2;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(110.7);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(112.5);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -139,7 +144,7 @@ public final class Constants {
             public static final int driveMotorID = 4;
             public static final int angleMotorID = 6;
             public static final int canCoderID = 5;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-81);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-79.4);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -149,7 +154,7 @@ public final class Constants {
             public static final int driveMotorID = 7;
             public static final int angleMotorID = 9;
             public static final int canCoderID = 8;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-82);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-80.5);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -163,6 +168,18 @@ public final class Constants {
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
+    }
+
+    public static final class Shooter {
+        public static final double intakeAngleRadians = 0.56;
+        public static final double idleSpeedRPM = 1300;
+        public static final double angleOffsetManual = Units.degreesToRadians(68.2);
+        public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
+    }
+
+    public static final class Elevator {
+        public static final double maxHeightMeters = 0.81;
+        public static final double minHeightMeters = 0.015;
     }
 
     public static final class AutoConstants {

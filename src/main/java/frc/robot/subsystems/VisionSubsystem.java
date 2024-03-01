@@ -24,8 +24,7 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.Vision.*;
-
+import frc.robot.Constants;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -51,15 +50,15 @@ public class VisionSubsystem extends SubsystemBase {
     private double lastEstTimestamp = 0;
 
     public VisionSubsystem() {
-        aprilTagCameraFront = new PhotonCamera(kAprilTagCameraFront);
+        aprilTagCameraFront = new PhotonCamera(Constants.Vision.kAprilTagCameraFront);
         //aprilTagCameraBack = new PhotonCamera(kAprilTagCameraBack);
-        noteCamera = new PhotonCamera(kNoteCamera);
+        noteCamera = new PhotonCamera(Constants.Vision.kNoteCamera);
 
         photonEstimatorFront = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, kRobotToCamFront);
+                Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
         //photonEstimatorBack = new PhotonPoseEstimator(
         //        kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, kRobotToCamBack);
-        photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
         //photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
@@ -73,10 +72,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     public PhotonPipelineResult getLatestResultN() { // Get the latest result for the Note camera
         return noteCamera.getLatestResult();
-    }
-
-    public void update() {
-
     }
 
     /**
@@ -106,7 +101,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @param estimatedPose The estimated pose to guess standard deviations for.
      */
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
-        var estStdDevs = kSingleTagStdDevs;
+        var estStdDevs = Constants.Vision.kSingleTagStdDevs;
         var targets = getLatestResultATF().getTargets();
         int numTags = 0;
         double avgDist = 0;
@@ -122,7 +117,7 @@ public class VisionSubsystem extends SubsystemBase {
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
         if (numTags > 1)
-            estStdDevs = kMultiTagStdDevs;
+            estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
