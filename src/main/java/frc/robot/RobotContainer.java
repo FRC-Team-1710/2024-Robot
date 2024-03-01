@@ -137,7 +137,7 @@ public class RobotContainer {
         targetAmp.whileTrue(new MissileLock(m_Shoota, "amp"));
         
         // Shooter
-        targetSpeaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem)); // Main fire
+        targetSpeaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, m_LEDSubsystem)); // Main fire
 
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(

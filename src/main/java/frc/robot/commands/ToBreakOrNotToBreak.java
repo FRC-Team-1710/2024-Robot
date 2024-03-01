@@ -6,14 +6,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntexerSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class ToBreakOrNotToBreak extends Command {
     IntexerSubsystem intexer;
+    LEDSubsystem ledSubsystem;
 
     /** Creates a new ToBreakOrNotToBreak. */
-    public ToBreakOrNotToBreak(IntexerSubsystem intexer) {
+    public ToBreakOrNotToBreak(IntexerSubsystem intexer, LEDSubsystem ledSubsystem) {
         // Use addRequirements() here to declare subsystem dependencies.
         this.intexer = intexer;
+        this.ledSubsystem = ledSubsystem;
         addRequirements(intexer);
     }
 
@@ -27,8 +30,10 @@ public class ToBreakOrNotToBreak extends Command {
     public void execute() {
         if (!intexer.shooterBreak()){
             intexer.setShooterIntake(.5);
+            ledSubsystem.hasNote = false;
         } else {
             intexer.setShooterIntake(0);
+            ledSubsystem.hasNote = true;
         }
     }
 

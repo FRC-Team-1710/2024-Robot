@@ -26,15 +26,15 @@ public class LEDSubsystem extends SubsystemBase {
   public Boolean[] inputBooleans = {
     false, // Amp             -0 Rainbow Pattern #1
     false, // Source          -1 Rainbow Pattern #2
-    false, // Climb           -2 Rainbow Pattern #3
+    false, // Climb           -2 Rainbow Pattern #3 ASK ANDREW ABOUT HOW TO DO
     false, // Blank/DC        -3 None
     false, // Note Detected   -4 White Solid 
     false, // Charging        -5 Green Pulse (HasNote)
     false, // At Speed        -6 Green BLink (HasNote)
     false, // Charging        -7 Magenta Pulse (NoNote)
     false, // At Speed        -8 Magenta BLink (NoNote)
-    false, // Note in Intake  -9 Orange Blink
-    false, // Note in Shooter -10 Orange Solid
+    false, // Note in Intake  -9 Orange Blink   ASK ANDREW ABOUT HOW TO DO
+    false, // Note in Shooter -10 Orange Solid  ASK ANDREW ABOUT HOW TO DO
     false, // Alliance Color  -11 Red Pulse
     false  // Alliance Color  -12 Blue Pulse
   };
