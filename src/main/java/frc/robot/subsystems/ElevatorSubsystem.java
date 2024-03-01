@@ -5,11 +5,15 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import au.grapplerobotics.ConfigurationFailedException;
@@ -52,6 +56,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         // Falcon setup
         m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
+        //m_elevatorLeft.setControl(new StaticBrake());
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
         // PID
@@ -63,11 +68,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         encoderConfigSlot0.kI = .0;
         encoderConfigSlot0.kD = .0;
         encoderConfigSlot0.kV = .0;
+        encoderConfigSlot0.kG = .0;
+        encoderConfigSlot0.GravityType = GravityTypeValue.Elevator_Static;
 
         encoderConfigSlot1.kP = 1;
         encoderConfigSlot1.kI = .0;
         encoderConfigSlot1.kD = .0;
         encoderConfigSlot1.kV = .01;
+
 
         m_elevatorLeft.getConfigurator().apply(encoderConfigSlot0, 0.050);
         m_elevatorLeft.getConfigurator().apply(closedloop);
@@ -116,7 +124,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             locked = false;
         }
         
-        //FiringSolutionsV3.updateHeight(getHeight()); TODO: test this
+        //FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
     }
 
     public void setManualOverride(boolean value){

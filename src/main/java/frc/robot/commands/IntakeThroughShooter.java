@@ -43,15 +43,16 @@ public class IntakeThroughShooter extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        intexer.setALL(0);
         shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
-        controller.setRumble(RumbleType.kBothRumble, 0.75);
+        intexer.setALL(0);
     }
-
+    
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         if (intexer.intakeBreak()) {
+            controller.setRumble(RumbleType.kBothRumble, 0.75);
+            intexer.setIntakeThroughShooterPart2Status(true);
             return true;
         } else {
             return false;

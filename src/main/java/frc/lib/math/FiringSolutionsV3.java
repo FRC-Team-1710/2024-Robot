@@ -20,7 +20,7 @@ public class FiringSolutionsV3 {
     public static final double ampTargetZ = .125;
 
     public static double speakerTargetXOffset = .24;
-    public static double speakerTargetZ = 1.95;
+    public static double speakerTargetZ = 1.92;
     public static double slipPercent = 0.5324;
 
     private static double speakerTargetXBlue = 0.0 + speakerTargetXOffset;
