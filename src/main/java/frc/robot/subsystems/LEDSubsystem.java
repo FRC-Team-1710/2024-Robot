@@ -19,17 +19,24 @@ public class LEDSubsystem extends SubsystemBase {
 
   public DigitalOutput[] bits = {bit1, bit2, bit3, bit4};
 
+  public Boolean hasNote = false;
+  public Boolean chargingOuttake = false;
+  public Boolean atSpeed = false; 
+
   public Boolean[] inputBooleans = {
     false, // Amp             -0 Rainbow Pattern #1
     false, // Source          -1 Rainbow Pattern #2
     false, // Climb           -2 Rainbow Pattern #3
-    false, // Has Note        -3 For Computing
-    false, // Charging        -4 Green/Magenta Pulse (HasNote)
-    false, // At Speed        -5 Green/Magenta BLink (HasNote)
-    false, // Note in Intake  -6 Orange Blink
-    false, // Note in Shooter -7 Orange Solid
-    false, // Note Detected   -8 White Solid 
-    false, // Alliance Color  -9 Red/Blue Wave
+    false, // Blank/DC        -3 None
+    false, // Note Detected   -4 White Solid 
+    false, // Charging        -5 Green Pulse (HasNote)
+    false, // At Speed        -6 Green BLink (HasNote)
+    false, // Charging        -7 Magenta Pulse (NoNote)
+    false, // At Speed        -8 Magenta BLink (NoNote)
+    false, // Note in Intake  -9 Orange Blink
+    false, // Note in Shooter -10 Orange Solid
+    false, // Alliance Color  -11 Red Pulse
+    false  // Alliance Color  -12 Blue Pulse
   };
 
   boolean[] output = new boolean[4];
@@ -66,14 +73,28 @@ public class LEDSubsystem extends SubsystemBase {
       inputBooleans[1] = true;
     }
 
-    if (shooter.getVelocity() > shooter.getCalculatedVelocity() - 0.5) {
-      ReadyToFire(true);
-    } else if (shooter.getVelocity() > 0.5 && shooter.getCalculatedVelocity() > shooter.getVelocity()) {
-      ReadyToFire(false);
-      ChargingOuttake(true);
+    
+
+    if (hasNote) {  // Converts from simple inputs to boolean
+      if (chargingOuttake) {
+        inputBooleans[5] = true;
+        inputBooleans[6] = false;
+      } else if (atSpeed) {
+        inputBooleans[5] = false;
+        inputBooleans[6] = true;
+      }
+      inputBooleans[7] = false;
+      inputBooleans[8] = false;
     } else {
-      ReadyToFire(false);
-      ChargingOuttake(false);
+      if (chargingOuttake) {
+        inputBooleans[7] = true;
+        inputBooleans[8] = false;
+      } else if (atSpeed) {
+        inputBooleans[7] = false;
+        inputBooleans[8] = true;
+      }
+      inputBooleans[5] = false;
+      inputBooleans[6] = false;
     }
   }
 
@@ -171,34 +192,35 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void HasNote(boolean hasNote) {
-    inputBooleans[3] = hasNote;
+    this.hasNote = hasNote;
   }
 
   public void ChargingOuttake(boolean chargingOuttake) {
-    inputBooleans[4] = chargingOuttake;
+    this.chargingOuttake = chargingOuttake;
   }
 
   public void ReadyToFire(boolean fire) {
-    inputBooleans[5] = fire;
+    this.atSpeed = fire;
   }
 
   public void NoteInIntake(boolean noteInIntake) {
-    inputBooleans[6] = noteInIntake;
+    inputBooleans[9] = noteInIntake;
   }
 
   public void NoteInShooter(boolean noteInShooter) {
-    inputBooleans[7] = noteInShooter;
+    inputBooleans[10] = noteInShooter;
   }
 
   public void NoteDetected(boolean note) {
-    inputBooleans[8] = note;
+    inputBooleans[4] = note;
   }
 
   public void setAllianceColor() {
-    inputBooleans[9] = Robot.getAlliance(); // True is Red, False is Blue
+    inputBooleans[11] = Robot.getAlliance();  // True is Red
+    inputBooleans[12] = !Robot.getAlliance(); // False is Blue
   }
 
   public void Disconnected(boolean disconnected) { // NOT CONFIRMED TO BE IN FINAL
-    inputBooleans[10] = disconnected;
+    inputBooleans[3] = disconnected;
   }
 }
