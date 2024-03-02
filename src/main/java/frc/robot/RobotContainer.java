@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -88,6 +89,15 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        // Named commands for PathPlanner autos
+        NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem));
+        NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))));
+        NamedCommands.registerCommand("Set Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
+        NamedCommands.registerCommand("Stop Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
+        NamedCommands.registerCommand("Shoot", new FIREEE(m_Shoota, m_IntexerSubsystem));
+        // TODO auto lock on command
+
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
                         m_SwerveSubsystem, m_VisionSubsystem, m_Shoota,
@@ -166,7 +176,7 @@ public class RobotContainer {
         // Zero wrist
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
         autoZeroShooter.onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
-        
+
         // Wrist
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
         
@@ -178,7 +188,7 @@ public class RobotContainer {
         
         // Reset R
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR())); // Reset the R calculation incase it gets off
-
+        
         // Kill Shooter
         rightStick.onTrue(new InstantCommand(()-> m_Shoota.setShooterVelocity(0)));
 
@@ -201,4 +211,5 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
 }

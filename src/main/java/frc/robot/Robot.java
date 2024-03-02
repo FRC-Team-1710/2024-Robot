@@ -103,6 +103,7 @@ public class Robot extends TimedRobot {
         //SmartDashboard.putData(PDH);
     }
 
+    /** Gets the current alliance, true is red */
     public static boolean getAlliance() {
         return redAlliance;
     }

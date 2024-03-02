@@ -21,8 +21,6 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -120,10 +118,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 checkRedAlliance(),
                 this // Reference to this subsystem to set requirements
         );
-        // TODO tune
-        // Vision Standard Deviation - Smaller means trust more
-        Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
-        Vector<N3> visionStdDevs = VecBuilder.fill(2, 2, 10); // Vision Odometry
 
         // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
@@ -131,8 +125,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 getGyroYaw(),
                 getModulePositions(),
                 new Pose2d(1.35, 5.55, new Rotation2d(0)),
-                stateStdDevs,
-                visionStdDevs);
+                Constants.Vision.stateStdDevs,
+                Constants.Vision.kSingleTagStdDevs);
 
         // Logging
         posePublisher = NetworkTableInstance.getDefault().getStructTopic("Fused Pose", Pose2d.struct).publish();
@@ -146,7 +140,10 @@ public class SwerveSubsystem extends SubsystemBase {
         this.vision = vision;
     }
 
-    /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
+    /**
+     * Check alliance for the AutoBuilder. Returns true when red. Using a method for
+     * better readability
+     */
     public BooleanSupplier checkRedAlliance() {
         return () -> Robot.getAlliance();
     }
@@ -288,12 +285,12 @@ public class SwerveSubsystem extends SubsystemBase {
         Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
         if (OptionalEstimatedPoseBack.isPresent()) {
 
-            final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseBack.get();
+            final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseBack.get();
 
             swerveOdomEstimator
-                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevsBack(estimatedPose.estimatedPose.toPose2d()));
+                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevsBack(estimatedPose2.estimatedPose.toPose2d()));
 
-            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose2.estimatedPose.toPose2d(), estimatedPose2.timestampSeconds);
         }
 
         swerveOdomEstimator.update(getGyroYaw(), modulePositions);
@@ -306,15 +303,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Obodom", getPose().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
-    }
 
-    public Command pathfindToSource() { // TODO tune constraints
-        PathConstraints constraints = new PathConstraints(4, 3, 10, 10);
-        if (Robot.getAlliance()) {
-            return AutoBuilder.pathfindToPose(new Pose2d(1.167, 1.508, Rotation2d.fromRadians(-2.099)), constraints, 0);
-        } else {
-            return AutoBuilder.pathfindToPose(new Pose2d(15.373, 1.419, Rotation2d.fromRadians(-1.044)), constraints, 0);
-        }
     }
 
     public void sysidroutine(SysIdRoutineLog log) {
@@ -341,4 +330,55 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
+
+    public Command pathToSource() {
+        if (!Robot.getAlliance()) {
+            return AutoBuilder.pathfindToPose(new Pose2d(1.21, 0.96, Rotation2d.fromDegrees(58.79)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(15.47, 1.50, Rotation2d.fromDegrees(-59.53)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        }
+    }
+
+    public Command pathToAmp() {
+        if (!Robot.getAlliance()) {
+            return AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.59, Rotation2d.fromDegrees(90.37)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(14.74, 7.52, Rotation2d.fromDegrees(90.37)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        }
+    }
+
+    public Command pathToMidfieldChain() {
+        if (!Robot.getAlliance()) {
+            return AutoBuilder.pathfindToPose(new Pose2d(6.29, 4.08, Rotation2d.fromDegrees(180)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(10.26, 4.10, Rotation2d.fromDegrees(0)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        }
+    }
+
+    public Command pathToSourceChain() {
+        if (!Robot.getAlliance()) {
+            return AutoBuilder.pathfindToPose(new Pose2d(4.18, 2.79, Rotation2d.fromDegrees(59.47)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(12.43, 2.90, Rotation2d.fromDegrees(121.26)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        }
+    }
+
+    public Command pathToAmpChain() {
+        if (!Robot.getAlliance()) {
+            return AutoBuilder.pathfindToPose(new Pose2d(4.20, 5.30, Rotation2d.fromDegrees(-58.21)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        } else {
+            return AutoBuilder.pathfindToPose(new Pose2d(12.50, 5.25, Rotation2d.fromDegrees(-120.96)),
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+        }
+    }
+
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -35,14 +36,15 @@ public final class Constants {
         public static final Transform3d kRobotToCamFront =
                 new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
         public static final Transform3d kRobotToCamBack = 
-                new Transform3d(new Translation3d(Units.inchesToMeters(-7), 0, Units.inchesToMeters(12)), new Rotation3d(0, 0, Math.PI));
+                new Transform3d(new Translation3d(Units.inchesToMeters(-8), 0, Units.inchesToMeters(12)), new Rotation3d(0, 0, Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = errorWrapper();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 15);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(2, 2, 10);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 20);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(2, 2, 15);
+        public static final Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
     }
 
     private static AprilTagFieldLayout errorWrapper() {
@@ -177,16 +179,16 @@ public final class Constants {
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }
 
-    public static final class Elevator {
+    public static final class Elevator { //TODO tune
         public static final double maxHeightMeters = 0.81;
         public static final double minHeightMeters = 0.015;
     }
 
-    public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    public static final class Auto {
+        public static final double kMaxSpeedMetersPerSecond = 4.25;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 8;
+        public static final double kMaxAngularSpeedRadiansPerSecond = (Math.PI*3)/2;
+        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI*2;
     
         public static final double kPXController = 1;
         public static final double kPYController = 1;
