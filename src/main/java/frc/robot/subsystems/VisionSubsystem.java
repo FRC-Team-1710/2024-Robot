@@ -24,8 +24,8 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.Vision.*;
-
+import frc.robot.Constants;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -48,17 +48,22 @@ public class VisionSubsystem extends SubsystemBase {
     public final PhotonPoseEstimator photonEstimatorFront;
     public final PhotonPoseEstimator photonEstimatorBack;
 
-    private double lastEstTimestamp = 0;
+    private double lastTimeStampFront = 0;
+    private double lastEstTimestampBack = 0;
 
     public VisionSubsystem() {
-        aprilTagCameraFront = new PhotonCamera(kAprilTagCameraFront);
-        aprilTagCameraBack = new PhotonCamera(kAprilTagCameraBack);
-        noteCamera = new PhotonCamera(kNoteCamera);
+        aprilTagCameraFront = new PhotonCamera(Constants.Vision.kAprilTagCameraFront);
+        aprilTagCameraBack = new PhotonCamera(Constants.Vision.kAprilTagCameraBack);
+        noteCamera = new PhotonCamera(Constants.Vision.kNoteCamera);
 
-        photonEstimatorFront = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, kRobotToCamFront);
+        Constants.Vision.kTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+
+        photonEstimatorFront = new PhotonPoseEstimator( //TODO Fix multi tag
+                Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
+
         photonEstimatorBack = new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, kRobotToCamBack);
+                Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
+
         photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
@@ -75,10 +80,6 @@ public class VisionSubsystem extends SubsystemBase {
         return noteCamera.getLatestResult();
     }
 
-    public void update() {
-
-    }
-
     /**
      * The latest estimated robot pose on the field from vision data. This may be empty. This should
      * only be called once per loop.
@@ -87,26 +88,35 @@ public class VisionSubsystem extends SubsystemBase {
      *         timestamp, and targets
      *         used for estimation.
      */
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+    public Optional<EstimatedRobotPose> getEstimatedPoseFront() {
         var visionEst = photonEstimatorFront.update();
         double latestTimestamp = aprilTagCameraFront.getLatestResult().getTimestampSeconds();
-        boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
+        boolean newResult = Math.abs(latestTimestamp - lastTimeStampFront) > 1e-5;
         if (newResult)
-            lastEstTimestamp = latestTimestamp;
+            lastTimeStampFront = latestTimestamp;
+        return visionEst;
+    }
+
+    public Optional<EstimatedRobotPose> getEstimatedPoseBack() {
+        var visionEst = photonEstimatorBack.update();
+        double latestTimestamp = aprilTagCameraBack.getLatestResult().getTimestampSeconds();
+        boolean newResult = Math.abs(latestTimestamp - lastEstTimestampBack) > 1e-5;
+        if (newResult)
+            lastEstTimestampBack = latestTimestamp;
         return visionEst;
     }
 
     /**
      * The standard deviations of the estimated pose from
-     * {@link #getEstimatedGlobalPose()}, for use
+     * {@link #getEstimatedPoseFront()}, for use
      * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
      * SwerveDrivePoseEstimator}.
      * This should only be used when there are targets visible.
      *
      * @param estimatedPose The estimated pose to guess standard deviations for.
      */
-    public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
-        var estStdDevs = kSingleTagStdDevs;
+    public Matrix<N3, N1> getEstimationStdDevsFront(Pose2d estimatedPose) {
+        var estStdDevs = Constants.Vision.kSingleTagStdDevs;
         var targets = getLatestResultATF().getTargets();
         int numTags = 0;
         double avgDist = 0;
@@ -122,9 +132,36 @@ public class VisionSubsystem extends SubsystemBase {
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
         if (numTags > 1)
-            estStdDevs = kMultiTagStdDevs;
+            estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4)
+            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        else
+            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+
+        return estStdDevs;
+    }
+
+    public Matrix<N3, N1> getEstimationStdDevsBack(Pose2d estimatedPose) {
+        var estStdDevs = Constants.Vision.kSingleTagStdDevs;
+        var targets = getLatestResultATB().getTargets();
+        int numTags = 0;
+        double avgDist = 0;
+        for (var tgt : targets) {
+            var tagPose = photonEstimatorBack.getFieldTags().getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty())
+                continue;
+            numTags++;
+            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+        }
+        if (numTags == 0)
+            return estStdDevs;
+        avgDist /= numTags;
+        // Decrease std devs if multiple targets are visible
+        if (numTags > 1)
+            estStdDevs = Constants.Vision.kMultiTagStdDevs;
+        // Increase std devs based on (average) distance
+        if (/*numTags == 1 &&*/ avgDist > 4)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else
             estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
