@@ -77,11 +77,20 @@ public class NoteSniffer extends Command {
             rotationVal = 0;
         }
 
-        swerveSubsystem.drive(
-                new Translation2d(translationVal, 0).times(Constants.Swerve.maxSpeed),
-                rotationVal * Constants.Swerve.maxAngularVelocity,
-                false,
-                false);
+        if (shooter.getDistanceToSpeaker() < 2.5){
+            swerveSubsystem.drive(
+                    new Translation2d(translationVal, 0).times(Constants.Swerve.maxSpeed),
+                    rotationVal * Constants.Swerve.maxAngularVelocity,
+                    false,
+                    false);
+        } else {
+            intexer.setALL(-.5);
+            swerveSubsystem.drive(
+                    new Translation2d(-0.2, 0).times(Constants.Swerve.maxSpeed),
+                    0 * Constants.Swerve.maxAngularVelocity,
+                    false,
+                    false);
+        }
     }
 
     // Called once the command ends or is interrupted.

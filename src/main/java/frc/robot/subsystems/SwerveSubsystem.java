@@ -60,7 +60,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Vars
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
-    SwerveModuleState[] swerveModuleStates;
+    private SwerveModuleState[] swerveModuleStates;
 
     // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -71,7 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
             new SysIdRoutine.Config(),
             new SysIdRoutine.Mechanism(
                     (Measure<Voltage> volts) -> {
-                        voltage(volts.in(Units.Volts));
+                        voltageDrive(volts.in(Units.Volts));
                     },
                     this::sysidroutine,
                     this));
@@ -111,10 +111,10 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig(
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        new PIDConstants(8.0, 0.0, 0.0), // Rotation PID constants TODO tune
                         4.5, // Max module speed, in m/s
-                        0.46, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                        0.37268, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig(true, true)
                 ),
                 checkRedAlliance(),
                 this // Reference to this subsystem to set requirements
@@ -139,7 +139,6 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putData("field", m_field);
 
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
-            // Do whatever you want with the poses here
             m_field.getObject("field").setPoses(poses);
         });
 
@@ -259,7 +258,7 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdomEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 
-    public void voltage(double Voltage) {
+    public void voltageDrive(double Voltage) {
         for (SwerveModule mod : mSwerveMods) {
             mod.voltageDrive(Voltage);
         }
@@ -269,14 +268,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
         SwerveModulePosition[] modulePositions = getModulePositions();
 
-        for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", modulePositions[mod.moduleNumber].angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
-        }
-
         // Correct pose estimate with multiple vision measurements
-        
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedPoseFront();
         if (OptionalEstimatedPoseFront.isPresent()) {
 
@@ -299,12 +291,19 @@ public class SwerveSubsystem extends SubsystemBase {
             swerveOdomEstimator.addVisionMeasurement(estimatedPose2.estimatedPose.toPose2d(), estimatedPose2.timestampSeconds);
         }
 
+        // Logging
         swerveOdomEstimator.update(getGyroYaw(), modulePositions);
 
         m_field.setRobotPose(getPose());
 
         posePublisher.set(getPose());
         swervePublisher.set(swerveModuleStates);
+
+        for (SwerveModule mod : mSwerveMods) {
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", modulePositions[mod.moduleNumber].angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
+        }
 
         SmartDashboard.putString("Obodom", getPose().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
@@ -337,6 +336,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return m_sysIdRoutine.dynamic(direction);
     }
 
+    // Pathfinding Commands
     public Command pathToSource() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(1.21, 0.96, Rotation2d.fromDegrees(58.79)),

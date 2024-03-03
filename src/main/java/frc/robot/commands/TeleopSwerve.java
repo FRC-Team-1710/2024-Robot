@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.Robot;
