@@ -86,7 +86,7 @@ public class TeleopSwerve extends Command {
                     FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
                             currentSpeed.vxMetersPerSecond,
                             currentSpeed.vyMetersPerSecond,
-                            FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
+                            pose.getRotation().getRadians()));
                             
         } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
@@ -95,7 +95,7 @@ public class TeleopSwerve extends Command {
                     FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
                             currentSpeed.vxMetersPerSecond,
                             currentSpeed.vyMetersPerSecond,
-                            FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
+                            pose.getRotation().getRadians()));
 
         } else if (intakeOverride.getAsBoolean() && result.hasTargets()) { // Lock robot towards detected note
             double yawToNote = Math.toRadians(result.getBestTarget().getYaw()) + swerveSubsystem.getGyroYaw().getRadians();

@@ -42,8 +42,8 @@ public final class Constants {
         public static final AprilTagFieldLayout kTagLayout = errorWrapper();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 20);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(2, 2, 15);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
         public static final Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
     }
 

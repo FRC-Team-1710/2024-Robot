@@ -90,14 +90,14 @@ public class RobotContainer {
      */
     public RobotContainer() {
         // Named commands for PathPlanner autos
-        NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem));
+        NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem, m_Shoota));
+        NamedCommands.registerCommand("Shoot", new AimBot(m_Shoota, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity())));
         NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))));
         NamedCommands.registerCommand("Set Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
         NamedCommands.registerCommand("Stop Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
-        NamedCommands.registerCommand("Shoot", new FIREEE(m_Shoota, m_IntexerSubsystem));
-        // TODO auto lock on command
-
+        NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
+        NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
                         m_SwerveSubsystem, m_VisionSubsystem, m_Shoota,
@@ -175,7 +175,7 @@ public class RobotContainer {
         
         // Zero wrist
         zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
-        autoZeroShooter.onTrue(new ZeroWrist(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
+        autoZeroShooter.onTrue(new ZeroRizz(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
 
         // Wrist
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
@@ -201,6 +201,12 @@ public class RobotContainer {
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
         quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
         quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));*/
+    }
+
+    public void stopAll () {
+        m_Shoota.setShooterVelocity(0);
+        m_Shoota.manualWristSpeed(0);
+        m_IntexerSubsystem.setALL(0);
     }
 
     /**

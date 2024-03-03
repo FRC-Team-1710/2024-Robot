@@ -1,0 +1,147 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.8,
+        "y": 5.5768617000416905
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.8632110836634554,
+        "y": 5.5768617000416905
+      },
+      "isLocked": false,
+      "linkedName": "3 Note Top 2nd END"
+    },
+    {
+      "anchor": {
+        "x": 1.8451658756049114,
+        "y": 5.5768617000416905
+      },
+      "prevControl": {
+        "x": 1.7551658756049113,
+        "y": 5.5768617000416905
+      },
+      "nextControl": {
+        "x": 1.9451658756049115,
+        "y": 5.5768617000416905
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8451658756049114,
+        "y": 4.094898451079563
+      },
+      "prevControl": {
+        "x": 1.8451658756049114,
+        "y": 4.777660033953261
+      },
+      "nextControl": {
+        "x": 1.8451658756049114,
+        "y": 3.9948984510795627
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 4.094898451079563
+      },
+      "prevControl": {
+        "x": 2.6500000000000004,
+        "y": 4.094898451079563
+      },
+      "nextControl": {
+        "x": 2.8499999999999996,
+        "y": 4.094898451079563
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.328428690111538,
+        "y": 4.3386424065009646
+      },
+      "prevControl": {
+        "x": 2.0609117652914652,
+        "y": 4.333767527392537
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 3.55,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Target"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake",
+      "waypointRelativePos": 2.6,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 8.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -45.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "3 Note Test",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

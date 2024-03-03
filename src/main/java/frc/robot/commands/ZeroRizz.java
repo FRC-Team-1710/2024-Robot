@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ZeroWrist extends Command {
+public class ZeroRizz extends Command {
     ShooterSubsystem shooter;
     public final Timer timer = new Timer();
 
     /** Creates a new ZeroWrist. */
-    public ZeroWrist(ShooterSubsystem shooter) {
+    public ZeroRizz(ShooterSubsystem shooter) {
         this.shooter = shooter;
         addRequirements(shooter);
         // Use addRequirements() here to declare subsystem dependencies.

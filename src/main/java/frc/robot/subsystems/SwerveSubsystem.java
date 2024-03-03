@@ -18,6 +18,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Matrix;
@@ -136,6 +137,11 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putData(gyro);
         SmartDashboard.putData(this);
         SmartDashboard.putData("field", m_field);
+
+        PathPlannerLogging.setLogActivePathCallback((poses) -> {
+            // Do whatever you want with the poses here
+            m_field.getObject("field").setPoses(poses);
+        });
 
         this.vision = vision;
     }

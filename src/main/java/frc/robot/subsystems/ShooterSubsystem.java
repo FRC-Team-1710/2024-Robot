@@ -176,7 +176,7 @@ Minor whoopsie if these guys were causing loop overruns
     public boolean shooterAtSpeed() { // Copied from Hudson but made it better
 
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 50) {
+        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 80) {
             speedTimer.start();
         } else {
             speedTimer.reset();
