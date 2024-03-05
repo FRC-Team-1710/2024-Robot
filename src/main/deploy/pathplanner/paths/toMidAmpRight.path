@@ -1,0 +1,65 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.9676876360878626,
+        "y": 7.010076157919538
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9676876360878635,
+        "y": 6.510076157919538
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.965088504998865,
+        "y": 6.171596951269913
+      },
+      "prevControl": {
+        "x": 3.5818378347909796,
+        "y": 5.877288298034192
+      },
+      "nextControl": {
+        "x": 5.423327141191101,
+        "y": 6.269094533438474
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.27578120239376,
+        "y": 5.684109040427108
+      },
+      "prevControl": {
+        "x": 6.096060458154171,
+        "y": 6.035100336233927
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Midfield Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
