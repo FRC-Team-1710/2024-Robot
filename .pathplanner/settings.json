@@ -4,7 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "3 Note Test",
-    "3 Note Real"
+    "3 Note Real",
+    "Close paths",
+    "Midfield Paths"
   ],
   "autoFolders": [
     "Testing"
