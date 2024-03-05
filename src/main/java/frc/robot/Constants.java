@@ -180,7 +180,7 @@ public final class Constants {
     }
 
     public static final class Elevator { //TODO tune
-        public static final double maxHeightMeters = 0.81;
+        public static final double maxHeightMeters = 0.78;
         public static final double minHeightMeters = 0.015;
     }
 

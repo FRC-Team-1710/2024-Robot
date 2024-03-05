@@ -37,7 +37,6 @@ public class NoteSniffer extends Command {
         this.intexer = intexer;
         this.shooter = shooter;
         addRequirements(swerve, intexer);
-        // Use addRequirements() here to declare subsystem dependencies.
     }
 
     // Called when the command is initially scheduled.
@@ -71,26 +70,26 @@ public class NoteSniffer extends Command {
 
             rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
 
-            intexer.setFrontIntake(.75);
+            intexer.setFrontIntake(.8);
             intexer.setShooterIntake(.35);
         } else {
             rotationVal = 0;
         }
 
-        if (shooter.getDistanceToSpeaker() < 2.5){
+        //if (shooter.getDistanceToSpeaker() < 2.5){
             swerveSubsystem.drive(
                     new Translation2d(translationVal, 0).times(Constants.Swerve.maxSpeed),
                     rotationVal * Constants.Swerve.maxAngularVelocity,
                     false,
                     false);
-        } else {
+        /* } else {
             intexer.setALL(-.5);
             swerveSubsystem.drive(
                     new Translation2d(-0.2, 0).times(Constants.Swerve.maxSpeed),
                     0 * Constants.Swerve.maxAngularVelocity,
                     false,
                     false);
-        }
+        }*/
     }
 
     // Called once the command ends or is interrupted.

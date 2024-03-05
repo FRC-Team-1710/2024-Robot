@@ -62,7 +62,7 @@ public class AimBot extends Command {
                 true,
                 false);
 
-        if (shooter.shooterAtSpeed()) {
+        if (shooter.shooterAtSpeed() && rotationPID.getPositionError() <= .035) {
             intexer.setShooterIntake(.9);
         }
 

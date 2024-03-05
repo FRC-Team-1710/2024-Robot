@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.6604,
-  "robotLength": 0.6604,
+  "robotWidth": 0.85,
+  "robotLength": 0.85,
   "holonomicMode": true,
   "pathFolders": [
     "3 Note Test",

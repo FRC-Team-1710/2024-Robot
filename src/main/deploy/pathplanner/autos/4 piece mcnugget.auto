@@ -76,6 +76,12 @@
           "data": {
             "name": "Shoot"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Idle Speed"
+          }
         }
       ]
     }
