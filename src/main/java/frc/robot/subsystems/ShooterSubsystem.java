@@ -49,15 +49,22 @@ public class ShooterSubsystem extends SubsystemBase {
     private double positionD = 0;
 
     // Vars
+    /** In m/s */
     private double shooterVelocity = 12.1;
     private double shooterAngleToSpeaker, shooterAngleToAmp;
-    private Boolean ENCFAIL = false;
+    private boolean ENCFAIL = false;
     public boolean isZeroed = false;
-    private double angleOffset = 68.2; // IN RADIANS
-    private final Timer speedTimer = new Timer();
-    private final int m_WristCurrentMax = 84;
-    private final Interpolations interpolation = new Interpolations();
+    public boolean wristIsLocked = false;
+    /** IN RADIANS */
+    private double angleOffset = 68.2;
     private double distanceToMovingSpeakerTarget = .94;
+    public double lastWristAngleSetpoint = 0.0;
+    public boolean manualOverride = false;
+
+    // Constants
+    private final Timer speedTimer = new Timer();
+    private final Interpolations interpolation = new Interpolations();
+    private final int m_WristCurrentMax = 84;
 
     private SwerveSubsystem swerveSubsystem;
 
@@ -95,7 +102,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_Wrist.burnFlash();
         shootaBot.burnFlash();
         shootaTop.burnFlash();
-        
+
         m_pidWrist = new PIDController(positionP, positionI, positionD);
 
         m_VelocityEncoder.setMeasurementPeriod(20);
@@ -118,29 +125,31 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-/*
-        pidSpdP = SmartDashboard.getNumber("Velo P", pidSpdP);
-        pidSpdI = SmartDashboard.getNumber("Velo I", pidSpdI);
-        pidSpdD = SmartDashboard.getNumber("Velo D", pidSpdD);
-Minor whoopsie if these guys were causing loop overruns
-        botPID.setP(pidSpdP, 0);
-        botPID.setI(pidSpdI, 0);
-        botPID.setD(pidSpdD, 0);
+        /*
+         * pidSpdP = SmartDashboard.getNumber("Velo P", pidSpdP);
+         * pidSpdI = SmartDashboard.getNumber("Velo I", pidSpdI);
+         * pidSpdD = SmartDashboard.getNumber("Velo D", pidSpdD);
+         * Minor whoopsie if these guys were causing loop overruns
+         * botPID.setP(pidSpdP, 0);
+         * botPID.setI(pidSpdI, 0);
+         * botPID.setD(pidSpdD, 0);
+         * 
+         * topPID.setP(pidSpdP, 0);
+         * topPID.setI(pidSpdI, 0);
+         * topPID.setD(pidSpdD, 0);
+         */
 
-        topPID.setP(pidSpdP, 0);
-        topPID.setI(pidSpdI, 0);
-        topPID.setD(pidSpdD, 0);
-*/
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
 
         FiringSolutionsV3.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
         FiringSolutionsV3.speakerTargetZ = SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.speakerTargetZ);
 
-        SmartDashboard.putNumber("Top - Bottom error", m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
-        SmartDashboard.putNumber("Current Angle Radians", getAngle());
+        SmartDashboard.putNumber("Top - Bottom error",
+                m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
+        SmartDashboard.putNumber("Current Angle Radians", getCurrentShooterAngle());
         SmartDashboard.putNumber("Current Velocity", getVelocity());
-        SmartDashboard.putBoolean("shooter at speed", shooterAtSpeed());
-        SmartDashboard.putNumber("Current Angle Degrees", Units.radiansToDegrees(getAngle()));
+        SmartDashboard.putBoolean("shooter at speed", isShooterAtSpeed());
+        SmartDashboard.putNumber("Current Angle Degrees", Units.radiansToDegrees(getCurrentShooterAngle()));
 
         // check for encoder failure
         if (m_WristEncoder.isConnected()) {
@@ -156,25 +165,53 @@ Minor whoopsie if these guys were causing loop overruns
         SmartDashboard.putNumber("Flywheel Right Current", shootaBot.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
-    }
 
-    /** Check if wrist motor is exceeding stall current, used for zeroing */
-    public boolean isWristMotorStalled() {
-        if (m_Wrist.getOutputCurrent() > m_WristCurrentMax) {
-            return true;
-        } else {
-            return false;
+        if (isZeroed && !manualOverride){
+            m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), lastWristAngleSetpoint));
         }
     }
 
-    /** Reset wrist encoder to given value */
-    public void setWristEncoderPosition(double newPosition) {
-        m_WristEncoder.setPositionOffset(newPosition);
+    /** in RADIANs units MATTER */
+    public double getCurrentShooterAngle() {
+        if (!ENCFAIL) {
+            return ((-m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
+        } else {
+            return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
+        }
+    }
+
+    public double getCalculatedAngleToAmp() {
+        return shooterAngleToAmp;
+    }
+
+    public double getCalculatedAngleToSpeaker() {
+        return shooterAngleToSpeaker;
+    }
+
+    public double getCalculatedVelocity() {
+        return shooterVelocity;
+    }
+
+    public double getDistanceTo(double x, double y) {
+        return FiringSolutionsV3.getDistanceToTarget(swerveSubsystem.getPose().getX(), swerveSubsystem.getPose().getY(),
+                x, y);
+    }
+
+    public double getDistanceToSpeakerWhileMoving() {
+        return distanceToMovingSpeakerTarget;
+    }
+
+    /** Shooter velocity in RPM */
+    public double getVelocity() {
+        return m_VelocityEncoder.getVelocity();
+    }
+
+    public double getWristRotations() {
+        return m_PositionEncoder.getPosition();
     }
 
     /** Get whether shooter is at target speed */
-    public boolean shooterAtSpeed() { // Copied from Hudson but made it better
-
+    public boolean isShooterAtSpeed() { // Copied from Hudson but made it better
         // if error less than certain amount start the timer
         if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 80) {
             speedTimer.start();
@@ -190,18 +227,19 @@ Minor whoopsie if these guys were causing loop overruns
         }
     }
 
-    /** Shooter velocity in RPM */
-    public double getVelocity() {
-        return m_VelocityEncoder.getVelocity();
+    /** Check if wrist motor is exceeding stall current, used for zeroing */
+    public boolean isWristMotorStalled() {
+        if (m_Wrist.getOutputCurrent() > m_WristCurrentMax) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    /** in RADIANs units MATTER */
-    public double getAngle() {
-        if (!ENCFAIL) {
-            return ((-m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
-        } else {
-            return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
-        }
+    public void PointShoot(double PointAngle, double launchVelocity) {
+        setWristByAngle(PointAngle);
+        botPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
+        topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
     }
 
     public void resetWristEncoders(double newOffset) {
@@ -211,10 +249,24 @@ Minor whoopsie if these guys were causing loop overruns
         isZeroed = true;
     }
 
-    /** IN RADIANS */
-    public void setWristPosition(double angle) {
-        if (isZeroed){
-            m_Wrist.set(m_pidWrist.calculate(getAngle(), angle));
+    public void setManualWristSpeed(double speed) {
+        m_Wrist.set(speed);
+    }
+
+    public void setManualOverride(boolean value){
+        manualOverride = value;
+    }
+
+    /** In rotations per minute */
+    public void setOffsetVelocity(double velocity) {
+        if (velocity == 0) {
+            shootaBot.stopMotor();
+            shootaTop.stopMotor();
+        } else {
+            botPID.setReference(velocity - SmartDashboard.getNumber("Top Bottom Offset", 400),
+                    CANSparkMax.ControlType.kVelocity);
+            topPID.setReference(velocity + SmartDashboard.getNumber("Top Bottom Offset", 400),
+                    CANSparkMax.ControlType.kVelocity);
         }
     }
 
@@ -229,69 +281,63 @@ Minor whoopsie if these guys were causing loop overruns
         }
     }
 
-    /** In rotations per minute */
-    public void SetOffsetVelocity(double velocity) {
-        if (velocity == 0) {
-            shootaBot.stopMotor();
-            shootaTop.stopMotor();
-        } else {
-            botPID.setReference(velocity - SmartDashboard.getNumber("Top Bottom Offset", 400), CANSparkMax.ControlType.kVelocity);
-            topPID.setReference(velocity + SmartDashboard.getNumber("Top Bottom Offset", 400), CANSparkMax.ControlType.kVelocity);
+    /** Reset wrist encoder to given value */
+    public void setWristEncoderOffset(double newPosition) {
+        m_WristEncoder.setPositionOffset(newPosition);
+    }
+
+    /** IN RADIANS */
+    public void setWristByAngle(double angle) { //TODO: Implement redundancy
+        if (isZeroed) {
+            updateWristAngleSetpoint(angle);
         }
     }
 
-    public void PointShoot(double PointAngle, double launchVelocity) {
-        setWristPosition(PointAngle);
-        botPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
-        topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
+    /** IN ROTATIONS */
+    public void setWristByRotations(double newPosition) {
+        if (isZeroed){
+            m_Wrist.set(m_pidWrist.calculate(getWristRotations(), newPosition));
+        }
     }
 
-    public void manualWristSpeed(double speed) {
-        m_Wrist.set(speed);
-    }
-
-    public double getCalculatedVelocity() {
-        return shooterVelocity;
-    }
-
-    public double getCalculatedAngleToAmp() {
-        return shooterAngleToAmp;
-    }
-
-    public double getCalculatedAngleToSpeaker() {
-        return shooterAngleToSpeaker;
-    }
-
-    public double getDistanceToSpeaker () {
-        return distanceToMovingSpeakerTarget;
+    public void updateWristAngleSetpoint(double angle) {
+        if (angle != lastWristAngleSetpoint){
+            lastWristAngleSetpoint = angle;
+        }
     }
 
     public void updateShooterMath() { // Shooter Math
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
 
-        distanceToMovingSpeakerTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
+        distanceToMovingSpeakerTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
+                FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
 
         FiringSolutionsV3.updateSpeakerR(distanceToMovingSpeakerTarget);
 
-        //shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
-        shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+        // shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
+        shooterAngleToSpeaker = Math
+                .toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
 
         SmartDashboard.putNumber("Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);
         SmartDashboard.putNumber("Calculated Angle Degrees", Math.toDegrees(shooterAngleToSpeaker));
-        SmartDashboard.putNumber("distance", FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
+        SmartDashboard.putNumber("distance", FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(),
+                FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
         SmartDashboard.putNumber("R", FiringSolutionsV3.getSpeakerR());
         SmartDashboard.putNumber("C", FiringSolutionsV3.C(distanceToMovingSpeakerTarget));
-        SmartDashboard.putNumber("quarticA", FiringSolutionsV3.quarticA(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
-        SmartDashboard.putNumber("quarticC", FiringSolutionsV3.quarticC(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
+        SmartDashboard.putNumber("quarticA",
+                FiringSolutionsV3.quarticA(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
+        SmartDashboard.putNumber("quarticC",
+                FiringSolutionsV3.quarticC(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
         SmartDashboard.putNumber("quarticE", FiringSolutionsV3.quarticE(distanceToMovingSpeakerTarget));
         SmartDashboard.putNumber("Distance to Moving Target", distanceToMovingSpeakerTarget);
         SmartDashboard.putNumber("robot vx", chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("robot vy", chassisSpeeds.vyMetersPerSecond);
 
-        double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
+        double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
+                FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
 
         FiringSolutionsV3.updateAmpR(distanceToMovingAmpTarget);

@@ -36,14 +36,14 @@ public class IntakeThroughShooter extends Command {
     public void execute() {
         shooter.setShooterVelocity(-1000);
         intexer.setALL(-.5);
-        shooter.setWristPosition(.66);
+        shooter.setWristByAngle(.66);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
+        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
         intexer.setALL(0);
     }
     

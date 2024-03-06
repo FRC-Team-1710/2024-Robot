@@ -29,7 +29,7 @@ public class IntexForAutosByAutos extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
+        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
 
         if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
             intexer.setALL(.35);
