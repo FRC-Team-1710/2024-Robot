@@ -3,10 +3,9 @@
   "robotLength": 0.85,
   "holonomicMode": true,
   "pathFolders": [
-    "3 Note Test",
-    "3 Note Real",
-    "Close paths",
-    "Midfield Paths"
+    "McNugget paths",
+    "Midfield Paths",
+    "Close"
   ],
   "autoFolders": [
     "Testing"
