@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
@@ -17,6 +18,7 @@ public class IntakeThroughShooterPart2 extends Command {
     private boolean finishPlease = false;
 
     Joystick controller;
+    public final Timer timer = new Timer();
 
     /** Creates a new IntakeFromShooterPart2. */
     public IntakeThroughShooterPart2(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
@@ -30,6 +32,8 @@ public class IntakeThroughShooterPart2 extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        timer.reset();
+        timer.start();
         controller.setRumble(RumbleType.kBothRumble, 0);
     }
 
@@ -38,7 +42,7 @@ public class IntakeThroughShooterPart2 extends Command {
     public void execute() {
         shooter.setShooterVelocity(0);
         intexer.setALL(.35);
-        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
+        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
     }
 
     // Called once the command ends or is interrupted.
@@ -52,7 +56,7 @@ public class IntakeThroughShooterPart2 extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (!intexer.intakeThroughShooterPart2isReady || intexer.shooterBreak()) {
+        if (!intexer.intakeThroughShooterPart2isReady || intexer.shooterBreak() || timer.get() > 1.5) {
             return true;
         } else {
             return false;

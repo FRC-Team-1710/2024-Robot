@@ -30,7 +30,7 @@ public class ZeroWrist extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.manualWristSpeed(.45);
+        shooter.setManualWristSpeed(.45);
     }
 
     // Called once the command ends or is interrupted.

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -55,6 +56,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
+        TalonFXConfiguration elevatorConfigs = new TalonFXConfiguration();
+        elevatorConfigs.Slot0.kP = 0.09;
+        elevatorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
         // PID
         Slot0Configs encoderConfigSlot0 = new Slot0Configs();
         ClosedLoopRampsConfigs closedloop = new ClosedLoopRampsConfigs();
@@ -71,7 +76,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         encoderConfigSlot1.kI = .0;
         encoderConfigSlot1.kD = .0;
         encoderConfigSlot1.kV = .01;
-
 
         m_elevatorLeft.getConfigurator().apply(encoderConfigSlot0, 0.050);
         m_elevatorLeft.getConfigurator().apply(closedloop);
@@ -110,15 +114,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorRight.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("LaserCan Ambient", measurement.ambient);
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
-
-        if (!manualOverride){ // Flagitious logic
-            if (!locked){
-                stopHere();
-                locked = true;
-            }
-        } else {
-            locked = false;
-        }
         
         //FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
     }
@@ -131,11 +126,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         return revolutionCount;
     }
 
-    public void setToEncoder(double value){
+    public void setPositionWithEncoder(double value){
+        locked = true;
         m_elevatorLeft.setControl(lockPosition.withPosition(value));
     }
 
     public void stopHere(){
+        locked = true;
         m_elevatorLeft.setControl(lockPosition.withPosition(revolutionCount).withSlot(0));
     }
 
@@ -146,6 +143,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
     public void setHeight(double height) {
+        locked = true;
         setHeight = height;
         if (!lasercanFailureCheck()) { // Run off LaserCan
             m_elevatorLeft.set(elevatorPID.calculate(getHeightLaserCan(), height));
@@ -171,6 +169,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void ManSpin(double percent) {
+        locked = false;
         m_elevatorLeft.set(percent);
     }
 
@@ -202,6 +201,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         } else {
             return false;
         }
+    }
+
+    public double getSetpoint(){
+        return m_elevatorLeft.getClosedLoopReference().getValue();
+    }
+
+    public double getPosition(){
+        return m_elevatorLeft.getPosition().getValueAsDouble();
     }
 
 }
