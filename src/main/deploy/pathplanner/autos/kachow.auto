@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2991794154609702,
-      "y": 6.971077125052112
+      "x": 1.45,
+      "y": 6.45
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "someShooterCode"
+            "name": "Shoot"
           }
         },
         {
@@ -26,7 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "someIntakeCode"
+            "name": "Note Sniffer"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "someShooterCode"
+            "name": "Shoot"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "named",
           "data": {
-            "name": "someIntakeCode"
+            "name": "Note Sniffer2"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "named",
           "data": {
-            "name": "someShooterCode"
+            "name": "Shoot"
           }
         },
         {
@@ -74,7 +74,7 @@
         {
           "type": "named",
           "data": {
-            "name": "someIntakeCode"
+            "name": "Note Sniffer"
           }
         },
         {
@@ -86,7 +86,7 @@
         {
           "type": "named",
           "data": {
-            "name": "someShooterCode"
+            "name": "Shoot"
           }
         }
       ]

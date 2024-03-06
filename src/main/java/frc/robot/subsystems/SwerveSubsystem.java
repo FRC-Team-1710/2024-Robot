@@ -125,7 +125,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
-                new Pose2d(1.35, 5.55, new Rotation2d(0)),
+                Constants.Vision.startingPose,
                 Constants.Vision.stateStdDevs,
                 Constants.Vision.kSingleTagStdDevs);
 

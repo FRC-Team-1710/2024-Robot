@@ -11,6 +11,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -45,6 +46,8 @@ public final class Constants {
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
         public static final Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
+
+        public static final Pose2d startingPose = new Pose2d(1.35, 5.55, new Rotation2d(0));
     }
 
     private static AprilTagFieldLayout errorWrapper() {

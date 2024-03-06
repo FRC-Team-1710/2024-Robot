@@ -58,12 +58,15 @@ public class VisionSubsystem extends SubsystemBase {
 
         Constants.Vision.kTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
-        photonEstimatorFront = new PhotonPoseEstimator( //TODO Fix multi tag
-                Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
+        photonEstimatorFront = new PhotonPoseEstimator(
+                Constants.Vision.kTagLayout, PoseStrategy.CLOSEST_TO_LAST_POSE, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
 
         photonEstimatorBack = new PhotonPoseEstimator(
-                Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
+                Constants.Vision.kTagLayout, PoseStrategy.CLOSEST_TO_LAST_POSE, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
 
+        photonEstimatorFront.setLastPose(Constants.Vision.startingPose);
+        photonEstimatorBack.setLastPose(Constants.Vision.startingPose);
+        
         photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
@@ -134,7 +137,7 @@ public class VisionSubsystem extends SubsystemBase {
         if (numTags > 1)
             estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4)
+        if (/*numTags == 1 && */avgDist > 4)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else
             estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
