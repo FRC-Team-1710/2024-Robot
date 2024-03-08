@@ -58,25 +58,32 @@ public class VisionSubsystem extends SubsystemBase {
 
         Constants.Vision.kTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
-        photonEstimatorFront = new PhotonPoseEstimator( //TODO Fix multi tag
-                Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
+        photonEstimatorFront = new PhotonPoseEstimator(
+                Constants.Vision.kTagLayout, PoseStrategy.CLOSEST_TO_LAST_POSE, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
 
         photonEstimatorBack = new PhotonPoseEstimator(
-                Constants.Vision.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
+                Constants.Vision.kTagLayout, PoseStrategy.CLOSEST_TO_LAST_POSE, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
 
-        photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonEstimatorFront.setLastPose(Constants.Vision.startingPose);
+        photonEstimatorBack.setLastPose(Constants.Vision.startingPose);
+        
+        // 2024 field quality makes multitag impractical
+        //photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        //photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    public PhotonPipelineResult getLatestResultATF() { // Get the latest result for the April Tag camera
+    /** Get the latest result from the front April Tag camera */
+    public PhotonPipelineResult getLatestResultATF() {
         return aprilTagCameraFront.getLatestResult();
     }
 
+    /** Get the latest result from the back April Tag camera */
     public PhotonPipelineResult getLatestResultATB() {
         return aprilTagCameraBack.getLatestResult();
     }
 
-    public PhotonPipelineResult getLatestResultN() { // Get the latest result for the Note camera
+    /** Get the latest result from the Note camera */
+    public PhotonPipelineResult getLatestResultN() {
         return noteCamera.getLatestResult();
     }
 
@@ -131,10 +138,10 @@ public class VisionSubsystem extends SubsystemBase {
             return estStdDevs;
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
-        if (numTags > 1)
-            estStdDevs = Constants.Vision.kMultiTagStdDevs;
+        //if (numTags > 1)
+        //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4)
+        if (/*numTags == 1 && */avgDist > 4)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else
             estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
@@ -158,8 +165,8 @@ public class VisionSubsystem extends SubsystemBase {
             return estStdDevs;
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
-        if (numTags > 1)
-            estStdDevs = Constants.Vision.kMultiTagStdDevs;
+        //if (numTags > 1)
+        //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
         if (/*numTags == 1 &&*/ avgDist > 4)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);

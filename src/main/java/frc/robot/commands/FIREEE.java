@@ -27,7 +27,7 @@ public class FIREEE extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (shooter.shooterAtSpeed()){
+        if (shooter.isShooterAtSpeed()){
             intexer.setShooterIntake(.9);
         }
     }

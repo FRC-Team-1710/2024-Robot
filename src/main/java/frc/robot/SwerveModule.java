@@ -73,6 +73,7 @@ public class SwerveModule {
         return Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());
     }
 
+    /** Set module angles to absolute position */
     public void resetToAbsolute(){
         double absolutePosition = getCANcoder().getRotations() - angleOffset.getRotations();
         mAngleMotor.setPosition(absolutePosition);
@@ -92,15 +93,22 @@ public class SwerveModule {
         );
     }
 
+    /** 
+     * Drive robot based on provided voltage value
+     * <p>
+     * Does NOT have optimization, meaning wheels have to be facing same direction
+     */
     public void voltageDrive(double Volts){
         mDriveMotor.setControl(driveCharacteriztionControl.withOutput(Volts));
     }
 
+    /** Get drive motor voltage */
     public double getMotorVoltage(){
         return mDriveMotor.getMotorVoltage().getValue();
     }
 
+    /** IN METERS PER SECOND */
     public double getMotorVelocity(){
-        return mDriveMotor.getVelocity().getValue();
+        return Conversions.RPSToMPS(mDriveMotor.getVelocity().getValue(), Constants.Swerve.wheelCircumference);
     }
 }

@@ -43,7 +43,7 @@ public class MissileLock extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
+        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
     }
 
     // Returns true when the command should end.

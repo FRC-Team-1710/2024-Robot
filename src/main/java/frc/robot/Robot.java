@@ -25,13 +25,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.math.FiringSolutionsV3;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the
- * name of this class or
- * the package after creating this project, you must also update the
- * build.gradle file in the
- * project.
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.gradle file in the project.
  */
 public class Robot extends TimedRobot {
     public static final CTREConfigs ctreConfigs = new CTREConfigs();
@@ -81,6 +77,8 @@ public class Robot extends TimedRobot {
         // Access PhotonVision dashboard when connected via usb TODO make work
        // PortForwarder.add(5800, "10.17.10.11", 5800);
 
+       //SmartDashboard.putData(PDH);
+
        // idk if this is useful
         System.gc();
     }
@@ -99,7 +97,6 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        //SmartDashboard.putData(PDH);
     }
 
     /** Gets the current alliance, true is red */

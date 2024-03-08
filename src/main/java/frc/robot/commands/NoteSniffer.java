@@ -51,7 +51,7 @@ public class NoteSniffer extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setWristPosition(Constants.Shooter.intakeAngleRadians);
+        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
 
         PhotonPipelineResult result = vision.getLatestResultN();
         double rotationVal;

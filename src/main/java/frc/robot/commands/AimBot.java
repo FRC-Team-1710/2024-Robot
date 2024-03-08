@@ -62,11 +62,11 @@ public class AimBot extends Command {
                 true,
                 false);
 
-        if (shooter.shooterAtSpeed() && rotationPID.getPositionError() <= .035) {
+        if (shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .035) {
             intexer.setShooterIntake(.9);
         }
 
-        shooter.setWristPosition(shooter.getCalculatedAngleToSpeaker());
+        shooter.setWristByAngle(shooter.getCalculatedAngleToSpeaker());
     }
 
     // Called once the command ends or is interrupted.
@@ -74,7 +74,7 @@ public class AimBot extends Command {
     public void end(boolean interrupted) {
         swerveSubsystem.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
         intexer.setShooterIntake(0);
-        shooter.manualWristSpeed(0);
+        shooter.setManualWristSpeed(0);
     }
 
     // Returns true when the command should end.
