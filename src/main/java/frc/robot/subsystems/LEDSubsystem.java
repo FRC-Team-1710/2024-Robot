@@ -17,15 +17,18 @@ public class LEDSubsystem extends SubsystemBase {
   public DigitalOutput bit3 = new DigitalOutput(4); // Bit 3 (4)
   public DigitalOutput bit4 = new DigitalOutput(5); // Bit 4 (8)
 
-  public DigitalOutput[] bits = {bit1, bit2, bit3, bit4};
+  // Output bits to the LEDs
+  public DigitalOutput[] bits = {bit1, bit2, bit3, bit4}; // Actual Outputs
+  boolean[] output = new boolean[4]; // Computed Outputs
 
+  // Booleans used for Easy input
   public Boolean hasNote = false;
   public Boolean chargingOuttake = false;
   public Boolean atSpeed = false; 
 
   public Boolean[] inputBooleans = {
-    false, // Amp             -0 Rainbow Pattern #1
-    false, // Source          -1 Rainbow Pattern #2
+    false, // Amp             -0 Rainbow Pattern #1 ASK ANDREW ABOUT HOW TO DO
+    false, // Source          -1 Rainbow Pattern #2 ASK ANDREW ABOUT HOW TO DO
     false, // Climb           -2 Rainbow Pattern #3 ASK ANDREW ABOUT HOW TO DO
     false, // Blank/DC        -3 None
     false, // Note Detected   -4 White Solid 
@@ -39,8 +42,7 @@ public class LEDSubsystem extends SubsystemBase {
     false  // Alliance Color  -12 Blue Pulse
   };
 
-  boolean[] output = new boolean[4];
-
+  // Use subsystems
   VisionSubsystem vision;
   ShooterSubsystem shooter;
   
@@ -61,20 +63,21 @@ public class LEDSubsystem extends SubsystemBase {
   private void set() { // Decimal phase
     var results = vision.getLatestResultN();
 
+    // Note Detected
     if (results.hasTargets()) {
       NoteDetected(true);
     } else {
       NoteDetected(false);
     }
 
+    // Driver Station Connected
     if (DriverStation.isDSAttached()) {
       inputBooleans[1] = false;
     } else {
       inputBooleans[1] = true;
     }
 
-    
-
+    // HasNote for ChargingOuttake and AtSpeed
     if (hasNote) {  // Converts from simple inputs to boolean
       if (chargingOuttake) {
         inputBooleans[5] = true;
@@ -106,16 +109,16 @@ public class LEDSubsystem extends SubsystemBase {
 
     for (int i = 0; i < inputBooleans.length; i++) { // Picks the first true sequence based on priority
       if (inputBooleans[i]) {
-        trueIndex = i;
+        trueIndex = i; 
         break;
       }
     }
     
-    String binaryString = Integer.toBinaryString(trueIndex);
+    String binaryString = Integer.toBinaryString(trueIndex); // Cast Number to Binary
+    int length = binaryString.length(); // Find length of Binary (How many bits)
+    String finalString; // Final binary string
 
-    int length = binaryString.length();
-
-    String finalString;
+    // Adds the amount of 0's needed for acurate transcription. Ex. 0x01 -> 0x0001
     if (length < pin_amount) {
         int zerosToAdd = pin_amount - length;
         StringBuilder paddedStringBuilder = new StringBuilder();
@@ -135,44 +138,9 @@ public class LEDSubsystem extends SubsystemBase {
     for (int i = pin_amount - 1; i >= 0; i--) {
         output[i] = finalString.charAt(i) == '1';
     }
-    
-    
-    // if (inputBooleans[0]) {
-    //   output[0] = false; output[1] = false; output[2] = false; output[3] = false; // 0000
-    // } else if (inputBooleans[1]) {
-    //   output[0] = true; output[1] = false; output[2] = false; output[3] = false;  // 1000
-    // } else if (inputBooleans[2]) {
-    //   output[0] = false; output[1] = true; output[2] = false; output[3] = false;  // 0100
-    // } else if (inputBooleans[3]) {
-    //   output[0] = true; output[1] = true; output[2] = false; output[3] = false;   // 1100
-    // } else if (inputBooleans[4]) {
-    //   output[0] = false; output[1] = false; output[2] = true; output[3] = false;  // 0010
-    // } else if (inputBooleans[5]) {
-    //   output[0] = true; output[1] = false; output[2] = true; output[3] = false;   // 1010
-    // } else if (inputBooleans[6]) {
-    //   output[0] = false; output[1] = true; output[2] = true; output[3] = false;   // 0110
-    // } else if (inputBooleans[7]) {
-    //   output[0] = true; output[1] = true; output[2] = true; output[3] = false;    // 1110
-    // } else if (inputBooleans[8]) {
-    //   output[0] = false; output[1] = false; output[2] = false; output[3] = true;  // 0001
-    // } else if (inputBooleans[9]) {
-    //   output[0] = true; output[1] = false; output[2] = false; output[3] = true;   // 1001
-    // } else if (inputBooleans[10]) {
-    //   output[0] = false; output[1] = true; output[2] = false; output[3] = true;   // 0101
-    // } else if (inputBooleans[11]) {
-    //   output[0] = true; output[1] = true; output[2] = false; output[3] = true;    // 1101
-    // } else if (inputBooleans[12]) {
-    //   output[0] = false; output[1] = false; output[2] = true; output[3] = true;   // 0011
-    // } else if (inputBooleans[13]) {
-    //   output[0] = true; output[1] = false; output[2] = true; output[3] = true;    // 1011
-    // } else if (inputBooleans[14]) {
-    //   output[0] = false; output[1] = true; output[2] = true; output[3] = true;    // 0111
-    // } else if (inputBooleans[15]) {
-    //   output[0] = true; output[1] = true; output[2] = true; output[3] = true;     // 1111
-    // }
   }
 
-  private void send() { // Send Phase - Redundancy is bliss
+  private void send() { // Send Phase - "Redundancy is bliss"
     for (int i = 0; i < output.length; i++) {
       bits[i].set(output[i]);
     }
