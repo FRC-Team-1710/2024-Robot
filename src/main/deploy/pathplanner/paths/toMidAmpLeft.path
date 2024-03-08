@@ -8,40 +8,40 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9774373943047188,
-        "y": 6.568574707220673
+        "x": 1.1334335257744161,
+        "y": 6.7858317189318464
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.4538759813861684,
-        "y": 6.288594049872185
+        "x": 2.4983996761342704,
+        "y": 6.308093566305898
       },
       "prevControl": {
-        "x": 2.0398800070691956,
-        "y": 6.313400996790026
+        "x": 1.0868292314408643,
+        "y": 6.394516246593248
       },
       "nextControl": {
-        "x": 4.565348418107764,
-        "y": 6.269094533438474
+        "x": 2.976137828760219,
+        "y": 6.2788442916553295
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.286830526155116,
-        "y": 6.873579542883553
+        "x": 4.087610265481815,
+        "y": 6.4445901813418836
       },
       "prevControl": {
-        "x": 4.916339713914584,
-        "y": 6.698083894980142
+        "x": 3.7073696950244264,
+        "y": 6.3470925991733225
       },
       "nextControl": {
-        "x": 5.8563656726391695,
-        "y": 7.143359349112842
+        "x": 4.698061762695483,
+        "y": 6.601116206268465
       },
       "isLocked": false,
       "linkedName": null
@@ -64,8 +64,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 8.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -77,5 +77,5 @@
   "reversed": false,
   "folder": "Midfield Paths",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
