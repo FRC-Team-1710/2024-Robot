@@ -1,0 +1,73 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.89943932856987,
+      "y": 3.782906188140168
+    },
+    "rotation": 13.495733280795742
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "someShooterCode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toRightCloseFromRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "someIntakeCode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "someShooterCode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "someIntakeCode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "someShooterCode"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

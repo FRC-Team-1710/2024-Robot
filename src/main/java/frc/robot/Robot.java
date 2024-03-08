@@ -22,17 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the
- * name of this class or
- * the package after creating this project, you must also update the
- * build.gradle file in the
- * project.
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.gradle file in the project.
  */
 public class Robot extends TimedRobot {
     public static final CTREConfigs ctreConfigs = new CTREConfigs();
@@ -82,6 +77,8 @@ public class Robot extends TimedRobot {
         // Access PhotonVision dashboard when connected via usb TODO make work
        // PortForwarder.add(5800, "10.17.10.11", 5800);
 
+       //SmartDashboard.putData(PDH);
+
        // idk if this is useful
         System.gc();
     }
@@ -100,9 +97,9 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        //SmartDashboard.putData(PDH);
     }
 
+    /** Gets the current alliance, true is red */
     public static boolean getAlliance() {
         return redAlliance;
     }
@@ -118,6 +115,11 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        m_robotContainer.stopAll();
+
+        if (m_autonomousCommand != null){
+            m_autonomousCommand.cancel();
+        }
     }
 
     @Override
@@ -134,7 +136,7 @@ public class Robot extends TimedRobot {
     
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-        FiringSolutions.setAlliance(redAlliance);
+        FiringSolutionsV3.setAlliance(redAlliance);
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
@@ -153,7 +155,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         redAlliance = checkRedAlliance();
 
-        FiringSolutions.setAlliance(redAlliance);
+        FiringSolutionsV3.setAlliance(redAlliance);
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove

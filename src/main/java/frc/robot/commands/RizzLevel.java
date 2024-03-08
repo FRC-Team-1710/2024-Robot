@@ -30,7 +30,7 @@ public class RizzLevel extends Command {
     @Override
     public void execute() {
         if (shooter.isZeroed){
-            shooter.setWristPosition(angle);
+            shooter.setWristByAngle(angle);
         }
     }
 
@@ -44,7 +44,7 @@ public class RizzLevel extends Command {
     @Override
     public boolean isFinished() {
         if (shooter.isZeroed){
-            return shooter.getAngle() >= (angle - Math.toRadians(.5)) && shooter.getAngle() < (angle + Math.toRadians(.5));
+            return shooter.getCurrentShooterAngle() >= (angle - Math.toRadians(.5)) && shooter.getCurrentShooterAngle() < (angle + Math.toRadians(.5));
         } else {
             return true;
         }

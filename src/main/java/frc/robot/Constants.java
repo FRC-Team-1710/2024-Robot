@@ -10,6 +10,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -35,14 +37,17 @@ public final class Constants {
         public static final Transform3d kRobotToCamFront =
                 new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
         public static final Transform3d kRobotToCamBack = 
-                new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
+                new Transform3d(new Translation3d(Units.inchesToMeters(-8), 0, Units.inchesToMeters(12)), new Rotation3d(0, 0, Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = errorWrapper();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(1, 1, 1);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
+        public static final Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
+
+        public static final Pose2d startingPose = new Pose2d(1.35, 5.55, new Rotation2d(0));
     }
 
     private static AprilTagFieldLayout errorWrapper() {
@@ -108,15 +113,15 @@ public final class Constants {
         public static final double angleKD = chosenModule.angleKD;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.12;
+        public static final double driveKP = 0.35919;
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
         public static final double driveKF = 0.0;
 
         /* Drive Motor Characterization Values From SYSID */
-        public static final double driveKS = 0.080723;
-        public static final double driveKV = 0.73696;
-        public static final double driveKA = 0.073127;
+        public static final double driveKS = 0.095261;
+        public static final double driveKV = 0.71919;
+        public static final double driveKA = 0.16421;
 
         /* Swerve Profiling Values */
         /** Meters per Second */
@@ -178,15 +183,15 @@ public final class Constants {
     }
 
     public static final class Elevator {
-        public static final double maxHeightMeters = 0.81;
+        public static final double maxHeightMeters = 0.78;
         public static final double minHeightMeters = 0.015;
     }
 
-    public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final class Auto {
+        public static final double kMaxSpeedMetersPerSecond = 1.8;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+        public static final double kMaxAngularSpeedRadiansPerSecond = 9.424778;
+        public static final double kMaxAngularSpeedRadiansPerSecondSquared = 12.56637;
     
         public static final double kPXController = 1;
         public static final double kPYController = 1;

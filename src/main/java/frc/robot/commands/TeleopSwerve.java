@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import frc.lib.math.FiringSolutions;
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -75,7 +74,7 @@ public class TeleopSwerve extends Command {
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
-            if (shooterSubsystem.getDistanceToSpeaker() >= 3.5){
+            if (shooterSubsystem.getDistanceToSpeakerWhileMoving() >= 3.5){
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else {
                 controller.setRumble(RumbleType.kBothRumble, 0);
@@ -86,7 +85,7 @@ public class TeleopSwerve extends Command {
                     FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
                             currentSpeed.vxMetersPerSecond,
                             currentSpeed.vyMetersPerSecond,
-                            FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
+                            pose.getRotation().getRadians()));
                             
         } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
@@ -95,7 +94,7 @@ public class TeleopSwerve extends Command {
                     FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
                             currentSpeed.vxMetersPerSecond,
                             currentSpeed.vyMetersPerSecond,
-                            FiringSolutions.getAngleToSpeaker(pose.getX(), pose.getY())));
+                            pose.getRotation().getRadians()));
 
         } else if (intakeOverride.getAsBoolean() && result.hasTargets()) { // Lock robot towards detected note
             double yawToNote = Math.toRadians(result.getBestTarget().getYaw()) + swerveSubsystem.getGyroYaw().getRadians();

@@ -4,26 +4,21 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class IntakeThroughShooter extends Command {
-    private ShooterSubsystem shooter;
+public class IntexForAutosByAutos extends Command {
+
     private IntexerSubsystem intexer;
+    private ShooterSubsystem shooter;
 
-    Joystick controller;
-
-    /** Creates a new IntakeFromShooter. */
-    public IntakeThroughShooter(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
-        shooter = shooterSub;
-        intexer = intex;
-        this.controller = controller;
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shooterSub, intex);
+    /** Creates a new IntexForAutosByAutos. */
+    public IntexForAutosByAutos(IntexerSubsystem intexerSub, ShooterSubsystem shooterSubsystem) {
+        this.intexer = intexerSub;
+        this.shooter = shooterSubsystem;
+        addRequirements(intexerSub, shooterSubsystem);
     }
 
     // Called when the command is initially scheduled.
@@ -34,25 +29,28 @@ public class IntakeThroughShooter extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setShooterVelocity(-1000);
-        intexer.setALL(-.5);
-        shooter.setWristByAngle(.66);
+        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
+
+        if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
+            intexer.setALL(.35);
+        } else if (intexer.shooterBreak()) { // Stop note if at shooter
+            intexer.setALL(0);
+        } else { // Note is not in robot
+            intexer.setFrontIntake(.85);
+            intexer.setShooterIntake(.35);
+        }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
         intexer.setALL(0);
     }
-    
+
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (intexer.intakeBreak()) {
-            controller.setRumble(RumbleType.kBothRumble, 0.75);
-            intexer.setIntakeThroughShooterPart2Status(true);
+        if (intexer.shooterBreak()) {
             return true;
         } else {
             return false;

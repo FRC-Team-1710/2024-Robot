@@ -14,19 +14,21 @@ import frc.robot.subsystems.LEDSubsystem;
 
 public class ManRizzt extends Command {
 
-    ShooterSubsystem shooterSubsystem;
+    ShooterSubsystem m_shooterSubsystem;
     LEDSubsystem ledSubsystem;
     private DoubleSupplier speed;
     BooleanSupplier setAngle;
+    double lastWristSetpoint = 0.0;
+    boolean wristIsLocked = false;
 
     public ManRizzt(ShooterSubsystem subsystem, LEDSubsystem ledSubsystem, DoubleSupplier speed, BooleanSupplier setAngle) {
         // Use addRequirements() here to declare subsystem dependencies.
-        shooterSubsystem = subsystem;
+        m_shooterSubsystem = subsystem;
         this.ledSubsystem = ledSubsystem;
         this.setAngle = setAngle;
         this.speed = speed;
         SmartDashboard.putNumber("Set Wrist Angle", 0);
-        addRequirements(shooterSubsystem);
+        addRequirements(m_shooterSubsystem);
     }
 
     // Called when the command is initially scheduled.
@@ -36,13 +38,24 @@ public class ManRizzt extends Command {
 
     @Override
     public void execute() {
-        double speedValue = speed.getAsDouble() * 0.5;
-        
-        speedValue = Math.pow(speed.getAsDouble(), 3);
-        if (setAngle.getAsBoolean()){
-            shooterSubsystem.setWristPosition(SmartDashboard.getNumber("Set Wrist Angle", 0));
+        double speedValue = Math.pow(speed.getAsDouble(), 3);
+
+        if (setAngle.getAsBoolean()) {
+            m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
         } else {
-            shooterSubsystem.manualWristSpeed(speedValue);
+            if (Math.abs(speedValue) > .05) {
+                wristIsLocked = false;
+                m_shooterSubsystem.setManualWristSpeed(speedValue);
+            } else {
+                if (m_shooterSubsystem.isZeroed){
+                    if (!wristIsLocked){
+                        m_shooterSubsystem.setWristByAngle(m_shooterSubsystem.getCurrentShooterAngle());
+                        wristIsLocked = true;
+                    }
+                } else {
+                    m_shooterSubsystem.setManualWristSpeed(0);
+                }
+            }
         }
     }
 
@@ -54,7 +67,7 @@ public class ManRizzt extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        shooterSubsystem.manualWristSpeed(0);
+        m_shooterSubsystem.setManualWristSpeed(0);
         ledSubsystem.ReadyToFire(false);
     }
 }
