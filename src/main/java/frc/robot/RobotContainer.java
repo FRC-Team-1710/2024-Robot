@@ -147,7 +147,7 @@ public class RobotContainer {
                         m_ElevatorSubsystem,
                         () -> -mech.getRawAxis(leftVerticalAxis)));
 
-        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, () -> -mech.getRawAxis(rightVerticalAxis),
+        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, m_LEDSubsystem, () -> -mech.getRawAxis(rightVerticalAxis),
                 () -> shooterToAntiDefense.getAsBoolean()));
 
         // m_LEDSubsystem.setAllianceColor();
