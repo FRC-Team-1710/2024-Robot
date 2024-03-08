@@ -27,17 +27,17 @@ public class LEDSubsystem extends SubsystemBase {
   public Boolean atSpeed = false; 
 
   public Boolean[] inputBooleans = {
-    false, // Amp             -0 Rainbow Pattern #1 ASK ANDREW ABOUT HOW TO DO
-    false, // Source          -1 Rainbow Pattern #2 ASK ANDREW ABOUT HOW TO DO
-    false, // Climb           -2 Rainbow Pattern #3 ASK ANDREW ABOUT HOW TO DO
+    false, // Amp             -0 Rainbow Pattern #1 
+    false, // Source          -1 Rainbow Pattern #2
+    false, // Climb           -2 Rainbow Pattern #3
     false, // Blank/DC        -3 None
     false, // Note Detected   -4 White Solid 
     false, // Charging        -5 Green Pulse (HasNote)
     false, // At Speed        -6 Green BLink (HasNote)
     false, // Charging        -7 Magenta Pulse (NoNote)
     false, // At Speed        -8 Magenta BLink (NoNote)
-    false, // Note in Intake  -9 Orange Blink   ASK ANDREW ABOUT HOW TO DO
-    false, // Note in Shooter -10 Orange Solid  ASK ANDREW ABOUT HOW TO DO
+    false, // Note in Intake  -9 Orange Blink
+    false, // Note in Shooter -10 Orange Solid
     false, // Alliance Color  -11 Red Pulse
     false  // Alliance Color  -12 Blue Pulse
   };
@@ -45,12 +45,16 @@ public class LEDSubsystem extends SubsystemBase {
   // Use subsystems
   VisionSubsystem vision;
   ShooterSubsystem shooter;
+  IntexerSubsystem intexer;
+  SwerveSubsystem swerve;
   
 
   /** Creates a new LEDSubsystem. */
-  public LEDSubsystem(VisionSubsystem m_VisionSubsystem, ShooterSubsystem m_ShooterSubsystem) {
+  public LEDSubsystem(VisionSubsystem m_VisionSubsystem, ShooterSubsystem m_ShooterSubsystem, IntexerSubsystem m_IntexerSubsystem, SwerveSubsystem m_SwerveSubsystem) {
     this.vision = m_VisionSubsystem;
     this.shooter = m_ShooterSubsystem;
+    this.intexer = m_IntexerSubsystem;
+    this.swerve = m_SwerveSubsystem;
   }
 
   @Override
@@ -80,24 +84,34 @@ public class LEDSubsystem extends SubsystemBase {
     // HasNote for ChargingOuttake and AtSpeed
     if (hasNote) {  // Converts from simple inputs to boolean
       if (chargingOuttake) {
-        inputBooleans[5] = true;
-        inputBooleans[6] = false;
+        inputBooleans[5] = true; inputBooleans[6] = false;
       } else if (atSpeed) {
-        inputBooleans[5] = false;
-        inputBooleans[6] = true;
+        inputBooleans[5] = false; inputBooleans[6] = true;
       }
-      inputBooleans[7] = false;
-      inputBooleans[8] = false;
+      inputBooleans[7] = false; inputBooleans[8] = false;
     } else {
       if (chargingOuttake) {
-        inputBooleans[7] = true;
-        inputBooleans[8] = false;
+        inputBooleans[7] = true; inputBooleans[8] = false;
       } else if (atSpeed) {
-        inputBooleans[7] = false;
-        inputBooleans[8] = true;
+        inputBooleans[7] = false; inputBooleans[8] = true;
       }
-      inputBooleans[5] = false;
-      inputBooleans[6] = false;
+      inputBooleans[5] = false; inputBooleans[6] = false;
+    }
+
+    // Check if pathfinding
+    if (SwerveSubsystem.followingPath) {
+      inputBooleans[0] = true;
+    } else {
+      inputBooleans[0] = false;
+    }
+
+    // Check beam breaks
+    if (intexer.intakeBreak()) {
+      inputBooleans[9] = true;
+      inputBooleans[10] = false;
+    } else if (intexer.shooterBreak()) {
+      inputBooleans[9] = false;
+      inputBooleans[10] = true;
     }
   }
 

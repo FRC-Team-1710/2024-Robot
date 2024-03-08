@@ -13,10 +13,9 @@ public class ToBreakOrNotToBreak extends Command {
     LEDSubsystem ledSubsystem;
 
     /** Creates a new ToBreakOrNotToBreak. */
-    public ToBreakOrNotToBreak(IntexerSubsystem intexer, LEDSubsystem ledSubsystem) {
+    public ToBreakOrNotToBreak(IntexerSubsystem intexer) {
         // Use addRequirements() here to declare subsystem dependencies.
         this.intexer = intexer;
-        this.ledSubsystem = ledSubsystem;
         addRequirements(intexer);
     }
 
@@ -30,10 +29,8 @@ public class ToBreakOrNotToBreak extends Command {
     public void execute() {
         if (!intexer.shooterBreak()){
             intexer.setShooterIntake(.5);
-            ledSubsystem.hasNote = false;
         } else {
             intexer.setShooterIntake(0);
-            ledSubsystem.hasNote = true;
         }
     }
 
