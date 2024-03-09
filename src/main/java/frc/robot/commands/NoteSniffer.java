@@ -27,7 +27,7 @@ public class NoteSniffer extends Command {
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
     private Timer timer = new Timer();
     private boolean noteInside = false;
-    double translationVal = 0.5;
+    private double translationVal = 0.5;
 
     /** Creates a new IntakeWithVision. */
     public NoteSniffer(SwerveSubsystem swerve, VisionSubsystem vision, IntexerSubsystem intexer,

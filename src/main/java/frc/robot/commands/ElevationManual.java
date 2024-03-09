@@ -34,11 +34,11 @@ public class ElevationManual extends Command {
     public void execute() {
         lastElevatorSetpoint = m_elevatorSubsystem.getSetpoint();
 
-        double value = -axis.getAsDouble();
+        double value = axis.getAsDouble();
 
         value = Math.pow(value, 3);
 
-        if (Math.abs(value) > .05) { // Crime zone
+        if (Math.abs(value) > .1) { // Crime zone
             m_elevatorSubsystem.ManSpin(value);
         } else {
             if (!m_elevatorSubsystem.locked){

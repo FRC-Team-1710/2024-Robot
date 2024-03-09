@@ -78,11 +78,9 @@ public class RobotContainer {
     /** Mech X */
     private final JoystickButton shooterToSubwoofer = new JoystickButton(mech, XboxController.Button.kX.value);
     /** Mech RB */
-    private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech,
-            XboxController.Button.kRightBumper.value);
+    private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
     /** Mech LB */
-    private final JoystickButton primeShooterSpeedAmp = new JoystickButton(mech,
-            XboxController.Button.kLeftBumper.value);
+    private final JoystickButton primeShooterSpeedAmp = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
     /** Mech RT */
     private final Trigger mechRT = new Trigger(() -> mech.getRawAxis(rightTrigger) > .5);
     /** Mech LT */
@@ -125,20 +123,13 @@ public class RobotContainer {
     public RobotContainer() {
         // Named commands for PathPlanner autos
         NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem, m_Shoota));
-        NamedCommands.registerCommand("Shoot", new AimBot(m_Shoota, m_SwerveSubsystem, m_IntexerSubsystem,
-                FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity())));
-        NamedCommands.registerCommand("Idle Speed",
-                new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
-        NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_Shoota
-                .setShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))));
-        NamedCommands.registerCommand("Set Shooter Intake",
-                new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
-        NamedCommands.registerCommand("Stop Shooter Intake",
-                new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
-        NamedCommands.registerCommand("Note Sniffer",
-                new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
-        NamedCommands.registerCommand("Note Sniffer2",
-                new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
+        NamedCommands.registerCommand("Shoot", new AimBot(m_Shoota, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity())));
+        NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))));
+        NamedCommands.registerCommand("Set Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
+        NamedCommands.registerCommand("Stop Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
+        NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
+        NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
 
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
@@ -232,8 +223,7 @@ public class RobotContainer {
                 .andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
 
         // Wrist
-        shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake
-                                                                                               // position
+        shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
 
         // Amp Preset
         shooterToAmp.onTrue(new RizzLevel(m_Shoota, -0.48))
@@ -254,11 +244,10 @@ public class RobotContainer {
                 .onFalse(new IntakeThroughShooterPart2(m_Shoota, m_IntexerSubsystem, mech));
 
         // Characterization tests
-        /* dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
-         * dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
-         * quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
-         * quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
-         */
+        dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
+        dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
+        quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
+        quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
     }
 
     public void stopAll() {

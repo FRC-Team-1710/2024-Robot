@@ -22,7 +22,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DataLogManager;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
@@ -31,14 +30,14 @@ public final class Constants {
     public static final double stickDeadband = 0.07;
 
     public static class Vision {
-        public static final String kAprilTagCameraFront = "ChristiansThirdEye";
-        public static final String kAprilTagCameraBack = "ChristiansFourthEye";
+        public static final String kAprilTagCameraFront = "ChristiansFourthEye";
+        public static final String kAprilTagCameraBack = "ChristiansThirdEye";
         public static final String kNoteCamera = "OnionRing";
 
         public static final Transform3d kRobotToCamFront =
-                new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
+                new Transform3d(new Translation3d(Units.inchesToMeters(12.5), Units.inchesToMeters(-1.25), Units.inchesToMeters(14.75)), new Rotation3d(0, Units.degreesToRadians(15), 0));
         public static final Transform3d kRobotToCamBack = 
-                new Transform3d(new Translation3d(Units.inchesToMeters(-8), 0, Units.inchesToMeters(12)), new Rotation3d(0, 0, Math.PI));
+                new Transform3d(new Translation3d(Units.inchesToMeters(-6.5), Units.inchesToMeters(11.5), Units.inchesToMeters(15)), new Rotation3d(0, Units.degreesToRadians(15), Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = errorWrapper();
