@@ -182,7 +182,8 @@ public class RobotContainer {
 
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
-                new InstantCommand(() -> m_SwerveSubsystem.setPose(new Pose2d(1.35, 5.55, new Rotation2d(0))))));
+                new InstantCommand(() -> m_SwerveSubsystem
+                        .setPose(new Pose2d(1.35, 5.55, new Rotation2d(0))))));
 
         // Intexer
         intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
@@ -199,20 +200,27 @@ public class RobotContainer {
 
         // Prime for Speaker
         primeShooterSpeedSpeaker
-                .whileTrue(new InstantCommand(() -> m_Shoota.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))))
-                .onFalse(new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+                .whileTrue(new InstantCommand(() -> m_Shoota.setShooterVelocity(
+                        FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))))
+                .onFalse(new InstantCommand(
+                        () -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Prime for Amp
         primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.setShooterVelocity(3417.8)))
-                .onFalse(new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+                .onFalse(new InstantCommand(
+                        () -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Elevator
-        elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
-        elevatorUp.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters));
+        elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters)
+                .alongWith(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
+        elevatorUp.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters)
+                .alongWith(new RizzLevel(m_Shoota, 0.0)));
 
         // Zero wrist
-        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
-        autoZeroShooter.onTrue(new ZeroRizz(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
+        zeroShooter.onTrue(new InstantCommand(
+                () -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
+        autoZeroShooter.onTrue(new ZeroRizz(m_Shoota)
+                .andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
 
         // Wrist
         shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
@@ -235,14 +243,14 @@ public class RobotContainer {
         intakeThroughShooter.whileTrue(new IntakeThroughShooter(m_Shoota, m_IntexerSubsystem, mech))
                 .onFalse(new IntakeThroughShooterPart2(m_Shoota, m_IntexerSubsystem, mech));
 
-        // Characterization tests 
+        // Characterization tests
         dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
         quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
         quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
     }
 
-    public void stopAll () {
+    public void stopAll() {
         m_Shoota.setShooterVelocity(0);
         m_Shoota.setManualWristSpeed(0);
         m_IntexerSubsystem.setALL(0);
