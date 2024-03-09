@@ -61,6 +61,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
     private SwerveModuleState[] swerveModuleStates;
+    public static boolean followingPath = false;
 
     // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -110,12 +111,11 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig(
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(6.0, 0.0, 0.0), // Rotation PID constants TODO tune
+                        new PIDConstants(5, 0, 0), // Translation PID constants
+                        new PIDConstants(5, 0.0, 0.0), // Rotation PID constants
                         4.5, // Max module speed, in m/s
                         0.37268, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig(true, true)
-                ),
+                        new ReplanningConfig(true, true, .5, .25)),
                 checkRedAlliance(),
                 this // Reference to this subsystem to set requirements
         );
@@ -140,15 +140,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
             m_field.getObject("field").setPoses(poses);
+
+            if (poses.isEmpty()){
+                followingPath = false;
+            } else {
+                followingPath = true;
+            }
         });
 
         this.vision = vision;
     }
 
-    /**
-     * Check alliance for the AutoBuilder. Returns true when red. Using a method for
-     * better readability
-     */
+    /** Check alliance for the AutoBuilder. Returns true when red. Using a method for better readability */
     public BooleanSupplier checkRedAlliance() {
         return () -> Robot.getAlliance();
     }
@@ -157,24 +160,25 @@ public class SwerveSubsystem extends SubsystemBase {
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         double translationX = translation.getX();
         double translationY = translation.getY();
+        SwerveModuleState[] desiredStates;
 
         if (fieldRelative) {
-            swerveModuleStates = Constants.Swerve.swerveKinematics
+            desiredStates = Constants.Swerve.swerveKinematics
                     .toSwerveModuleStates(ChassisSpeeds.discretize(ChassisSpeeds.fromFieldRelativeSpeeds(
                             translationX,
                             translationY,
                             rotation,
                             getHeading()), 0.02));
         } else {
-            swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(new ChassisSpeeds(translationX,
+            desiredStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(new ChassisSpeeds(translationX,
                     translationY,
                     rotation));
         }
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
         for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+            mod.setDesiredState(desiredStates[mod.moduleNumber], isOpenLoop);
         }
     }
 
@@ -188,22 +192,21 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public SwerveModuleState[] getModuleStates() {
-        /* 
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        for (SwerveModule mod : mSwerveMods) {
-            states[mod.moduleNumber] = mod.getState();
-        }
-        return states;
-        */
         return swerveModuleStates;
+    }
+
+    public void updateModuleStates() {
+        for (SwerveModule mod : mSwerveMods) {
+            swerveModuleStates[mod.moduleNumber] = mod.getState();
+        }
     }
 
     /** Drive method for Autos */
     public void setChassisSpeeds(ChassisSpeeds speed) {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speed, 0.02);
 
-        SwerveModuleState[] targetStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(targetSpeeds);
-        setModuleStates(targetStates);
+        SwerveModuleState[] desiredState = Constants.Swerve.swerveKinematics.toSwerveModuleStates(targetSpeeds);
+        setModuleStates(desiredState);
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -266,6 +269,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        updateModuleStates();
         SwerveModulePosition[] modulePositions = getModulePositions();
 
         // Correct pose estimate with multiple vision measurements
@@ -275,20 +279,24 @@ public class SwerveSubsystem extends SubsystemBase {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
 
             swerveOdomEstimator
-                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevsFront(estimatedPose.estimatedPose.toPose2d()));
+                    .setVisionMeasurementStdDevs(
+                            vision.getEstimationStdDevsFront(estimatedPose.estimatedPose.toPose2d()));
 
-            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
+                    estimatedPose.timestampSeconds);
         }
 
-        Optional <EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
+        Optional<EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
         if (OptionalEstimatedPoseBack.isPresent()) {
 
             final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseBack.get();
 
             swerveOdomEstimator
-                    .setVisionMeasurementStdDevs(vision.getEstimationStdDevsBack(estimatedPose2.estimatedPose.toPose2d()));
+                    .setVisionMeasurementStdDevs(
+                            vision.getEstimationStdDevsBack(estimatedPose2.estimatedPose.toPose2d()));
 
-            swerveOdomEstimator.addVisionMeasurement(estimatedPose2.estimatedPose.toPose2d(), estimatedPose2.timestampSeconds);
+            swerveOdomEstimator.addVisionMeasurement(estimatedPose2.estimatedPose.toPose2d(),
+                    estimatedPose2.timestampSeconds);
         }
 
         // Logging
@@ -302,7 +310,7 @@ public class SwerveSubsystem extends SubsystemBase {
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", modulePositions[mod.moduleNumber].angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
         }
 
         SmartDashboard.putString("Obodom", getPose().toString());
@@ -312,20 +320,34 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void sysidroutine(SysIdRoutineLog log) {
-        log.motor("drive-left")
+        log.motor("drive-BR")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[3].getMotorVoltage(), Volts))
+                                mSwerveMods[3].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[3].getMotorVelocity(), MetersPerSecond));
-        log.motor("drive-right")
+        log.motor("drive-FL")
                 .voltage(
                         m_appliedVoltage.mut_replace(
                                 mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
-                .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
+                .linearPosition(m_distance.mut_replace(mSwerveMods[0].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[0].getMotorVelocity(), MetersPerSecond));
+        log.motor("drive-FR")
+                .voltage(
+                        m_appliedVoltage.mut_replace(
+                                mSwerveMods[1].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                .linearPosition(m_distance.mut_replace(mSwerveMods[1].getPosition().distanceMeters, Meters))
+                .linearVelocity(
+                        m_velocity.mut_replace(mSwerveMods[1].getMotorVelocity(), MetersPerSecond));
+        log.motor("drive-BL")
+                .voltage(
+                        m_appliedVoltage.mut_replace(
+                                mSwerveMods[2].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                .linearPosition(m_distance.mut_replace(mSwerveMods[2].getPosition().distanceMeters, Meters))
+                .linearVelocity(
+                        m_velocity.mut_replace(mSwerveMods[2].getMotorVelocity(), MetersPerSecond));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -340,50 +362,80 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command pathToSource() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(1.21, 0.96, Rotation2d.fromDegrees(58.79)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(15.47, 1.50, Rotation2d.fromDegrees(-59.53)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         }
     }
 
     public Command pathToAmp() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.59, Rotation2d.fromDegrees(90.37)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(14.74, 7.52, Rotation2d.fromDegrees(90.37)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         }
     }
 
     public Command pathToMidfieldChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(6.29, 4.08, Rotation2d.fromDegrees(180)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(10.26, 4.10, Rotation2d.fromDegrees(0)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         }
     }
 
     public Command pathToSourceChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(4.18, 2.79, Rotation2d.fromDegrees(59.47)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(12.43, 2.90, Rotation2d.fromDegrees(121.26)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         }
     }
 
     public Command pathToAmpChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(4.20, 5.30, Rotation2d.fromDegrees(-58.21)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(12.50, 5.25, Rotation2d.fromDegrees(-120.96)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond, Constants.Auto.kMaxAccelerationMetersPerSecondSquared, Constants.Auto.kMaxAngularSpeedRadiansPerSecond, Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
+                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
+                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
         }
     }
 

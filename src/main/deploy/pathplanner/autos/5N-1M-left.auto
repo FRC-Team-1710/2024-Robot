@@ -2,13 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-<<<<<<< HEAD:src/main/deploy/pathplanner/autos/4N-1M-left.auto
       "x": 1.3771774811958186,
       "y": 6.50308873064302
-=======
-      "x": 1.45,
-      "y": 6.45
->>>>>>> f8dcaf8cae43b9b9042643a56208b94ff88cf8f9:src/main/deploy/pathplanner/autos/kachow.auto
     },
     "rotation": 0
   },
@@ -86,6 +81,30 @@
           "type": "path",
           "data": {
             "pathName": "backCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseRight"
           }
         },
         {

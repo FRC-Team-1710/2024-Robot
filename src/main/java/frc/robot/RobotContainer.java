@@ -20,19 +20,17 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
+ * the robot (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
 
     /* Controllers */
     private final Joystick driver = new Joystick(0);
     private final Joystick mech = new Joystick(1);
+    private final Joystick FF = new Joystick(2);
 
     /* Analog */
     private final int leftVerticalAxis = XboxController.Axis.kLeftY.value;
@@ -104,16 +102,11 @@ public class RobotContainer {
     /** Mech RS */
     private final JoystickButton rightStick = new JoystickButton(mech, XboxController.Button.kRightStick.value);
 
-    /*
-     * private final Trigger dynamicForward = new Trigger(() -> mech.getPOV() ==
-     * 90);
-     * private final Trigger dynamicBackward = new Trigger(() -> mech.getPOV() ==
-     * 270);
-     * private final Trigger quasistaticForward = new Trigger(() -> mech.getPOV() ==
-     * 0);
-     * private final Trigger quasistaticBackwards = new Trigger(() -> mech.getPOV()
-     * == 180);
-     */
+    
+    private final Trigger dynamicForward = new Trigger(() -> FF.getPOV() == 90);
+    private final Trigger dynamicBackward = new Trigger(() -> FF.getPOV() == 270);
+    private final Trigger quasistaticForward = new Trigger(() -> FF.getPOV() == 0);
+    private final Trigger quasistaticBackwards = new Trigger(() -> FF.getPOV() == 180);
 
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -209,6 +202,9 @@ public class RobotContainer {
         forceShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
                 .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
+        driverUp.whileTrue(m_SwerveSubsystem.pathToAmpChain());
+        driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
+
         /* MECH BUTTONS */
 
         // Prime for Speaker
@@ -260,12 +256,9 @@ public class RobotContainer {
         // Characterization tests
         /*
          * dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
-         * dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse))
-         * ;
-         * quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.
-         * kForward));
-         * quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.
-         * kReverse));
+         * dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
+         * quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
+         * quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
          */
     }
 

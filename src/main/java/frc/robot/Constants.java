@@ -114,15 +114,15 @@ public final class Constants {
         public static final double angleKD = chosenModule.angleKD;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.12;
+        public static final double driveKP = 0.35919;
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
         public static final double driveKF = 0.0;
 
         /* Drive Motor Characterization Values From SYSID */
-        public static final double driveKS = 0.080723;
-        public static final double driveKV = 0.73696;
-        public static final double driveKA = 0.073127;
+        public static final double driveKS = 0.095261;
+        public static final double driveKV = 0.71919;
+        public static final double driveKA = 0.16421;
 
         /* Swerve Profiling Values */
         /** Meters per Second */
@@ -185,16 +185,16 @@ public final class Constants {
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }
 
-    public static final class Elevator { //TODO tune
+    public static final class Elevator {
         public static final double maxHeightMeters = 0.78;
         public static final double minHeightMeters = 0.015;
     }
 
     public static final class Auto {
-        public static final double kMaxSpeedMetersPerSecond = 4.25;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 8;
-        public static final double kMaxAngularSpeedRadiansPerSecond = (Math.PI*3)/2;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI*2;
+        public static final double kMaxSpeedMetersPerSecond = 1.8;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxAngularSpeedRadiansPerSecond = 9.424778;
+        public static final double kMaxAngularSpeedRadiansPerSecondSquared = 12.56637;
     
         public static final double kPXController = 1;
         public static final double kPYController = 1;
