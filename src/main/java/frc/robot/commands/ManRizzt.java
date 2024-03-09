@@ -46,6 +46,7 @@ public class ManRizzt extends Command {
             } else {
                 if (m_shooterSubsystem.isZeroed){
                     if (!wristIsLocked){
+                        m_shooterSubsystem.setManualOverride(false);
                         m_shooterSubsystem.setWristByAngle(m_shooterSubsystem.getCurrentShooterAngle());
                         wristIsLocked = true;
                     }

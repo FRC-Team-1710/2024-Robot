@@ -58,14 +58,16 @@ public class ShooterSubsystem extends SubsystemBase {
     public boolean isZeroed = false;
     public boolean wristIsLocked = false;
     /** IN RADIANS */
-    private double angleOffset = 68.2;
+    private double angleOffset = Constants.Shooter.angleOffsetManual;
     private double distanceToMovingSpeakerTarget = .94;
     public double lastWristAngleSetpoint = 0.0;
     public boolean manualOverride = false;
-    public double wristAngleUpperBound = Constants.Shooter.wristAngleMax;
-    public double wristAngleLowerBound = Constants.Shooter.wristAngleMin;
+    public double wristAngleUpperBound;
+    public double wristAngleLowerBound;
 
     // Constants
+    private final double wristAngleMax = 0.0;
+    private final double wristAngleMin = 0.0;
     private final Timer speedTimer = new Timer();
     private final Interpolations interpolation = new Interpolations();
     private final int m_WristCurrentMax = 84;
@@ -268,6 +270,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setManualWristSpeed(double speed) {
+        manualOverride = true;
         m_Wrist.set(speed);
     }
 
@@ -305,8 +308,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setWristAngleLowerBound(double wristAngleLowerBound) {
-        if (wristAngleLowerBound < Constants.Shooter.wristAngleMin){
-            wristAngleLowerBound = Constants.Shooter.wristAngleMin;
+        if (wristAngleLowerBound < wristAngleMin){
+            wristAngleLowerBound = wristAngleMin;
         } else if (wristAngleLowerBound > wristAngleUpperBound){
             wristAngleLowerBound = wristAngleUpperBound;
         } else {
@@ -315,8 +318,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setWristAngleUpperBound(double wristAngleUpperBound) {
-        if (wristAngleUpperBound > Constants.Shooter.wristAngleMax){
-            wristAngleUpperBound = Constants.Shooter.wristAngleMax;
+        if (wristAngleUpperBound > wristAngleMax){
+            wristAngleUpperBound = wristAngleMax;
         } else if (wristAngleUpperBound < wristAngleLowerBound){
             wristAngleUpperBound = wristAngleLowerBound;
         } else {
@@ -340,13 +343,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void updateWristAngleSetpoint(double angle) {
         if (angle != lastWristAngleSetpoint){
-            if (angle < wristAngleLowerBound){
+            /*if (lastWristAngleSetpoint < wristAngleLowerBound){
                 lastWristAngleSetpoint = wristAngleLowerBound;
-            } else if (angle > wristAngleUpperBound){
+            } else if (lastWristAngleSetpoint > wristAngleUpperBound){
                 lastWristAngleSetpoint = wristAngleUpperBound;
             } else {
-                lastWristAngleSetpoint = angle;
-            }
+                
+            } */
+            lastWristAngleSetpoint = angle;
         }
     }
 

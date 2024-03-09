@@ -23,15 +23,13 @@ public class RizzLevel extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-
+        shooter.setManualOverride(false);
+        shooter.setWristByAngle(angle);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (shooter.isZeroed){
-            shooter.setWristByAngle(angle);
-        }
     }
 
     // Called once the command ends or is interrupted.
@@ -43,10 +41,6 @@ public class RizzLevel extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (shooter.isZeroed){
-            return shooter.getCurrentShooterAngle() >= (angle - Math.toRadians(.5)) && shooter.getCurrentShooterAngle() < (angle + Math.toRadians(.5));
-        } else {
-            return true;
-        }
+        return true;
     }
 }
