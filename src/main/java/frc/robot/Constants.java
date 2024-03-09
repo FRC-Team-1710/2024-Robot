@@ -22,6 +22,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DataLogManager;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
@@ -61,7 +62,7 @@ public final class Constants {
     }
 
     public static final class Swerve {
-        public static final String canivore = "uno";
+        public static final String canivore = "rex";
         public static final int pigeonID = 13;
 
         public static final COTSTalonFXSwerveConstants chosenModule = 
@@ -178,7 +179,9 @@ public final class Constants {
     public static final class Shooter {
         public static final double intakeAngleRadians = 0.56;
         public static final double idleSpeedRPM = 1300;
-        public static final double angleOffsetManual = Units.degreesToRadians(68.2);
+        public static final double wristAngleMax = Units.degreesToRadians(62.7);
+        public static final double wristAngleMin = Units.degreesToRadians(-28.8);
+        public static final double angleOffsetManual = Units.degreesToRadians(62.7);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }
 

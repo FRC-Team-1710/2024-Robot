@@ -34,7 +34,7 @@ public class ElevationManual extends Command {
     public void execute() {
         lastElevatorSetpoint = m_elevatorSubsystem.getSetpoint();
 
-        double value = axis.getAsDouble();
+        double value = -axis.getAsDouble();
 
         value = Math.pow(value, 3);
 

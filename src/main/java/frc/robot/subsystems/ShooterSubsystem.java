@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.FiringSolutionsV3;
 import frc.lib.math.Interpolations;
+import frc.robot.Constants;
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -60,12 +62,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private double distanceToMovingSpeakerTarget = .94;
     public double lastWristAngleSetpoint = 0.0;
     public boolean manualOverride = false;
-    public double wristAngleUpperBound;
-    public double wristAngleLowerBound;
+    public double wristAngleUpperBound = Constants.Shooter.wristAngleMax;
+    public double wristAngleLowerBound = Constants.Shooter.wristAngleMin;
 
     // Constants
-    private final double wristAngleMax = 0.0;
-    private final double wristAngleMin = 0.0;
     private final Timer speedTimer = new Timer();
     private final Interpolations interpolation = new Interpolations();
     private final int m_WristCurrentMax = 84;
@@ -81,13 +81,17 @@ public class ShooterSubsystem extends SubsystemBase {
         m_PositionEncoder = m_Wrist.getEncoder();
         m_WristEncoder = new DutyCycleEncoder(0);
 
+        // Wrist Encoder Reset
+        m_WristEncoder.reset();
+        m_PositionEncoder.setPosition(0);
+
         // Spark Max Setup
         shootaTop.restoreFactoryDefaults();
         shootaBot.restoreFactoryDefaults();
         m_Wrist.restoreFactoryDefaults();
 
         m_Wrist.setIdleMode(IdleMode.kBrake);
-        m_Wrist.setInverted(true);
+        m_Wrist.setInverted(false);
 
         shootaBot.setInverted(false);
 
@@ -188,7 +192,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** in RADIANs units MATTER */
     public double getCurrentShooterAngle() {
         if (!ENCFAIL) {
-            return ((-m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
+            return ((m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
         } else {
             return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
         }
@@ -301,8 +305,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setWristAngleLowerBound(double wristAngleLowerBound) {
-        if (wristAngleLowerBound < wristAngleMin){
-            wristAngleLowerBound = wristAngleMin;
+        if (wristAngleLowerBound < Constants.Shooter.wristAngleMin){
+            wristAngleLowerBound = Constants.Shooter.wristAngleMin;
         } else if (wristAngleLowerBound > wristAngleUpperBound){
             wristAngleLowerBound = wristAngleUpperBound;
         } else {
@@ -311,8 +315,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setWristAngleUpperBound(double wristAngleUpperBound) {
-        if (wristAngleUpperBound > wristAngleMax){
-            wristAngleUpperBound = wristAngleMax;
+        if (wristAngleUpperBound > Constants.Shooter.wristAngleMax){
+            wristAngleUpperBound = Constants.Shooter.wristAngleMax;
         } else if (wristAngleUpperBound < wristAngleLowerBound){
             wristAngleUpperBound = wristAngleLowerBound;
         } else {
@@ -321,7 +325,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** IN RADIANS */
-    public void setWristByAngle(double angle) { //TODO: Implement redundancy
+    public void setWristByAngle(double angle) {
         if (isZeroed) {
             updateWristAngleSetpoint(angle);
         }
@@ -336,9 +340,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void updateWristAngleSetpoint(double angle) {
         if (angle != lastWristAngleSetpoint){
-            if (lastWristAngleSetpoint < wristAngleLowerBound){
+            if (angle < wristAngleLowerBound){
                 lastWristAngleSetpoint = wristAngleLowerBound;
-            } else if (lastWristAngleSetpoint > wristAngleUpperBound){
+            } else if (angle > wristAngleUpperBound){
                 lastWristAngleSetpoint = wristAngleUpperBound;
             } else {
                 lastWristAngleSetpoint = angle;

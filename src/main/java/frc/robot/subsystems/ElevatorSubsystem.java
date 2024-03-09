@@ -111,7 +111,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Left Supply Current", m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Elevator Right Supply Current",
         m_elevatorRight.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("LaserCan Ambient", measurement.ambient);
+        //SmartDashboard.putNumber("LaserCan Ambient", measurement.ambient);
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
         
         //FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
