@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
 public class LEDSubsystem extends SubsystemBase {
-  public DigitalOutput bit1 = new DigitalOutput(2); // Bit 1 (1)
-  public DigitalOutput bit2 = new DigitalOutput(3); // Bit 2 (2)
-  public DigitalOutput bit3 = new DigitalOutput(4); // Bit 3 (4)
-  public DigitalOutput bit4 = new DigitalOutput(5); // Bit 4 (8)
+  public DigitalOutput bit1 = new DigitalOutput(3); // Bit 1 (1)
+  public DigitalOutput bit2 = new DigitalOutput(4); // Bit 2 (2)
+  public DigitalOutput bit3 = new DigitalOutput(5); // Bit 3 (4)
+  public DigitalOutput bit4 = new DigitalOutput(6); // Bit 4 (8)
 
   // Output bits to the LEDs
   public DigitalOutput[] bits = {bit1, bit2, bit3, bit4}; // Actual Outputs
