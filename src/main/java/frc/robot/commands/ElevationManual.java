@@ -38,7 +38,7 @@ public class ElevationManual extends Command {
 
         value = Math.pow(value, 3);
 
-        if (Math.abs(value) > .05) { // Crime zone
+        if (Math.abs(value) > .1) { // Crime zone
             m_elevatorSubsystem.ManSpin(value);
         } else {
             if (!m_elevatorSubsystem.locked){

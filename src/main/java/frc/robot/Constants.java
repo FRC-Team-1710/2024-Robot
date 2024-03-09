@@ -30,14 +30,14 @@ public final class Constants {
     public static final double stickDeadband = 0.07;
 
     public static class Vision {
-        public static final String kAprilTagCameraFront = "ChristiansThirdEye";
-        public static final String kAprilTagCameraBack = "ChristiansFourthEye";
+        public static final String kAprilTagCameraFront = "ChristiansFourthEye";
+        public static final String kAprilTagCameraBack = "ChristiansThirdEye";
         public static final String kNoteCamera = "OnionRing";
 
         public static final Transform3d kRobotToCamFront =
-                new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(1.25), Units.inchesToMeters(13.5)), new Rotation3d(0, 0, 0));
+                new Transform3d(new Translation3d(Units.inchesToMeters(12.5), Units.inchesToMeters(-1.25), Units.inchesToMeters(14.75)), new Rotation3d(0, Units.degreesToRadians(15), 0));
         public static final Transform3d kRobotToCamBack = 
-                new Transform3d(new Translation3d(Units.inchesToMeters(-8), 0, Units.inchesToMeters(12)), new Rotation3d(0, 0, Math.PI));
+                new Transform3d(new Translation3d(Units.inchesToMeters(-6.5), Units.inchesToMeters(11.5), Units.inchesToMeters(15)), new Rotation3d(0, Units.degreesToRadians(15), Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = errorWrapper();
@@ -61,7 +61,7 @@ public final class Constants {
     }
 
     public static final class Swerve {
-        public static final String canivore = "uno";
+        public static final String canivore = "rex";
         public static final int pigeonID = 13;
 
         public static final COTSTalonFXSwerveConstants chosenModule = 

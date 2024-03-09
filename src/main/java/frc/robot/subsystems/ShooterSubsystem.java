@@ -87,7 +87,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_Wrist.restoreFactoryDefaults();
 
         m_Wrist.setIdleMode(IdleMode.kBrake);
-        m_Wrist.setInverted(true);
+        m_Wrist.setInverted(false);
 
         shootaBot.setInverted(false);
 
@@ -188,7 +188,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** in RADIANs units MATTER */
     public double getCurrentShooterAngle() {
         if (!ENCFAIL) {
-            return ((-m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
+            return ((m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
         } else {
             return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
         }
