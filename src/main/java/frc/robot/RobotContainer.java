@@ -254,8 +254,7 @@ public class RobotContainer {
                 .onFalse(new IntakeThroughShooterPart2(m_Shoota, m_IntexerSubsystem, mech));
 
         // Characterization tests
-        /*
-         * dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
+        /* dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
          * dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
          * quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
          * quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
