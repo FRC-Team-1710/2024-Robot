@@ -44,7 +44,7 @@ public class NoteSniffer extends Command {
     public void initialize() {
         timer.reset();
         timer.start();
-        translationVal = .5;
+        translationVal = .25;
         noteInside = false;
     }
 
@@ -70,8 +70,8 @@ public class NoteSniffer extends Command {
 
             rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
 
-            intexer.setFrontIntake(.8);
-            intexer.setShooterIntake(.35);
+            intexer.setFrontIntake(.65);
+            intexer.setShooterIntake(.3);
         } else {
             rotationVal = 0;
         }

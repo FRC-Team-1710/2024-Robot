@@ -45,11 +45,13 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera aprilTagCameraBack;
     private final PhotonCamera noteCamera;
 
-    public final PhotonPoseEstimator photonEstimatorFront;
-    public final PhotonPoseEstimator photonEstimatorBack;
+    private final PhotonPoseEstimator photonEstimatorFront;
+    private final PhotonPoseEstimator photonEstimatorBack;
 
     private double lastTimeStampFront = 0;
     private double lastEstTimestampBack = 0;
+
+    private final double maxAcceptableRange = 4;
 
     public VisionSubsystem() {
         aprilTagCameraFront = new PhotonCamera(Constants.Vision.kAprilTagCameraFront);
@@ -141,7 +143,7 @@ public class VisionSubsystem extends SubsystemBase {
         //if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (/*numTags == 1 && */avgDist > 4)
+        if (/*numTags == 1 && */avgDist > maxAcceptableRange)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else
             estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
@@ -168,7 +170,7 @@ public class VisionSubsystem extends SubsystemBase {
         //if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (/*numTags == 1 &&*/ avgDist > 4)
+        if (/*numTags == 1 &&*/ avgDist > maxAcceptableRange)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else
             estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));

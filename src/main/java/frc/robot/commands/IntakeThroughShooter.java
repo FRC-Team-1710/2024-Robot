@@ -29,6 +29,7 @@ public class IntakeThroughShooter extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        shooter.setWristByAngle(.66);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -36,7 +37,6 @@ public class IntakeThroughShooter extends Command {
     public void execute() {
         shooter.setShooterVelocity(-1000);
         intexer.setALL(-.5);
-        shooter.setWristByAngle(.66);
     }
 
     // Called once the command ends or is interrupted.
