@@ -37,7 +37,6 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -311,10 +310,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle",
-                    modulePositions[mod.moduleNumber].angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity",
-                    swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", modulePositions[mod.moduleNumber].angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
         }
 
         SmartDashboard.putString("Obodom", getPose().toString());
@@ -341,14 +338,14 @@ public class SwerveSubsystem extends SubsystemBase {
         log.motor("drive-FR")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[1].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[1].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[1].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[1].getMotorVelocity(), MetersPerSecond));
         log.motor("drive-BL")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[2].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[2].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[2].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[2].getMotorVelocity(), MetersPerSecond));
