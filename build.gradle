@@ -27,6 +27,13 @@ deploy {
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                    // Switch GC to 2023's G1
+                    //gcType = 'G1'
+                    //jvmArgs.add("-XX:+UseG1GC")
+                    //jvmArgs.add("-XX:MaxGCPauseMillis=1")
+                    //jvmArgs.add("-XX:GCTimeRatio=1")
+                    //jvmArgs.remove('-XX:+AlwaysPreTouch')
+
                     // Use VisualVM for code profiling
                     //jvmArgs.add("-Dcom.sun.management.jmxremote=true")
                     //jvmArgs.add("-Dcom.sun.management.jmxremote.port=1099")

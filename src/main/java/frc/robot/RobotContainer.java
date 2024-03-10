@@ -3,8 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -180,7 +178,7 @@ public class RobotContainer {
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
                 new InstantCommand(() -> m_SwerveSubsystem
-                        .setPose(new Pose2d(1.35, 5.55, new Rotation2d(0))))));
+                        .setPose(Constants.Vision.startingPose))));
 
         // Intexer
         intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
@@ -225,10 +223,6 @@ public class RobotContainer {
         // Amp Preset
         shooterToAmp.onTrue(new RizzLevel(m_ShooterSubsystem, -0.48))
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters));
-
-        // xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
-        // .onFalse(new InstantCommand(() ->
-        // m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Reset the R calculation incase it gets off
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR()));

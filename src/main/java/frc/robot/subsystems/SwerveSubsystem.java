@@ -42,7 +42,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static edu.wpi.first.units.Units.Meters;
@@ -140,7 +143,7 @@ public class SwerveSubsystem extends SubsystemBase {
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
             m_field.getObject("field").setPoses(poses);
 
-            if (poses.isEmpty()){
+            if (poses.isEmpty()) {
                 followingPath = false;
             } else {
                 followingPath = true;
@@ -308,8 +311,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", modulePositions[mod.moduleNumber].angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle",
+                    modulePositions[mod.moduleNumber].angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity",
+                    swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
         }
 
         SmartDashboard.putString("Obodom", getPose().toString());
@@ -322,14 +327,14 @@ public class SwerveSubsystem extends SubsystemBase {
         log.motor("drive-BR")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[3].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[3].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[3].getMotorVelocity(), MetersPerSecond));
         log.motor("drive-FL")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[0].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[0].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[0].getMotorVelocity(), MetersPerSecond));
@@ -350,11 +355,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.quasistatic(direction);
+        return new SequentialCommandGroup(new InstantCommand(this::resetModulesToAbsolute, this), new WaitCommand(0.5),
+                m_sysIdRoutine.quasistatic(direction));
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.dynamic(direction);
+        return new SequentialCommandGroup(new InstantCommand(this::resetModulesToAbsolute, this), new WaitCommand(0.5),
+                m_sysIdRoutine.dynamic(direction));
     }
 
     // Pathfinding Commands

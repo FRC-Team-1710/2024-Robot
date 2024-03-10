@@ -70,18 +70,18 @@ public class Robot extends TimedRobot {
         URCL.start();
 
         // Log data from all CTRE devices
-        SignalLogger.setPath("/media/sda1/logs/");
-        SignalLogger.start();
+        //SignalLogger.setPath("/media/sda1/logs/");
+        //SignalLogger.start();
 
         // Output command scheduler to dashboard
         SmartDashboard.putData(CommandScheduler.getInstance());
 
         // Access PhotonVision dashboard when connected via usb TODO make work
-       // PortForwarder.add(5800, "10.17.10.11", 5800);
+        PortForwarder.add(5800, "10.17.10.11", 5800);
 
-       SmartDashboard.putData(PDH);
+        SmartDashboard.putData(PDH);
 
-       // idk if this is useful
+        // idk if this is useful
         System.gc();
     }
 
