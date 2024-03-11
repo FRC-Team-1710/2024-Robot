@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -34,13 +35,16 @@ public final class Constants {
         public static final String kAprilTagCameraBack = "ChristiansThirdEye";
         public static final String kNoteCamera = "OnionRing";
 
-        public static final Transform3d kRobotToCamFront =
-                new Transform3d(new Translation3d(Units.inchesToMeters(12.5), Units.inchesToMeters(-1.25), Units.inchesToMeters(14.75)), new Rotation3d(0, Units.degreesToRadians(15), 0));
-        public static final Transform3d kRobotToCamBack = 
-                new Transform3d(new Translation3d(Units.inchesToMeters(-6.5), Units.inchesToMeters(11.5), Units.inchesToMeters(15)), new Rotation3d(0, Units.degreesToRadians(15), Math.PI));
+        public static final Transform3d kRobotToCamFront = new Transform3d(
+                new Translation3d(Units.inchesToMeters(12.5), Units.inchesToMeters(-1.25), Units.inchesToMeters(14.75)),
+                new Rotation3d(0, Units.degreesToRadians(15), 0));
+
+        public static final Transform3d kRobotToCamBack = new Transform3d(
+                new Translation3d(Units.inchesToMeters(-7), Units.inchesToMeters(11), Units.inchesToMeters(15)),
+                new Rotation3d(0, Units.degreesToRadians(14), Math.PI));
 
         // The layout of the AprilTags on the field
-        public static final AprilTagFieldLayout kTagLayout = errorWrapper();
+        public static final AprilTagFieldLayout kTagLayout = getFieldLayout();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
@@ -50,7 +54,7 @@ public final class Constants {
         public static final Pose2d startingPose = new Pose2d(1.35, 5.55, new Rotation2d(0));
     }
 
-    private static AprilTagFieldLayout errorWrapper() {
+    private static AprilTagFieldLayout getFieldLayout() {
         try {
             AprilTagFieldLayout attemptedKTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
             return attemptedKTagLayout;
@@ -64,8 +68,8 @@ public final class Constants {
         public static final String canivore = "rex";
         public static final int pigeonID = 13;
 
-        public static final COTSTalonFXSwerveConstants chosenModule = 
-        COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
+        public static final COTSTalonFXSwerveConstants chosenModule = COTSTalonFXSwerveConstants.SDS.MK4i
+                .Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
         public static final double trackWidth = Units.inchesToMeters(20.75);
@@ -74,11 +78,11 @@ public final class Constants {
 
         /* Swerve Kinematics 
          * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
-         public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+        public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
+                new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
+                new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
+                new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
+                new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
 
         /* Module Gear Ratios */
         public static final double driveGearRatio = chosenModule.driveGearRatio;
@@ -134,50 +138,51 @@ public final class Constants {
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
         /* Module Specific Constants */
-        /* Front Left Module - Module 0 */
+        /** Front Left Module - Module 0 */
         public static final class Mod0 {
             public static final int driveMotorID = 1;
             public static final int angleMotorID = 3;
             public static final int canCoderID = 2;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(112.5);
-            public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+                    canCoderID, angleOffset);
         }
 
-        /* Front Right Module - Module 1 */
+        /** Front Right Module - Module 1 */
         public static final class Mod1 {
             public static final int driveMotorID = 4;
             public static final int angleMotorID = 6;
             public static final int canCoderID = 5;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-79.4);
-            public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+                    canCoderID, angleOffset);
         }
-        
-        /* Back Left Module - Module 2 */
+
+        /** Back Left Module - Module 2 */
         public static final class Mod2 {
             public static final int driveMotorID = 7;
             public static final int angleMotorID = 9;
             public static final int canCoderID = 8;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-80.5);
-            public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+                    canCoderID, angleOffset);
         }
 
-        /* Back Right Module - Module 3 */
+        /** Back Right Module - Module 3 */
         public static final class Mod3 {
             public static final int driveMotorID = 10;
             public static final int angleMotorID = 12;
             public static final int canCoderID = 11;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(114);
-            public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+                    canCoderID, angleOffset);
         }
     }
 
     public static final class Shooter {
         public static final double intakeAngleRadians = 0.56;
         public static final double idleSpeedRPM = 1300;
+        public static final double angleOffsetBottom = Units.degreesToRadians(2.3);
         public static final double wristAngleMax = Units.degreesToRadians(62.7);
         public static final double wristAngleMin = Units.degreesToRadians(-28.8);
         public static final double angleOffsetManual = Units.degreesToRadians(62.7);
@@ -185,8 +190,8 @@ public final class Constants {
     }
 
     public static final class Elevator {
-        public static final double maxHeightMeters = 0.78;
-        public static final double minHeightMeters = 0.015;
+        public static final double maxHeightMeters = 0.6;
+        public static final double minHeightMeters = -0.01;
     }
 
     public static final class Auto {
@@ -199,9 +204,12 @@ public final class Constants {
         public static final double kPYController = 1;
         public static final double kPThetaController = 1;
     
-        /* Constraint for the motion profilied robot angle controller */
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-            new TrapezoidProfile.Constraints(
+        public static final PathConstraints PathfindingConstraints = new PathConstraints(kMaxSpeedMetersPerSecond,
+                kMaxAccelerationMetersPerSecondSquared, kMaxAngularSpeedRadiansPerSecond,
+                kMaxAngularSpeedRadiansPerSecondSquared);
+
+        /** Constraint for the motion profilied robot angle controller */
+        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 }

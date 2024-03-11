@@ -25,7 +25,7 @@ public class AimBot extends Command {
     private double speed;
     private Timer timer = new Timer();
 
-    /** Creates a new AutoShoot. */
+    /** Creates a new AimBot. */
     public AimBot(ShooterSubsystem shooterSubsystem, SwerveSubsystem swerve, IntexerSubsystem intexer, double speed) {
         this.shooter = shooterSubsystem;
         this.speed = speed;

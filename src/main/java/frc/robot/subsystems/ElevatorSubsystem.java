@@ -24,9 +24,9 @@ import frc.robot.Constants;
 public class ElevatorSubsystem extends SubsystemBase {
 
     // Devices
-    public TalonFX m_elevatorLeft = new TalonFX(20); // left leader
-    public TalonFX m_elevatorRight = new TalonFX(21);
-    public LaserCan lasercan = new LaserCan(22);
+    public TalonFX m_elevatorLeft; // left leader
+    public TalonFX m_elevatorRight;
+    public LaserCan lasercan;
 
     // Falcon stuff
     private final PositionDutyCycle m_requestPosition = new PositionDutyCycle(0);
@@ -48,6 +48,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     public boolean locked = false;
 
     public ElevatorSubsystem() {
+        m_elevatorLeft = new TalonFX(20); // left leader
+        m_elevatorRight = new TalonFX(21);
+        lasercan = new LaserCan(22);
+
         // Falcon setup
         TalonFXConfiguration elevatorConfigs = new TalonFXConfiguration();
         elevatorConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -55,15 +59,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorConfigs.Slot1.kP = 1;
         elevatorConfigs.Slot0.GravityType = GravityTypeValue.Elevator_Static;
         elevatorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        elevatorConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.5;
-        elevatorConfigs.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.5;
-        elevatorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.5;
+        elevatorConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.25;
+        elevatorConfigs.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.25;
+        elevatorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.25;
 
         m_elevatorLeft.getConfigurator().apply(elevatorConfigs);
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
         // laser can pid shenanigans
-        elevatorPID.setP(2.5);
+        elevatorPID.setP(3);
         elevatorPID.setI(0);
         elevatorPID.setD(0);
         elevatorPID.setTolerance(0.02);
@@ -92,8 +96,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("LaserCan Meters", getHeightLaserCan());
         SmartDashboard.putBoolean("LaserCan failure", lasercanFailureCheck());
         SmartDashboard.putNumber("Elevator Left Supply Current", m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Elevator Right Supply Current",
-        m_elevatorRight.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Elevator Right Supply Current", m_elevatorRight.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("LaserCan Ambient", measurement != null ? measurement.ambient : 0);
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
         
@@ -129,6 +132,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         setHeight = height;
         if (!lasercanFailureCheck()) { // Run off LaserCan
             m_elevatorLeft.set(elevatorPID.calculate(getHeightLaserCan(), height));
+            m_elevatorLeft.getFault_StatorCurrLimit().getValue();
         } else { // Run off encoder
             double rot = (height / (spoolCircumference * Math.PI)) * gearRatio;
             if (getHeightEncoder() < Constants.Elevator.maxHeightMeters) {

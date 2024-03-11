@@ -74,11 +74,12 @@ public class TeleopSwerve extends Command {
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
-            if (shooterSubsystem.getDistanceToSpeakerWhileMoving() >= 3.5){
+            if (shooterSubsystem.getDistanceToSpeakerWhileMoving() >= 3){
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else {
                 controller.setRumble(RumbleType.kBothRumble, 0);
             }
+
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
             rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
@@ -102,6 +103,7 @@ public class TeleopSwerve extends Command {
             SmartDashboard.putNumber("Note Yaw", yawToNote);
 
             rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
+            
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);

@@ -40,7 +40,7 @@ public class IntexBestHex extends Command {
                 controller.setRumble(RumbleType.kBothRumble, 0.75);
                 intexer.setALL(0);
             } else { // Note is not in robot
-                intexer.setFrontIntake(.75);
+                intexer.setFrontIntake(.65);
             }
         } else { // Outtake
             intexer.setALL(-0.5);

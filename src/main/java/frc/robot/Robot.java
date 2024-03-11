@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
 
     private static boolean redAlliance;
 
-    PowerDistribution PDH = new PowerDistribution(1, ModuleType.kRev);
+    PowerDistribution PDH;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -49,6 +49,8 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer. This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
+
+        PDH = new PowerDistribution(1, ModuleType.kRev);
 
         // Disable LiveWindow since we don't use it
         LiveWindow.disableAllTelemetry();
@@ -68,18 +70,18 @@ public class Robot extends TimedRobot {
         URCL.start();
 
         // Log data from all CTRE devices
-        SignalLogger.setPath("/media/sda1/logs/");
-        SignalLogger.start();
+        //SignalLogger.setPath("/media/sda1/logs/");
+        //SignalLogger.start();
 
         // Output command scheduler to dashboard
         SmartDashboard.putData(CommandScheduler.getInstance());
 
         // Access PhotonVision dashboard when connected via usb TODO make work
-       // PortForwarder.add(5800, "10.17.10.11", 5800);
+        PortForwarder.add(5800, "10.17.10.11", 5800);
 
-       SmartDashboard.putData(PDH);
+        SmartDashboard.putData(PDH);
 
-       // idk if this is useful
+        // idk if this is useful
         System.gc();
     }
 
@@ -97,6 +99,7 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
     /** Gets the current alliance, true is red */
@@ -108,8 +111,10 @@ public class Robot extends TimedRobot {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             return alliance.get() == DriverStation.Alliance.Red;
+        } else {
+            DataLogManager.log("ERROR: Alliance not found. Defaulting to Blue");
+            return false;
         }
-        return false;
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -144,6 +149,7 @@ public class Robot extends TimedRobot {
         }
 
         FiringSolutionsV3.resetAllR();
+        m_robotContainer.zeroWristEncoders();
     }
 
     /** This function is called periodically during autonomous. */
