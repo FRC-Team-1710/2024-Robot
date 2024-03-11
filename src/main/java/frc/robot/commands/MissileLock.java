@@ -31,8 +31,8 @@ public class MissileLock extends Command {
     @Override
     public void execute() {
         if (target == "amp") {
-            shooter.PointShoot(shooter.getCalculatedAngleToAmp(),
-                    FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+            shooter.PointShoot(Math.toRadians(60),
+                    FiringSolutionsV3.convertToRPM(10));
         } else {
             shooter.PointShoot(shooter.getCalculatedAngleToSpeaker(),
                     FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));

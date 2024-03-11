@@ -65,6 +65,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
+    public boolean outOfAmpRange = false;
+
     // Constants
     private final double wristAngleMax = 0.0;
     private final double wristAngleMin = 0.0;
@@ -176,17 +178,21 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
 
-        if (isZeroed){
-            if (!manualOverride){
+        if (isZeroed) {
+            if (!manualOverride) {
                 m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), lastWristAngleSetpoint));
             }
 
-            //Implement whenever build stops throwing
-            /*if (getCurrentShooterAngle() > wristAngleUpperBound){
-                m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), wristAngleUpperBound));
-            } else if (getCurrentShooterAngle() < wristAngleLowerBound){
-                m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), wristAngleLowerBound));
-            }*/
+            // Implement whenever build stops throwing
+            /*
+             * if (getCurrentShooterAngle() > wristAngleUpperBound){
+             * m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
+             * wristAngleUpperBound));
+             * } else if (getCurrentShooterAngle() < wristAngleLowerBound){
+             * m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
+             * wristAngleLowerBound));
+             * }
+             */
         }
 
     }
@@ -274,7 +280,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_Wrist.set(speed);
     }
 
-    public void setManualOverride(boolean value){
+    public void setManualOverride(boolean value) {
         manualOverride = value;
     }
 
@@ -308,9 +314,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setWristAngleLowerBound(double wristAngleLowerBound) {
-        if (wristAngleLowerBound < wristAngleMin){
+        if (wristAngleLowerBound < wristAngleMin) {
             wristAngleLowerBound = wristAngleMin;
-        } else if (wristAngleLowerBound > wristAngleUpperBound){
+        } else if (wristAngleLowerBound > wristAngleUpperBound) {
             wristAngleLowerBound = wristAngleUpperBound;
         } else {
             this.wristAngleLowerBound = wristAngleLowerBound;
@@ -318,9 +324,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setWristAngleUpperBound(double wristAngleUpperBound) {
-        if (wristAngleUpperBound > wristAngleMax){
+        if (wristAngleUpperBound > wristAngleMax) {
             wristAngleUpperBound = wristAngleMax;
-        } else if (wristAngleUpperBound < wristAngleLowerBound){
+        } else if (wristAngleUpperBound < wristAngleLowerBound) {
             wristAngleUpperBound = wristAngleLowerBound;
         } else {
             this.wristAngleUpperBound = wristAngleUpperBound;
@@ -336,25 +342,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** IN ROTATIONS */
     public void setWristByRotations(double newPosition) {
-        if (isZeroed){
+        if (isZeroed) {
             m_Wrist.set(m_pidWrist.calculate(getWristRotations(), newPosition));
         }
     }
 
     public void updateWristAngleSetpoint(double angle) {
-        if (angle != lastWristAngleSetpoint){
-            /*if (lastWristAngleSetpoint < wristAngleLowerBound){
-                lastWristAngleSetpoint = wristAngleLowerBound;
-            } else if (lastWristAngleSetpoint > wristAngleUpperBound){
-                lastWristAngleSetpoint = wristAngleUpperBound;
-            } else {
-                
-            } */
+        if (angle != lastWristAngleSetpoint) {
             lastWristAngleSetpoint = angle;
         }
     }
 
     public void updateShooterMath() { // Shooter Math
+
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
 
@@ -365,8 +365,19 @@ public class ShooterSubsystem extends SubsystemBase {
         FiringSolutionsV3.updateSpeakerR(distanceToMovingSpeakerTarget);
 
         // shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
-        shooterAngleToSpeaker = Math
-                .toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+        shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+
+        if (FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
+                FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
+                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
+                pose.getRotation().getRadians()) > FiringSolutionsV3.maxRangeWithR){
+                    outOfAmpRange = true;
+                } else {
+                    if (outOfAmpRange){
+                        outOfAmpRange = false;
+                        FiringSolutionsV3.resetAmpR();
+                    }
+                }
 
         SmartDashboard.putNumber("Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);

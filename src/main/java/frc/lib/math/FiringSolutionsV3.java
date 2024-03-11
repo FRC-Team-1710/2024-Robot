@@ -6,29 +6,34 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public class FiringSolutionsV3 {
 
+    // Robot Values
     private static final double defaultShooterHeight = 0.42672;
-    private static final double laserCANOffset = 0;
     private static double shooterHeight = 0.42672;
-
-    private static final double noteFallAccel = 9.8;
-    private static final double maxShooterAngle = Math.toRadians(70);
-    private static final double ampTargetXBlue = 1.84;
-    private static final double ampTargetXRed = 14.7;
-    
-    public static final double speakerTargetY = 5.55;
-    public static final double ampTargetY = 8.0;
-    public static final double ampTargetZ = .125;
-
-    public static double speakerTargetXOffset = .24;
-    public static double speakerTargetZ = 1.92;
+    private static final double laserCANOffset = 0;
+    public static final double maxShooterAngle = Math.toRadians(70);
     public static double slipPercent = 0.5324;
+    private static double shooterVelocity = 10.0;
+    private static final double noteFallAccel = 9.8;
 
+    // Amp Values
+    private static final double ampTargetXRed = 15.91;
+    private static final double ampTargetXBlue = 16.54 - ampTargetXRed;
+    public static double ampTargetX;
+    public static final double ampTargetY = 7;
+    public static final double ampTargetZ = .125;
+    
+    // Speaker Values
+    public static double speakerTargetXOffset = .24;
     private static double speakerTargetXBlue = 0.0 + speakerTargetXOffset;
     private static double speakerTargetXRed = 16.54 - speakerTargetXOffset;
     public static double speakerTargetX;
-    public static double ampTargetX;
-    private static double shooterVelocity = 10.0;
+    public static final double speakerTargetY = 5.55;
+    public static double speakerTargetZ = 1.92;
+
+    //R Values
     private static double speakerR, ampR, customR = 1.0;
+    public static double maxRangeWithR = 11.25;
+
 
     private FiringSolutionsV3() {
     }
