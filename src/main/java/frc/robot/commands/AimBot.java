@@ -74,7 +74,7 @@ public class AimBot extends Command {
     public void end(boolean interrupted) {
         swerveSubsystem.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
         intexer.setShooterIntake(0);
-        shooter.setManualWristSpeed(0);
+        shooter.setWristSpeedManual(0);
     }
 
     // Returns true when the command should end.

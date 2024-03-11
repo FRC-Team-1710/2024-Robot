@@ -143,13 +143,13 @@ public class ShooterSubsystem extends SubsystemBase {
             topPID.setP(velocityP, 0);
             botPID.setP(velocityP, 0);
         }
-
+        
         if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)){
             velocityI = SmartDashboard.getNumber("Velo I", velocityI);
             topPID.setI(velocityI, 0);
             botPID.setI(velocityI, 0);
         }
-
+        
         if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)){
             velocityD = SmartDashboard.getNumber("Velo D", velocityD);
             topPID.setD(velocityD, 0);
@@ -273,6 +273,7 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
     }
 
+
     public void resetWristEncoders(double newOffset) {
         angleOffset = newOffset;
         m_WristEncoder.reset();
@@ -281,14 +282,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** Wrist Encoder Reset */
-    public void restartWristEncoders(){
+    public void restartWristEncoders() {
         m_WristEncoder.reset();
         m_PositionEncoder.setPosition(0);
-    }
-
-    public void setManualWristSpeed(double speed) {
-        manualOverride = true;
-        m_Wrist.set(speed);
     }
 
     public void setManualOverride(boolean value) {
@@ -360,6 +356,11 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
+    public void setWristSpeedManual(double speed) {
+        manualOverride = true;
+        m_Wrist.set(speed);
+    }
+
     public void updateWristAngleSetpoint(double angle) {
         if (angle != lastWristAngleSetpoint) {
             lastWristAngleSetpoint = angle;
@@ -378,19 +379,20 @@ public class ShooterSubsystem extends SubsystemBase {
         FiringSolutionsV3.updateSpeakerR(distanceToMovingSpeakerTarget);
 
         // shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
-        shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+        shooterAngleToSpeaker = Math
+                .toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
 
         if (FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
                 FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                pose.getRotation().getRadians()) > FiringSolutionsV3.maxRangeWithR){
-                    outOfAmpRange = true;
-                } else {
-                    if (outOfAmpRange){
-                        outOfAmpRange = false;
-                        FiringSolutionsV3.resetAmpR();
-                    }
-                }
+                pose.getRotation().getRadians()) > FiringSolutionsV3.maxRangeWithR) {
+            outOfAmpRange = true;
+        } else {
+            if (outOfAmpRange) {
+                outOfAmpRange = false;
+                FiringSolutionsV3.resetAmpR();
+            }
+        }
 
         SmartDashboard.putNumber("Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);

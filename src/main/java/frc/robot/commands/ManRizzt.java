@@ -45,16 +45,15 @@ public class ManRizzt extends Command {
         } else {
             if (Math.abs(speedValue) > .0) {
                 wristIsLocked = false;
-                m_shooterSubsystem.setManualWristSpeed(speedValue);
+                m_shooterSubsystem.setWristSpeedManual(speedValue);
             } else {
                 if (m_shooterSubsystem.isZeroed){
                     if (!wristIsLocked){
-                        m_shooterSubsystem.setManualOverride(false);
                         m_shooterSubsystem.setWristByAngle(m_shooterSubsystem.getCurrentShooterAngle());
                         wristIsLocked = true;
                     }
                 } else {
-                    m_shooterSubsystem.setManualWristSpeed(0);
+                    m_shooterSubsystem.setWristSpeedManual(0);
                 }
             }
         }
@@ -67,6 +66,6 @@ public class ManRizzt extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        m_shooterSubsystem.setManualWristSpeed(0);
+        m_shooterSubsystem.setWristSpeedManual(0);
     }
 }

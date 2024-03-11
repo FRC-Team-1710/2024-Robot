@@ -90,12 +90,16 @@ public class TeleopSwerve extends Command {
                             
         } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
-
-            rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
-                    FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
-                            currentSpeed.vxMetersPerSecond,
-                            currentSpeed.vyMetersPerSecond,
-                            pose.getRotation().getRadians()));
+            if (FiringSolutionsV3.getDistanceToTarget(swerveSubsystem.getPose().getX(), swerveSubsystem.getPose().getY(),
+            FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4) {
+                rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
+                        FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
+                                currentSpeed.vxMetersPerSecond,
+                                currentSpeed.vyMetersPerSecond,
+                                pose.getRotation().getRadians()));
+            } else {
+                rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),Math.toRadians(90));
+            }
 
         } else if (intakeOverride.getAsBoolean() && result.hasTargets()) { // Lock robot towards detected note
             double yawToNote = Math.toRadians(result.getBestTarget().getYaw()) + swerveSubsystem.getGyroYaw().getRadians();

@@ -15,12 +15,18 @@ public class FiringSolutionsV3 {
     private static double shooterVelocity = 10.0;
     private static final double noteFallAccel = 9.8;
 
-    // Amp Values
+    // Amp Values (used for targeting from afar)
     private static final double ampTargetXRed = 15.91;
     private static final double ampTargetXBlue = 16.54 - ampTargetXRed;
     public static double ampTargetX;
     public static final double ampTargetY = 7;
     public static final double ampTargetZ = .125;
+
+    // True Amp Values
+    private static final double trueAmpXBlue = 1.8415;
+    private static final double trueAmpXRed = 16.54 - trueAmpXBlue;
+    public static double trueAmpX;
+    public static final double trueAmpY = 8.2;
     
     // Speaker Values
     public static double speakerTargetXOffset = .24;
@@ -42,9 +48,11 @@ public class FiringSolutionsV3 {
         if (redAlliance) {
             speakerTargetX = speakerTargetXRed;
             ampTargetX = ampTargetXRed;
+            trueAmpX = trueAmpXRed;
         } else {
             speakerTargetX = speakerTargetXBlue;
             ampTargetX = ampTargetXBlue;
+            trueAmpX = trueAmpXBlue;
         }
     }
 

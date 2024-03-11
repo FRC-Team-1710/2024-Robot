@@ -103,6 +103,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         //FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
     }
 
+    public void setElevatorSpeedManual(double value){
+        m_elevatorLeft.set(value);
+    }
+
     public void setManualOverride(boolean value){
         manualOverride = value;
     }

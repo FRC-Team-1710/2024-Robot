@@ -96,7 +96,9 @@ public class RobotContainer {
     /** Mech Back */
     private final JoystickButton zeroShooter = new JoystickButton(mech, XboxController.Button.kBack.value);
     /** Mech RS */
-    private final JoystickButton rightStick = new JoystickButton(mech, XboxController.Button.kRightStick.value);
+    private final JoystickButton mechRightStick = new JoystickButton(mech, XboxController.Button.kRightStick.value);
+    /** Mech LS */
+    private final JoystickButton mechLeftStick = new JoystickButton(mech, XboxController.Button.kLeftStick.value);
 
     
     private final Trigger dynamicForward = new Trigger(() -> FF.getPOV() == 90);
@@ -188,8 +190,15 @@ public class RobotContainer {
         forceShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
                 .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
+        // Move to Amp
         driverUp.whileTrue(m_SwerveSubsystem.pathToAmpChain());
+
+        // Move to Source
         driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
+
+        // Intake from Source
+        driverX.whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, driver))
+                .onFalse(new IntakeThroughShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, driver));
 
         /* MECH BUTTONS */
 
@@ -227,13 +236,20 @@ public class RobotContainer {
         // Reset the R calculation incase it gets off
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR()));
 
-        // Kill Shooter
-        rightStick.onTrue(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(0)));
-
         // Intake Through Shooter
         intakeThroughShooter.whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, mech))
-                .onFalse(new IntakeThroughShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, mech));
+        .onFalse(new IntakeThroughShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, mech));
+        
+        // Kill Flywheels
+        mechRightStick.onTrue(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(0)));
+        
+        // Kill Wrist
+        mechLT.and(mechRightStick).onTrue(new InstantCommand(() -> m_ShooterSubsystem.setWristSpeedManual(0)));
 
+        // Kill Elevator
+        mechLT.and(mechLeftStick).onTrue(new InstantCommand(() -> m_ElevatorSubsystem.setElevatorSpeedManual(0)));
+
+        /* THIRD CONTROLLER */
         // Characterization tests
         dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
@@ -243,7 +259,7 @@ public class RobotContainer {
 
     public void stopAll() {
         m_ShooterSubsystem.setShooterVelocity(0);
-        m_ShooterSubsystem.setManualWristSpeed(0);
+        m_ShooterSubsystem.setWristSpeedManual(0);
         m_IntexerSubsystem.setALL(0);
         m_ElevatorSubsystem.setPositionWithEncoder(m_ElevatorSubsystem.getPosition());
     }
