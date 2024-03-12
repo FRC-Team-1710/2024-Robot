@@ -149,8 +149,6 @@ public class RobotContainer {
         m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, m_LEDSubsystem, () -> -mech.getRawAxis(rightVerticalAxis),
                 () -> shooterToAntiDefense.getAsBoolean()));
 
-        // m_LEDSubsystem.setAllianceColor();
-
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
         autoChooser = AutoBuilder.buildAutoChooser();

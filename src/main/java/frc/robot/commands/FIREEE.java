@@ -32,12 +32,6 @@ public class FIREEE extends Command {
     public void execute() {
         if (shooter.isShooterAtSpeed()){
             intexer.setShooterIntake(.9);
-            ledSubsystem.atSpeed = true;
-            ledSubsystem.chargingOuttake = false;
-            ledSubsystem.hasNote = false;
-        } else {
-            ledSubsystem.atSpeed = false;
-            ledSubsystem.chargingOuttake = true;
         }
     }
 
