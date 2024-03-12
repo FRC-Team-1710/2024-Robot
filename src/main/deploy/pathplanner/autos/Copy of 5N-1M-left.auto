@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3479282065452507,
-      "y": 6.620085829245293
+      "x": 1.3771774811958186,
+      "y": 6.50308873064302
     },
     "rotation": 0
   },
@@ -75,12 +75,6 @@
           "type": "named",
           "data": {
             "name": "Note Sniffer"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "backCloseMiddle"
           }
         },
         {
