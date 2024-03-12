@@ -3,8 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -80,7 +78,7 @@ public class RobotContainer {
     /** Mech RB */
     private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
     /** Mech LB */
-    private final JoystickButton primeShooterSpeedAmp = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton resetNoteInShooter = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
     /** Mech RT */
     private final Trigger mechRT = new Trigger(() -> mech.getRawAxis(rightTrigger) > .5);
     /** Mech LT */
@@ -92,13 +90,15 @@ public class RobotContainer {
     /** Mech Right */
     private final Trigger resetR = new Trigger(() -> mech.getPOV() == 90);
     /** Mech Left */
-    private final Trigger intakeThroughShooter = new Trigger(() -> mech.getPOV() == 270);
+    private final Trigger mechLeft = new Trigger(() -> mech.getPOV() == 270);
     /** Mech Start */
     private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
     /** Mech Back */
     private final JoystickButton zeroShooter = new JoystickButton(mech, XboxController.Button.kBack.value);
     /** Mech RS */
-    private final JoystickButton rightStick = new JoystickButton(mech, XboxController.Button.kRightStick.value);
+    private final JoystickButton mechRightStick = new JoystickButton(mech, XboxController.Button.kRightStick.value);
+    /** Mech LS */
+    private final JoystickButton mechLeftStick = new JoystickButton(mech, XboxController.Button.kLeftStick.value);
 
     
     private final Trigger dynamicForward = new Trigger(() -> FF.getPOV() == 90);
@@ -109,10 +109,10 @@ public class RobotContainer {
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
-    public final ShooterSubsystem m_Shoota = new ShooterSubsystem(m_SwerveSubsystem);
+    //private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem, m_Shoota, m_IntexerSubsystem, m_SwerveSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
     private final IntexerSubsystem m_IntexerSubsystem = new IntexerSubsystem();
-    private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem, m_Shoota, m_IntexerSubsystem, m_SwerveSubsystem);
+    private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_SwerveSubsystem, m_ElevatorSubsystem);
 
     private final SendableChooser<Command> autoChooser;
 
@@ -121,18 +121,18 @@ public class RobotContainer {
      */
     public RobotContainer() {
         // Named commands for PathPlanner autos
-        NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem, m_Shoota));
-        NamedCommands.registerCommand("Shoot", new AimBot(m_Shoota, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity())));
-        NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
-        NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_Shoota.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))));
+        NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem, m_ShooterSubsystem));
+        NamedCommands.registerCommand("Shoot", new AimBot(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity())));
+        NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()))));
         NamedCommands.registerCommand("Set Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
         NamedCommands.registerCommand("Stop Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
-        NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
-        NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_Shoota));
+        NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
+        NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
 
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
-                        m_SwerveSubsystem, m_VisionSubsystem, m_Shoota,
+                        m_SwerveSubsystem, m_VisionSubsystem, m_ShooterSubsystem,
                         () -> -driver.getRawAxis(leftVerticalAxis),
                         () -> -driver.getRawAxis(leftHorizontalAxis),
                         () -> -driver.getRawAxis(rightHorizontalAxis),
@@ -146,8 +146,8 @@ public class RobotContainer {
                         m_ElevatorSubsystem,
                         () -> -mech.getRawAxis(leftVerticalAxis)));
 
-        m_Shoota.setDefaultCommand(new ManRizzt(m_Shoota, m_LEDSubsystem, () -> -mech.getRawAxis(rightVerticalAxis),
-                () -> shooterToAntiDefense.getAsBoolean()));
+        m_ShooterSubsystem.setDefaultCommand(new ManRizzt(m_ShooterSubsystem, () -> -mech.getRawAxis(rightVerticalAxis),
+                () -> shooterToSubwoofer.getAsBoolean()));
 
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
@@ -161,25 +161,26 @@ public class RobotContainer {
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
-     * created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * created by instantiating a {@link GenericHID} or one of its subclasses ({@link
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-     * it to a {@link
-     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */ 
+     * it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
     private void configureButtonBindings() {
         /* DRIVER BUTTONS */
 
         // Lock on to speaker
-        targetSpeaker.whileTrue(new MissileLock(m_Shoota, "speaker"));
-        targetAmp.whileTrue(new MissileLock(m_Shoota, "amp"));
+        targetSpeaker.whileTrue(new MissileLock(m_ShooterSubsystem, "speaker"))
+        .onFalse(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        targetAmp.whileTrue(new MissileLock(m_ShooterSubsystem, "amp"))
+        .onFalse(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Shooter
-        targetSpeaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_Shoota, m_IntexerSubsystem, m_LEDSubsystem)); // Main fire
+        Speaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_ShooterSubsystem, m_IntexerSubsystem)); // Main fire
 
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
-                new InstantCommand(() -> m_SwerveSubsystem.setPose(new Pose2d(1.35, 5.55, new Rotation2d(0))))));
+                new InstantCommand(() -> m_SwerveSubsystem
+                        .setPose(Constants.Vision.startingPose))));
 
         // Intexer
         intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
@@ -189,61 +190,91 @@ public class RobotContainer {
         forceShoot.whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
                 .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
+        // Move to Amp
         driverUp.whileTrue(m_SwerveSubsystem.pathToAmpChain());
+
+        // Move to Source
         driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
+
+        // Intake from Source
+        driverX.whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, driver))
+                .onFalse(new IntakeThroughShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, driver));
 
         /* MECH BUTTONS */
 
-        // Prime for Speaker
+        // Prime Shooter
         primeShooterSpeedSpeaker
-                .whileTrue(new InstantCommand(() -> m_Shoota.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_Shoota.getCalculatedVelocity()))))
-                .onFalse(new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
-
-        // Prime for Amp
-        primeShooterSpeedAmp.whileTrue(new InstantCommand(() -> m_Shoota.setShooterVelocity(3417.8)))
-                .onFalse(new InstantCommand(() -> m_Shoota.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+                .whileTrue(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(
+                        FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()))))
+                .onFalse(new InstantCommand(
+                        () -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Elevator
-        elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
-        elevatorUp.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters));
+        elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters)
+                .alongWith(new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)));
+        elevatorUp.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters)
+                .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
 
         // Zero wrist
-        zeroShooter.onTrue(new InstantCommand(() -> m_Shoota.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
-        autoZeroShooter.onTrue(new ZeroRizz(m_Shoota).andThen(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)));
+        mechLT.negate().and(zeroShooter).onTrue(new InstantCommand(
+                () -> m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
+        //autoZeroShooter.onTrue(new ZeroRizz(m_ShooterSubsystem)
+        //        .andThen(new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)));
 
-        // Wrist
-        shooterToIntake.onTrue(new RizzLevel(m_Shoota, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
+        // Intake Preset
+        shooterToIntake.onTrue(new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians))
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
 
         // Amp Preset
-        shooterToAmp.onTrue(new RizzLevel(m_Shoota, -0.48))
-                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters));
+        shooterToAmp.onTrue(new RizzLevel(m_ShooterSubsystem, -0.48))
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.ampHeight));
 
-        // xButton.whileTrue(new InstantCommand(() -> m_Shoota.SetOffsetVelocity(2000)))
-        // .onFalse(new InstantCommand(() ->
-        // m_Shoota.SetShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        // Subwoofer Preset
+        shooterToSubwoofer.onTrue(new RizzLevel(m_ShooterSubsystem, Math.toRadians(57)))
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
 
-        // Reset the R calculation incase it gets off
+        // Anti-Defense Preset
+        shooterToAntiDefense
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.antiBozoSmileToasterAhhGoonBotShooterHeight));
+
+        // Reset the R calculation in case it gets off
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR()));
 
-        // Kill Shooter
-        rightStick.onTrue(new InstantCommand(() -> m_Shoota.setShooterVelocity(0)));
+        // Reset Note in Shooter
+        resetNoteInShooter.whileTrue(new ResetNoteInShooter(m_ShooterSubsystem, m_IntexerSubsystem, mech))
+        .onFalse(new ResetNoteInShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, mech));
+        
+        // Kill Flywheels
+        mechLT.negate().and(mechRightStick).onTrue(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(0)));
+        
+        // Kill Wrist
+        mechLT.and(mechRightStick).onTrue(new InstantCommand(() -> m_ShooterSubsystem.setWristSpeedManual(0))
+        .alongWith(new InstantCommand(() -> m_ShooterSubsystem.setWristToCoast())))
+        .onFalse(new InstantCommand(() -> m_ShooterSubsystem.setWristToBrake()));
 
-        // Intake Through Shooter
-        intakeThroughShooter.whileTrue(new IntakeThroughShooter(m_Shoota, m_IntexerSubsystem, mech))
-                .onFalse(new IntakeThroughShooterPart2(m_Shoota, m_IntexerSubsystem, mech));
+        // Kill Elevator
+        mechLT.and(mechLeftStick).onTrue(new InstantCommand(() -> m_ElevatorSubsystem.setElevatorSpeedManual(0)));
 
-        // Characterization tests 
+        mechLT.and(zeroShooter).onTrue(new InstantCommand(
+                () -> m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetBottom)));
+
+        /* THIRD CONTROLLER */
+        // Characterization tests
         dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
         quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
         quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
     }
 
-    public void stopAll () {
-        m_Shoota.setShooterVelocity(0);
-        m_Shoota.setManualWristSpeed(0);
+    public void stopAll() {
+        m_ShooterSubsystem.setShooterVelocity(0);
+        m_ShooterSubsystem.setWristSpeedManual(0);
         m_IntexerSubsystem.setALL(0);
         m_ElevatorSubsystem.setPositionWithEncoder(m_ElevatorSubsystem.getPosition());
+    }
+
+    public void zeroWristEncoders(){
+        m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetBottom);
     }
 
     /**

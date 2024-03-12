@@ -62,6 +62,7 @@ public class TeleopSwerve extends Command {
     public void execute() {
         Pose2d pose = swerveSubsystem.getPose();
         boolean robotCentric = robotCentricSup.getAsBoolean();
+        boolean openLoop = true;
         PhotonPipelineResult result = vision.getLatestResultN();
 
         /* Get Values, Deadband */
@@ -79,29 +80,38 @@ public class TeleopSwerve extends Command {
             } else {
                 controller.setRumble(RumbleType.kBothRumble, 0);
             }
+
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
-            rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
+            rotationVal = rotationPID.calculate(pose.getRotation().getRadians(),
                     FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
                             currentSpeed.vxMetersPerSecond,
                             currentSpeed.vyMetersPerSecond,
                             pose.getRotation().getRadians()));
+            openLoop = false;
                             
         } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
-            rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
-                    FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
-                            currentSpeed.vxMetersPerSecond,
-                            currentSpeed.vyMetersPerSecond,
-                            pose.getRotation().getRadians()));
+            if (FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4) {
+
+                rotationVal = rotationPID.calculate(pose.getRotation().getRadians(),
+                        FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
+                                currentSpeed.vxMetersPerSecond,
+                                currentSpeed.vyMetersPerSecond,
+                                pose.getRotation().getRadians()));
+            } else {
+                rotationVal = rotationPID.calculate(pose.getRotation().getRadians(), Math.toRadians(-90));
+            }
 
         } else if (intakeOverride.getAsBoolean() && result.hasTargets()) { // Lock robot towards detected note
             double yawToNote = Math.toRadians(result.getBestTarget().getYaw()) + swerveSubsystem.getGyroYaw().getRadians();
 
             SmartDashboard.putNumber("Note Yaw", yawToNote);
 
+            //openLoop = false;
             rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
+            
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);
@@ -118,6 +128,6 @@ public class TeleopSwerve extends Command {
                 new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
                 rotationVal * Constants.Swerve.maxAngularVelocity,
                 !robotCentric,
-                true);
+                openLoop);
     }
 }
