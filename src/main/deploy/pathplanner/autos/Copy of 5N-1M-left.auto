@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7141939224496041,
-      "y": 4.309393131850397
+      "x": 1.3771774811958186,
+      "y": 6.50308873064302
     },
-    "rotation": -61.949224233821454
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "toMidSourceRight"
+            "pathName": "toMidAmpLeft"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "backMidSourceRight"
+            "pathName": "backMidAmpLeft"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "toMidSourceLeft"
+            "pathName": "toCloseLeft"
           }
         },
         {
@@ -56,7 +56,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "backMidSourceLeft"
+            "pathName": "backCloseLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseRight"
           }
         },
         {
