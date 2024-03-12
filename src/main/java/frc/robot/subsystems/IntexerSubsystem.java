@@ -19,6 +19,8 @@ public class IntexerSubsystem extends SubsystemBase {
     private CANSparkBase right;
     private CANSparkBase shooterIntake;
     public boolean intakeThroughShooterPart2isReady = false;
+    public boolean resetNoteInShooterPart2isReady = false;
+    
 
     /** Front Intake */
     private DigitalInput breakingBeam;
@@ -85,6 +87,10 @@ public class IntexerSubsystem extends SubsystemBase {
 
     public void setIntakeThroughShooterPart2Status(boolean value){
         intakeThroughShooterPart2isReady = value;
+    }
+
+    public void resetNoteInShooterPart2Status(boolean value){
+        resetNoteInShooterPart2isReady = value;
     }
 
     @Override

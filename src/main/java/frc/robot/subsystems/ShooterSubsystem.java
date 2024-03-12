@@ -363,6 +363,13 @@ public class ShooterSubsystem extends SubsystemBase {
         m_Wrist.set(speed);
     }
 
+    public void setWristToBrake(){
+        m_Wrist.setIdleMode(IdleMode.kBrake);
+    }
+    public void setWristToCoast(){
+        m_Wrist.setIdleMode(IdleMode.kCoast);
+    }
+
     public void updateWristAngleSetpoint(double angle) {
         if (angle != lastWristAngleSetpoint) {
             lastWristAngleSetpoint = angle;

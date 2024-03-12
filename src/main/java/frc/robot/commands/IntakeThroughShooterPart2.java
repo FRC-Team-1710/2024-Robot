@@ -56,7 +56,7 @@ public class IntakeThroughShooterPart2 extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (/*intexer.intakeThroughShooterPart2isReady ||*/ intexer.shooterBreak() || timer.get() > 1.5) {
+        if (intexer.shooterBreak() || timer.get() > 1.5) {
             return true;
         } else {
             return false;
