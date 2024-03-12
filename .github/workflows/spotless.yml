@@ -16,4 +16,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+      # Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
       - run: ./gradlew spotlessCheck
