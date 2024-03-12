@@ -36,12 +36,12 @@ public final class Constants {
         public static final String kNoteCamera = "OnionRing";
 
         public static final Transform3d kRobotToCamFront = new Transform3d(
-                new Translation3d(Units.inchesToMeters(12.5), Units.inchesToMeters(-1.25), Units.inchesToMeters(14.75)),
+                new Translation3d(Units.inchesToMeters(11.5), Units.inchesToMeters(-1.25), Units.inchesToMeters(14.75)),
                 new Rotation3d(0, Units.degreesToRadians(15), 0));
 
         public static final Transform3d kRobotToCamBack = new Transform3d(
-                new Translation3d(Units.inchesToMeters(-7), Units.inchesToMeters(11), Units.inchesToMeters(15)),
-                new Rotation3d(0, Units.degreesToRadians(14), Math.PI));
+                new Translation3d(Units.inchesToMeters(-7), Units.inchesToMeters(11), Units.inchesToMeters(14.5)),
+                new Rotation3d(0, Units.degreesToRadians(15), Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = getFieldLayout();
@@ -49,7 +49,7 @@ public final class Constants {
         // The standard deviations of our vision estimated poses, which affect correction rate
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
-        public static final Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, 1); // Encoder Odometry
+        public static final Vector<N3> stateStdDevs = VecBuilder.fill(.5, .5, .5); // Encoder Odometry
 
         public static final Pose2d startingPose = new Pose2d(1.35, 5.55, new Rotation2d(0));
     }
@@ -117,15 +117,15 @@ public final class Constants {
         public static final double angleKD = chosenModule.angleKD;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.35919;
+        public static final double driveKP = 0.36;
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
         public static final double driveKF = 0.0;
 
         /* Drive Motor Characterization Values From SYSID */
-        public static final double driveKS = 0.095261;
-        public static final double driveKV = 0.71919;
-        public static final double driveKA = 0.16421;
+        public static final double driveKS = 0.072013;
+        public static final double driveKV = 2.3106;
+        public static final double driveKA = 0.27696;
 
         /* Swerve Profiling Values */
         /** Meters per Second */
@@ -179,10 +179,16 @@ public final class Constants {
         }
     }
 
+    public static final class Intake {
+        public static final double noteOutsideSpeed = 0.5;
+        public static final double noteInsideSpeed = 0.3;
+        public static final double outakeSpeed = -0.5;
+    }
+
     public static final class Shooter {
         public static final double intakeAngleRadians = 0.56;
         public static final double idleSpeedRPM = 1300;
-        public static final double angleOffsetBottom = Units.degreesToRadians(2.3);
+        public static final double angleOffsetBottom = Units.degreesToRadians(-1);
         public static final double wristAngleMax = Units.degreesToRadians(62.7);
         public static final double wristAngleMin = Units.degreesToRadians(-28.8);
         public static final double angleOffsetManual = Units.degreesToRadians(62.7);
@@ -190,8 +196,10 @@ public final class Constants {
     }
 
     public static final class Elevator {
-        public static final double maxHeightMeters = 0.6;
+        public static final double maxHeightMeters = 0.61;
         public static final double minHeightMeters = -0.01;
+        public static final double ampHeight = 0.513;
+        public static final double antiBozoSmileToasterAhhGoonBotShooterHeight = .5;
     }
 
     public static final class Auto {

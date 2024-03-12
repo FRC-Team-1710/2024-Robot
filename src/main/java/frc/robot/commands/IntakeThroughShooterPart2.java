@@ -42,7 +42,7 @@ public class IntakeThroughShooterPart2 extends Command {
     @Override
     public void execute() {
         shooter.setShooterVelocity(0);
-        intexer.setALL(.3);
+        intexer.setALL(Constants.Intake.noteInsideSpeed);
     }
 
     // Called once the command ends or is interrupted.

@@ -36,7 +36,7 @@ public class IntakeThroughShooter extends Command {
     @Override
     public void execute() {
         shooter.setShooterVelocity(-1000);
-        intexer.setALL(-.5);
+        intexer.setALL(Constants.Intake.outakeSpeed);
     }
 
     // Called once the command ends or is interrupted.

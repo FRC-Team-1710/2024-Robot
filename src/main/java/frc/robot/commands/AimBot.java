@@ -37,10 +37,7 @@ public class AimBot extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        timer.reset();
-        timer.start();
         shooter.setShooterVelocity(speed);
-        
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -63,6 +60,8 @@ public class AimBot extends Command {
                 false);
 
         if (shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .035) {
+            timer.reset();
+            timer.start();
             intexer.setShooterIntake(.9);
         }
 
@@ -80,6 +79,6 @@ public class AimBot extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !intexer.shooterBreak() && timer.get() > 1.5;
+        return !intexer.shooterBreak() && timer.get() > .2;
     }
 }

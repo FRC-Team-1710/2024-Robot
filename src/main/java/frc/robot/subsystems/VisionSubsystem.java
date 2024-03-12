@@ -51,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
     private double lastTimeStampFront = 0;
     private double lastEstTimestampBack = 0;
 
-    private final double maxAcceptableRange = 4;
+    private final double maxAcceptableRange = 2.75;
 
     public VisionSubsystem() {
         aprilTagCameraFront = new PhotonCamera(Constants.Vision.kAprilTagCameraFront);
@@ -61,10 +61,10 @@ public class VisionSubsystem extends SubsystemBase {
         Constants.Vision.kTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
         photonEstimatorFront = new PhotonPoseEstimator(
-                Constants.Vision.kTagLayout, PoseStrategy.CLOSEST_TO_LAST_POSE, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
+                Constants.Vision.kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
 
         photonEstimatorBack = new PhotonPoseEstimator(
-                Constants.Vision.kTagLayout, PoseStrategy.CLOSEST_TO_LAST_POSE, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
+                Constants.Vision.kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
 
         photonEstimatorFront.setLastPose(Constants.Vision.startingPose);
         photonEstimatorBack.setLastPose(Constants.Vision.startingPose);

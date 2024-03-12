@@ -75,9 +75,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private final int m_WristCurrentMax = 84;
 
     private SwerveSubsystem swerveSubsystem;
+    private ElevatorSubsystem elevatorSubsystem;
 
-    public ShooterSubsystem(SwerveSubsystem swerve) {
+    public ShooterSubsystem(SwerveSubsystem swerve, ElevatorSubsystem elevator) {
         swerveSubsystem = swerve;
+        elevatorSubsystem = elevator;
 
         m_Wrist = new CANSparkMax(13, MotorType.kBrushless);
         shootaTop = new CANSparkMax(11, MotorType.kBrushless); // leader
@@ -121,7 +123,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("set velocity", shooterVelocity);
 
-        SmartDashboard.putData(m_pidWrist);
+        SmartDashboard.putData("Wrist PID", m_pidWrist);
         SmartDashboard.putData(this);
 
         SmartDashboard.putNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
@@ -379,8 +381,12 @@ public class ShooterSubsystem extends SubsystemBase {
         FiringSolutionsV3.updateSpeakerR(distanceToMovingSpeakerTarget);
 
         // shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
-        shooterAngleToSpeaker = Math
-                .toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+
+        if (elevatorSubsystem.getHeight() > 0.3){
+            shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(distanceToMovingSpeakerTarget));
+        } else {
+            shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+        }
 
         if (FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
                 FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,

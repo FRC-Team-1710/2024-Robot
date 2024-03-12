@@ -314,7 +314,7 @@ public class SwerveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
         }
 
-        SmartDashboard.putString("Obodom", getPose().toString());
+        //SmartDashboard.putString("Obodom", getPose().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
 

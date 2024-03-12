@@ -64,6 +64,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.25;
 
         m_elevatorLeft.getConfigurator().apply(elevatorConfigs);
+        m_elevatorRight.getConfigurator().apply(elevatorConfigs);
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
         // laser can pid shenanigans

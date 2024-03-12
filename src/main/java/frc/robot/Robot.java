@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData(PDH);
 
         // idk if this is useful
-        System.gc();
+        //System.gc();
     }
 
     /**

@@ -109,10 +109,10 @@ public class RobotContainer {
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
-    private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_SwerveSubsystem);
     // private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
     private final IntexerSubsystem m_IntexerSubsystem = new IntexerSubsystem();
+    private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_SwerveSubsystem, m_ElevatorSubsystem);
 
     private final SendableChooser<Command> autoChooser;
 
@@ -171,12 +171,13 @@ public class RobotContainer {
         /* DRIVER BUTTONS */
 
         // Lock on to speaker
-        targetSpeaker.whileTrue(new MissileLock(m_ShooterSubsystem, "speaker"));
-        targetAmp.whileTrue(new MissileLock(m_ShooterSubsystem, "amp"));
+        targetSpeaker.whileTrue(new MissileLock(m_ShooterSubsystem, "speaker"))
+        .onFalse(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+        targetAmp.whileTrue(new MissileLock(m_ShooterSubsystem, "amp"))
+        .onFalse(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Shooter
         targetSpeaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_ShooterSubsystem, m_IntexerSubsystem)); // Main fire
-
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
                 new InstantCommand(() -> m_SwerveSubsystem
@@ -221,17 +222,21 @@ public class RobotContainer {
                 .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
 
         // Zero wrist
-        zeroShooter.onTrue(new InstantCommand(
+        mechLT.negate().and(zeroShooter).onTrue(new InstantCommand(
                 () -> m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetManual))); // Set encoder to zero
-        autoZeroShooter.onTrue(new ZeroRizz(m_ShooterSubsystem)
-                .andThen(new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)));
+        //autoZeroShooter.onTrue(new ZeroRizz(m_ShooterSubsystem)
+        //        .andThen(new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)));
 
         // Wrist
         shooterToIntake.onTrue(new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)); // Move wrist to intake position
 
         // Amp Preset
         shooterToAmp.onTrue(new RizzLevel(m_ShooterSubsystem, -0.48))
-                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters));
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.ampHeight));
+
+        // Anti-Defense Preset
+        shooterToAntiDefense
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.antiBozoSmileToasterAhhGoonBotShooterHeight));
 
         // Reset the R calculation incase it gets off
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR()));
@@ -241,13 +246,16 @@ public class RobotContainer {
         .onFalse(new IntakeThroughShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, mech));
         
         // Kill Flywheels
-        mechRightStick.onTrue(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(0)));
+        mechLT.negate().and(mechRightStick).onTrue(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(0)));
         
         // Kill Wrist
         mechLT.and(mechRightStick).onTrue(new InstantCommand(() -> m_ShooterSubsystem.setWristSpeedManual(0)));
 
         // Kill Elevator
         mechLT.and(mechLeftStick).onTrue(new InstantCommand(() -> m_ElevatorSubsystem.setElevatorSpeedManual(0)));
+
+        mechLT.and(zeroShooter).onTrue(new InstantCommand(
+                () -> m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetBottom)));
 
         /* THIRD CONTROLLER */
         // Characterization tests
@@ -265,7 +273,7 @@ public class RobotContainer {
     }
 
     public void zeroWristEncoders(){
-        m_ShooterSubsystem.restartWristEncoders();
+        m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetBottom);
     }
 
     /**

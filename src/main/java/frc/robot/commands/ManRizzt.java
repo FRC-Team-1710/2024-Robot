@@ -66,6 +66,6 @@ public class ManRizzt extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        m_shooterSubsystem.setWristSpeedManual(0);
+        //m_shooterSubsystem.setWristSpeedManual(0);
     }
 }
