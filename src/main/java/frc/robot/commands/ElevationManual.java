@@ -6,8 +6,10 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ElevationManual extends Command {
@@ -35,17 +37,17 @@ public class ElevationManual extends Command {
         lastElevatorSetpoint = m_elevatorSubsystem.getSetpoint();
 
         double value = axis.getAsDouble();
-
+        value = MathUtil.applyDeadband(value, Constants.stickDeadband);
         value = Math.pow(value, 3);
 
-        if (Math.abs(value) > .05) { // Crime zone
+//        if (Math.abs(value) > .1) { // Crime zone
             m_elevatorSubsystem.ManSpin(value);
-        } else {
+/*         } else {
             if (!m_elevatorSubsystem.locked){
                 lastElevatorSetpoint = m_elevatorSubsystem.getPosition();
                 m_elevatorSubsystem.setPositionWithEncoder(lastElevatorSetpoint);
             }
-        }
+        }*/
 
         SmartDashboard.putBoolean("locked", locked);
         SmartDashboard.putNumber("locked value", lockedValue);

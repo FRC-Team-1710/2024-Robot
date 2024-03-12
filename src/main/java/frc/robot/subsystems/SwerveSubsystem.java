@@ -15,7 +15,6 @@ import org.photonvision.EstimatedRobotPose;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -38,12 +37,14 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static edu.wpi.first.units.Units.Meters;
@@ -141,7 +142,7 @@ public class SwerveSubsystem extends SubsystemBase {
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
             m_field.getObject("field").setPoses(poses);
 
-            if (poses.isEmpty()){
+            if (poses.isEmpty()) {
                 followingPath = false;
             } else {
                 followingPath = true;
@@ -313,7 +314,7 @@ public class SwerveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
         }
 
-        SmartDashboard.putString("Obodom", getPose().toString());
+        //SmartDashboard.putString("Obodom", getPose().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
 
@@ -323,119 +324,91 @@ public class SwerveSubsystem extends SubsystemBase {
         log.motor("drive-BR")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[3].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[3].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[3].getMotorVelocity(), MetersPerSecond));
         log.motor("drive-FL")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[0].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[0].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[0].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[0].getMotorVelocity(), MetersPerSecond));
         log.motor("drive-FR")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[1].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[1].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[1].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[1].getMotorVelocity(), MetersPerSecond));
         log.motor("drive-BL")
                 .voltage(
                         m_appliedVoltage.mut_replace(
-                                mSwerveMods[2].getMotorVoltage() * RobotController.getBatteryVoltage(), Volts))
+                                mSwerveMods[2].getMotorVoltage(), Volts))
                 .linearPosition(m_distance.mut_replace(mSwerveMods[2].getPosition().distanceMeters, Meters))
                 .linearVelocity(
                         m_velocity.mut_replace(mSwerveMods[2].getMotorVelocity(), MetersPerSecond));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.quasistatic(direction);
+        return new SequentialCommandGroup(new InstantCommand(this::resetModulesToAbsolute, this), new WaitCommand(0.5),
+                m_sysIdRoutine.quasistatic(direction));
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.dynamic(direction);
+        return new SequentialCommandGroup(new InstantCommand(this::resetModulesToAbsolute, this), new WaitCommand(0.5),
+                m_sysIdRoutine.dynamic(direction));
     }
 
     // Pathfinding Commands
     public Command pathToSource() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(1.21, 0.96, Rotation2d.fromDegrees(58.79)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(15.47, 1.50, Rotation2d.fromDegrees(-59.53)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         }
     }
 
     public Command pathToAmp() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.59, Rotation2d.fromDegrees(90.37)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(14.74, 7.52, Rotation2d.fromDegrees(90.37)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         }
     }
 
     public Command pathToMidfieldChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(6.29, 4.08, Rotation2d.fromDegrees(180)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(10.26, 4.10, Rotation2d.fromDegrees(0)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         }
     }
 
     public Command pathToSourceChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(4.18, 2.79, Rotation2d.fromDegrees(59.47)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(12.43, 2.90, Rotation2d.fromDegrees(121.26)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         }
     }
 
     public Command pathToAmpChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(new Pose2d(4.20, 5.30, Rotation2d.fromDegrees(-58.21)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         } else {
             return AutoBuilder.pathfindToPose(new Pose2d(12.50, 5.25, Rotation2d.fromDegrees(-120.96)),
-                    new PathConstraints(Constants.Auto.kMaxSpeedMetersPerSecond,
-                            Constants.Auto.kMaxAccelerationMetersPerSecondSquared,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecond,
-                            Constants.Auto.kMaxAngularSpeedRadiansPerSecondSquared));
+                    Constants.Auto.PathfindingConstraints);
         }
     }
 

@@ -32,12 +32,12 @@ public class IntexForAutosByAutos extends Command {
         shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
 
         if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
-            intexer.setALL(.35);
+            intexer.setALL(Constants.Intake.noteInsideSpeed);
         } else if (intexer.shooterBreak()) { // Stop note if at shooter
             intexer.setALL(0);
         } else { // Note is not in robot
-            intexer.setFrontIntake(.85);
-            intexer.setShooterIntake(.35);
+            intexer.setFrontIntake(Constants.Intake.noteOutsideSpeed);
+            intexer.setShooterIntake(Constants.Intake.noteInsideSpeed);
         }
     }
 

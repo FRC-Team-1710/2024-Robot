@@ -31,8 +31,12 @@ public class MissileLock extends Command {
     @Override
     public void execute() {
         if (target == "amp") {
-            shooter.PointShoot(shooter.getCalculatedAngleToAmp(),
-                    FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+            if (shooter.getDistanceTo(FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4) {
+                shooter.PointShoot(Math.toRadians(55),
+                        FiringSolutionsV3.convertToRPM(12));
+            } else {
+                shooter.setShooterVelocity(FiringSolutionsV3.convertToRPM(12));
+            }
         } else {
             shooter.PointShoot(shooter.getCalculatedAngleToSpeaker(),
                     FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
@@ -42,8 +46,10 @@ public class MissileLock extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
+        //shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
+        if (target != "amp" || shooter.getDistanceTo(FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4){
+            shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
+        }
     }
 
     // Returns true when the command should end.

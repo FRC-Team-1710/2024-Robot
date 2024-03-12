@@ -7,8 +7,10 @@ package frc.robot.commands;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class ManRizzt extends Command {
@@ -35,14 +37,15 @@ public class ManRizzt extends Command {
 
     @Override
     public void execute() {
-        double speedValue = Math.pow(speed.getAsDouble(), 3);
+        double speedValue = MathUtil.applyDeadband(speed.getAsDouble(), Constants.stickDeadband);
+        speedValue = Math.pow(speedValue, 3);
 
         if (setAngle.getAsBoolean()) {
             m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
         } else {
-            if (Math.abs(speedValue) > .05) {
+            if (Math.abs(speedValue) > .0) {
                 wristIsLocked = false;
-                m_shooterSubsystem.setManualWristSpeed(speedValue);
+                m_shooterSubsystem.setWristSpeedManual(speedValue);
             } else {
                 if (m_shooterSubsystem.isZeroed){
                     if (!wristIsLocked){
@@ -50,7 +53,7 @@ public class ManRizzt extends Command {
                         wristIsLocked = true;
                     }
                 } else {
-                    m_shooterSubsystem.setManualWristSpeed(0);
+                    m_shooterSubsystem.setWristSpeedManual(0);
                 }
             }
         }
@@ -63,6 +66,6 @@ public class ManRizzt extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        m_shooterSubsystem.setManualWristSpeed(0);
+        //m_shooterSubsystem.setWristSpeedManual(0);
     }
 }

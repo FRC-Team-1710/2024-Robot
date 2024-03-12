@@ -30,7 +30,7 @@ public class ZeroRizz extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setManualWristSpeed(.45);
+        shooter.setWristSpeedManual(.45);
     }
 
     // Called once the command ends or is interrupted.

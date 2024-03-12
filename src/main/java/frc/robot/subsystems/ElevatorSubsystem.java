@@ -4,14 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import au.grapplerobotics.ConfigurationFailedException;
@@ -21,66 +19,56 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
     // Devices
-    public TalonFX m_elevatorLeft = new TalonFX(20); // left leader
-    public TalonFX m_elevatorRight = new TalonFX(21);
-    public LaserCan lasercan = new LaserCan(22);
+    public TalonFX m_elevatorLeft; // left leader
+    public TalonFX m_elevatorRight;
+    public LaserCan lasercan;
 
     // Falcon stuff
     private final PositionDutyCycle m_requestPosition = new PositionDutyCycle(0);
     private final PositionDutyCycle lockPosition = new PositionDutyCycle(0);
     private final PIDController elevatorPID = new PIDController(0, 0, 0);
-    private final Slot1Configs encoderConfigSlot1 = new Slot1Configs();
 
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
     private final double gearRatio = 17.33;
-    private final double maxHeight = .8;
 
     // Vars
     private double revolutionCount;
     private double currentHeight;
     private double setHeight;
     private boolean laser;
-    LaserCan.Measurement measurement;
+    private LaserCan.Measurement measurement;
 
     public boolean manualOverride = false;
     public boolean locked = false;
 
     public ElevatorSubsystem() {
+        m_elevatorLeft = new TalonFX(20); // left leader
+        m_elevatorRight = new TalonFX(21);
+        lasercan = new LaserCan(22);
+
         // Falcon setup
-        m_elevatorLeft.setNeutralMode(NeutralModeValue.Brake);
+        TalonFXConfiguration elevatorConfigs = new TalonFXConfiguration();
+        elevatorConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        elevatorConfigs.Slot0.kP = 0.09;
+        elevatorConfigs.Slot1.kP = 1;
+        elevatorConfigs.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+        elevatorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        elevatorConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.25;
+        elevatorConfigs.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.25;
+        elevatorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.25;
+
+        m_elevatorLeft.getConfigurator().apply(elevatorConfigs);
+        m_elevatorRight.getConfigurator().apply(elevatorConfigs);
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
-        TalonFXConfiguration elevatorConfigs = new TalonFXConfiguration();
-        elevatorConfigs.Slot0.kP = 0.09;
-        elevatorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        // PID
-        Slot0Configs encoderConfigSlot0 = new Slot0Configs();
-        ClosedLoopRampsConfigs closedloop = new ClosedLoopRampsConfigs();
-
-        closedloop.withDutyCycleClosedLoopRampPeriod(.5).withTorqueClosedLoopRampPeriod(0.5);
-        encoderConfigSlot0.kP = .09;
-        encoderConfigSlot0.kI = .0;
-        encoderConfigSlot0.kD = .0;
-        encoderConfigSlot0.kV = .0;
-        encoderConfigSlot0.kG = .0;
-        encoderConfigSlot0.GravityType = GravityTypeValue.Elevator_Static;
-
-        encoderConfigSlot1.kP = 1;
-        encoderConfigSlot1.kI = .0;
-        encoderConfigSlot1.kD = .0;
-        encoderConfigSlot1.kV = .01;
-
-        m_elevatorLeft.getConfigurator().apply(encoderConfigSlot0, 0.050);
-        m_elevatorLeft.getConfigurator().apply(closedloop);
-
         // laser can pid shenanigans
-        elevatorPID.setP(2.5);
+        elevatorPID.setP(3);
         elevatorPID.setI(0);
         elevatorPID.setD(0);
         elevatorPID.setTolerance(0.02);
@@ -109,12 +97,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("LaserCan Meters", getHeightLaserCan());
         SmartDashboard.putBoolean("LaserCan failure", lasercanFailureCheck());
         SmartDashboard.putNumber("Elevator Left Supply Current", m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Elevator Right Supply Current",
-        m_elevatorRight.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("LaserCan Ambient", measurement.ambient);
+        SmartDashboard.putNumber("Elevator Right Supply Current", m_elevatorRight.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("LaserCan Ambient", measurement != null ? measurement.ambient : 0);
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
         
         //FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
+    }
+
+    public void setElevatorSpeedManual(double value){
+        m_elevatorLeft.set(value);
     }
 
     public void setManualOverride(boolean value){
@@ -146,9 +137,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         setHeight = height;
         if (!lasercanFailureCheck()) { // Run off LaserCan
             m_elevatorLeft.set(elevatorPID.calculate(getHeightLaserCan(), height));
+            m_elevatorLeft.getFault_StatorCurrLimit().getValue();
         } else { // Run off encoder
             double rot = (height / (spoolCircumference * Math.PI)) * gearRatio;
-            if (getHeightEncoder() < maxHeight) {
+            if (getHeightEncoder() < Constants.Elevator.maxHeightMeters) {
                 m_elevatorLeft.setControl(m_requestPosition.withPosition(rot).withSlot(1));
             }
         }

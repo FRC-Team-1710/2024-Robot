@@ -60,6 +60,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "3N Grab Note 3"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Note Sniffer"
