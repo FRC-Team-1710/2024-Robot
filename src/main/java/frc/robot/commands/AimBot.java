@@ -25,7 +25,7 @@ public class AimBot extends Command {
     private double speed;
     private Timer timer = new Timer();
 
-    /** Creates a new AutoShoot. */
+    /** Creates a new AimBot. */
     public AimBot(ShooterSubsystem shooterSubsystem, SwerveSubsystem swerve, IntexerSubsystem intexer, double speed) {
         this.shooter = shooterSubsystem;
         this.speed = speed;
@@ -37,10 +37,7 @@ public class AimBot extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        timer.reset();
-        timer.start();
         shooter.setShooterVelocity(speed);
-        
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -63,6 +60,8 @@ public class AimBot extends Command {
                 false);
 
         if (shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .035) {
+            timer.reset();
+            timer.start();
             intexer.setShooterIntake(.9);
         }
 
@@ -74,12 +73,12 @@ public class AimBot extends Command {
     public void end(boolean interrupted) {
         swerveSubsystem.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
         intexer.setShooterIntake(0);
-        shooter.setManualWristSpeed(0);
+        shooter.setWristSpeedManual(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !intexer.shooterBreak() && timer.get() > 1.5;
+        return !intexer.shooterBreak() && timer.get() > .2;
     }
 }

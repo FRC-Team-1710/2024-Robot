@@ -11,14 +11,14 @@ import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class IntakeThroughShooter extends Command {
+public class ResetNoteInShooter extends Command {
     private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
 
     Joystick controller;
 
     /** Creates a new IntakeFromShooter. */
-    public IntakeThroughShooter(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
+    public ResetNoteInShooter(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
         shooter = shooterSub;
         intexer = intex;
         this.controller = controller;
@@ -35,14 +35,12 @@ public class IntakeThroughShooter extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setShooterVelocity(-1000);
         intexer.setALL(Constants.Intake.outakeSpeed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
         shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
         intexer.setALL(0);
     }

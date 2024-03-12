@@ -27,7 +27,7 @@ public class NoteSniffer extends Command {
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
     private Timer timer = new Timer();
     private boolean noteInside = false;
-    double translationVal = 0.5;
+    private double translationVal;
 
     /** Creates a new IntakeWithVision. */
     public NoteSniffer(SwerveSubsystem swerve, VisionSubsystem vision, IntexerSubsystem intexer,
@@ -44,7 +44,7 @@ public class NoteSniffer extends Command {
     public void initialize() {
         timer.reset();
         timer.start();
-        translationVal = .5;
+        translationVal = .35;
         noteInside = false;
     }
 
@@ -70,8 +70,8 @@ public class NoteSniffer extends Command {
 
             rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
 
-            intexer.setFrontIntake(.8);
-            intexer.setShooterIntake(.35);
+            intexer.setFrontIntake(Constants.Intake.noteOutsideSpeed);
+            intexer.setShooterIntake(Constants.Intake.noteInsideSpeed);
         } else {
             rotationVal = 0;
         }

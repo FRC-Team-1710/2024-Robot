@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.FiringSolutionsV3;
+import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 
 public class IntexBestHex extends Command {
@@ -35,15 +36,15 @@ public class IntexBestHex extends Command {
     public void execute() {
         if (in) { // Hood logic to run forwards or backwards
             if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
-                intexer.setALL(.35);
+                intexer.setALL(Constants.Intake.noteInsideSpeed);
             } else if (!intexer.intakeBreak() && intexer.shooterBreak()) { // Stop note if at shooter
                 controller.setRumble(RumbleType.kBothRumble, 0.75);
                 intexer.setALL(0);
             } else { // Note is not in robot
-                intexer.setFrontIntake(.75);
+                intexer.setFrontIntake(Constants.Intake.noteOutsideSpeed);
             }
         } else { // Outtake
-            intexer.setALL(-0.5);
+            intexer.setALL(Constants.Intake.outakeSpeed);
         }
         
     }
