@@ -8,40 +8,56 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1334335257744161,
-        "y": 6.7858317189318464
+        "x": 1.4525645005705963,
+        "y": 6.373314171129768
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.4983996761342704,
-        "y": 6.308093566305898
+        "x": 2.62197994481459,
+        "y": 6.303149244475128
       },
       "prevControl": {
-        "x": 1.0868292314408643,
-        "y": 6.394516246593248
+        "x": 2.2009903848867527,
+        "y": 6.338231707802447
       },
       "nextControl": {
-        "x": 2.976137828760219,
-        "y": 6.2788442916553295
+        "x": 3.102052624207869,
+        "y": 6.263143187859021
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.087610265481815,
-        "y": 6.4445901813418836
+        "x": 3.873254470155664,
+        "y": 6.537032333323926
       },
       "prevControl": {
-        "x": 3.7073696950244264,
-        "y": 6.3470925991733225
+        "x": 3.4392388686731197,
+        "y": 6.418028055498066
       },
       "nextControl": {
-        "x": 4.698061762695483,
-        "y": 6.601116206268465
+        "x": 4.598292045586939,
+        "y": 6.735832958845405
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.323329621018216,
+        "y": 6.958021893251764
+      },
+      "prevControl": {
+        "x": 4.880368383741278,
+        "y": 6.831969463656056
+      },
+      "nextControl": {
+        "x": 5.929464796776777,
+        "y": 7.130508343843873
       },
       "isLocked": false,
       "linkedName": null
@@ -52,8 +68,8 @@
         "y": 7.380566970160069
       },
       "prevControl": {
-        "x": 5.871816019166482,
-        "y": 7.107573740088099
+        "x": 6.118532123104131,
+        "y": 7.203599136543003
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,8 +80,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 8.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -77,5 +93,5 @@
   "reversed": false,
   "folder": "Midfield Paths",
   "previewStartingState": null,
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
