@@ -39,24 +39,19 @@ public class RobotContainer {
     private final int leftTrigger = XboxController.Axis.kLeftTrigger.value;
     private final int rightTrigger = XboxController.Axis.kRightTrigger.value;
 
-    /* DRIVER BUTTONS */
+    /* DRIVER BUTTONS spotless:off */
     /** Driver X */
-    private final JoystickButton intakeNoMove =
-            new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton intakeNoMove = new JoystickButton(driver, XboxController.Button.kX.value);
     /** Driver A */
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kA.value);
     /** Driver B */
-    private final JoystickButton forceShoot =
-            new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton forceShoot = new JoystickButton(driver, XboxController.Button.kB.value);
     /** Driver Y */
-    private final JoystickButton intakeFromSource =
-            new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton intakeFromSource = new JoystickButton(driver, XboxController.Button.kY.value);
     /** Driver RB */
-    private final JoystickButton intex =
-            new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton intex = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     /** Driver LB */
-    private final JoystickButton outex =
-            new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton outex = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     /** Driver LT */
     private final Trigger targetAmp = new Trigger(() -> driver.getRawAxis(leftTrigger) > .5);
     /** Driver RT */
@@ -70,28 +65,21 @@ public class RobotContainer {
     /** Driver Left */
     private final Trigger driverRight = new Trigger(() -> driver.getPOV() == 270);
     /** Driver Start */
-    private final JoystickButton resetOdom =
-            new JoystickButton(driver, XboxController.Button.kStart.value);
+    private final JoystickButton resetOdom = new JoystickButton(driver, XboxController.Button.kStart.value);
 
     /* MECH BUTTONS */
     /** Mech X */
-    private final JoystickButton shooterToAntiDefense =
-            new JoystickButton(mech, XboxController.Button.kX.value);
+    private final JoystickButton shooterToAntiDefense = new JoystickButton(mech, XboxController.Button.kX.value);
     /** Mech A */
-    private final JoystickButton shooterToIntake =
-            new JoystickButton(mech, XboxController.Button.kA.value);
+    private final JoystickButton shooterToIntake = new JoystickButton(mech, XboxController.Button.kA.value);
     /** Mech Y */
-    private final JoystickButton shooterToAmp =
-            new JoystickButton(mech, XboxController.Button.kY.value);
+    private final JoystickButton shooterToAmp = new JoystickButton(mech, XboxController.Button.kY.value);
     /** Mech B */
-    private final JoystickButton shooterToSubwoofer =
-            new JoystickButton(mech, XboxController.Button.kB.value);
+    private final JoystickButton shooterToSubwoofer = new JoystickButton(mech, XboxController.Button.kB.value);
     /** Mech RB */
-    private final JoystickButton primeShooterSpeedSpeaker =
-            new JoystickButton(mech, XboxController.Button.kRightBumper.value);
+    private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
     /** Mech LB */
-    private final JoystickButton resetNoteInShooter =
-            new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton resetNoteInShooter = new JoystickButton(mech, XboxController.Button.kLeftBumper.value);
     /** Mech RT */
     private final Trigger mechRT = new Trigger(() -> mech.getRawAxis(rightTrigger) > .5);
     /** Mech LT */
@@ -105,18 +93,14 @@ public class RobotContainer {
     /** Mech Left */
     private final Trigger mechLeft = new Trigger(() -> mech.getPOV() == 270);
     /** Mech Start */
-    private final JoystickButton autoZeroShooter =
-            new JoystickButton(mech, XboxController.Button.kStart.value);
+    private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
     /** Mech Back */
-    private final JoystickButton zeroShooter =
-            new JoystickButton(mech, XboxController.Button.kBack.value);
+    private final JoystickButton zeroShooter = new JoystickButton(mech, XboxController.Button.kBack.value);
     /** Mech RS */
-    private final JoystickButton mechRightStick =
-            new JoystickButton(mech, XboxController.Button.kRightStick.value);
+    private final JoystickButton mechRightStick = new JoystickButton(mech, XboxController.Button.kRightStick.value);
     /** Mech LS */
-    private final JoystickButton mechLeftStick =
-            new JoystickButton(mech, XboxController.Button.kLeftStick.value);
-
+    private final JoystickButton mechLeftStick = new JoystickButton(mech, XboxController.Button.kLeftStick.value);
+// spotless:on
     private final Trigger dynamicForward = new Trigger(() -> FF.getPOV() == 90);
     private final Trigger dynamicBackward = new Trigger(() -> FF.getPOV() == 270);
     private final Trigger quasistaticForward = new Trigger(() -> FF.getPOV() == 0);
@@ -216,7 +200,10 @@ public class RobotContainer {
                                 : Constants.Vision.startingPoseBlue))));
 
         // Intexer
-        intex.or(intakeNoMove).whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
+        intex.or(intakeNoMove)
+                .whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver))
+                .onFalse(new ResetNoteInShooterPart2(
+                        m_ShooterSubsystem, m_IntexerSubsystem, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
 
         // Shooter intake
