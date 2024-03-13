@@ -177,7 +177,7 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Shooter
-        Speaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_ShooterSubsystem, m_IntexerSubsystem)); // Main fire
+        targetSpeaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_ShooterSubsystem, m_IntexerSubsystem)); // Main fire
 
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(

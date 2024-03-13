@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.lang.reflect.Array;
-
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
