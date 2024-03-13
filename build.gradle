@@ -121,8 +121,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**'
         }
         toggleOffOn()
-        googleJavaFormat()
-        indentWithSpaces(4)
+        palantirJavaFormat().style("AOSP")
         removeUnusedImports()
         trimTrailingWhitespace()
     }

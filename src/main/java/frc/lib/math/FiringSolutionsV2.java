@@ -1,5 +1,5 @@
 package frc.lib.math;
-
+// format:off
 public class FiringSolutionsV2 {
 
     private static final double shooterHeight = 0.355;
