@@ -35,7 +35,7 @@ public class LEDSubsystem extends SubsystemBase {
         false, // Note Detected -4 White Solid
         false, // Charging -5 Green Pulse (HasNote)
         false, // At Speed -6 Green BLink (HasNote)
-        false, // Charging -7 Magenta Pulse (NoNote)
+        false, // Charging -7 Magenta Pulse (NoNote)  
         false, // At Speed -8 Magenta BLink (NoNote)
         false, // Note in Intake -9 Orange Blink
         false, // Note in Shooter -10 Orange Solid
@@ -87,29 +87,6 @@ public class LEDSubsystem extends SubsystemBase {
         } else {
             inputBooleans[11] = false;
             inputBooleans[12] = true;
-        }
-
-        // HasNote for ChargingOuttake and AtSpeed
-        if (hasNote) { // Converts from simple inputs to boolean
-            if (chargingOuttake) {
-                inputBooleans[5] = true;
-                inputBooleans[6] = false;
-            } else if (atSpeed) {
-                inputBooleans[5] = false;
-                inputBooleans[6] = true;
-            }
-            inputBooleans[7] = false;
-            inputBooleans[8] = false;
-        } else {
-            if (chargingOuttake) {
-                inputBooleans[7] = true;
-                inputBooleans[8] = false;
-            } else if (atSpeed) {
-                inputBooleans[7] = false;
-                inputBooleans[8] = true;
-            }
-            inputBooleans[5] = false;
-            inputBooleans[6] = false;
         }
 
         // Check if pathfinding
