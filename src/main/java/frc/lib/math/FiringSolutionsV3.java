@@ -1,5 +1,5 @@
 package frc.lib.math;
-
+// format:off
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Translation2d;

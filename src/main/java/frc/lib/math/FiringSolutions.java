@@ -1,5 +1,5 @@
 package frc.lib.math;
-
+// format:off
 public final class FiringSolutions {
     private static final double shooterHeight = 0.355;
     private static final double noteFallAccel = 9.8;
