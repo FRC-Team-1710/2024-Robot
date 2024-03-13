@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -49,11 +50,7 @@ public class LEDSubsystem extends SubsystemBase {
     SwerveSubsystem swerve;
 
     /** Creates a new LEDSubsystem. */
-    public LEDSubsystem(
-            VisionSubsystem m_VisionSubsystem,
-            ShooterSubsystem m_ShooterSubsystem,
-            IntexerSubsystem m_IntexerSubsystem,
-            SwerveSubsystem m_SwerveSubsystem) {
+    public LEDSubsystem(VisionSubsystem m_VisionSubsystem, ShooterSubsystem m_ShooterSubsystem, IntexerSubsystem m_IntexerSubsystem, SwerveSubsystem m_SwerveSubsystem) {
         this.vision = m_VisionSubsystem;
         this.shooter = m_ShooterSubsystem;
         this.intexer = m_IntexerSubsystem;
@@ -122,6 +119,21 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[0] = false;
         }
 
+        // Check beam breaks
+        if (intexer.intakeBreak()) {
+            inputBooleans[9] = true; // Intake
+            inputBooleans[10] = false; // Shooter
+            hasNote = true;
+        } else if (intexer.shooterBreak()) {
+            inputBooleans[9] = false; // Intake
+            inputBooleans[10] = true; // Shooter
+            hasNote = true;
+        } else {
+            inputBooleans[9] = false; // Intake
+            inputBooleans[10] = false; // Shooter
+            hasNote = false;
+        }
+
         // Charging or At Speed with Note or without Note
         if (hasNote) { // Has Note
             if (shooter.isShooterAtSpeed()) { // At speed
@@ -145,20 +157,7 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[6] = false;
         }
 
-        // Check beam breaks
-        if (intexer.intakeBreak()) {
-            inputBooleans[9] = true; // Intake
-            inputBooleans[10] = false; // Shooter
-            hasNote = true;
-        } else if (intexer.shooterBreak()) {
-            inputBooleans[9] = false; // Intake
-            inputBooleans[10] = true; // Shooter
-            hasNote = true;
-        } else {
-            inputBooleans[9] = false; // Intake
-            inputBooleans[10] = false; // Shooter
-            hasNote = false;
-        }
+        SmartDashboard.putBooleanArray("Input Booleans", inputBooleans);
     }
 
     private void encoder() { // Transition phase
@@ -167,9 +166,7 @@ public class LEDSubsystem extends SubsystemBase {
 
         int trueIndex = 0; // Index of selected LED sequence
 
-        for (int i = 0;
-                i < inputBooleans.length;
-                i++) { // Picks the first true sequence based on priority
+        for (int i = 0; i < inputBooleans.length; i++) { // Picks the first true sequence based on priority
             if (inputBooleans[i]) {
                 trueIndex = i;
                 break;
@@ -197,6 +194,8 @@ public class LEDSubsystem extends SubsystemBase {
             finalString = binaryString;
         }
 
+        SmartDashboard.putString("Binary Output", finalString);
+
         for (int i = pin_amount - 1; i >= 0; i--) {
             output[i] = finalString.charAt(i) == '1';
         }
@@ -206,6 +205,7 @@ public class LEDSubsystem extends SubsystemBase {
         for (int i = 0; i < output.length; i++) {
             bits[i].set(output[i]);
         }
+        SmartDashboard.putBooleanArray("DigitalOutputs", output);
     }
 
     // SET FUNCTIONS
