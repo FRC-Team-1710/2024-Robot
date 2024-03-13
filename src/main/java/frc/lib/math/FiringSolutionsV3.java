@@ -1,5 +1,5 @@
 package frc.lib.math;
-// format:off
+// spotless:off
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -346,5 +346,5 @@ public class FiringSolutionsV3 {
     public static double convertToRPM(double velocity) {
         return (60 * velocity) / (slipPercent * Math.PI * .1016);
     }
-
+// spotless:on
 }

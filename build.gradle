@@ -127,10 +127,10 @@ spotless {
             include '**/*.java'
             exclude '**/build/**', '**/build-*/**'
         }
-        toggleOffOn()
         palantirJavaFormat().style("AOSP")
         removeUnusedImports()
         trimTrailingWhitespace()
+        toggleOffOn()
     }
 
     groovyGradle {

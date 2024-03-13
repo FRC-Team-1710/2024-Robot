@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.LaserCan.RangingMode;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -12,9 +16,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import au.grapplerobotics.ConfigurationFailedException;
-import au.grapplerobotics.LaserCan;
-import au.grapplerobotics.LaserCan.RangingMode;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -91,32 +92,36 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Set Height", setHeight);
         SmartDashboard.putNumber("LaserCan Meters", getHeightLaserCan());
         SmartDashboard.putBoolean("LaserCan failure", lasercanFailureCheck());
-        SmartDashboard.putNumber("Elevator Left Supply Current", m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Elevator Right Supply Current", m_elevatorRight.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber(
+                "Elevator Left Supply Current",
+                m_elevatorLeft.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber(
+                "Elevator Right Supply Current",
+                m_elevatorRight.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("LaserCan Ambient", measurement != null ? measurement.ambient : 0);
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
-        
-        //FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
+
+        // FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
     }
 
-    public void setElevatorSpeedManual(double value){
+    public void setElevatorSpeedManual(double value) {
         m_elevatorLeft.set(value);
     }
 
-    public void setManualOverride(boolean value){
+    public void setManualOverride(boolean value) {
         manualOverride = value;
     }
 
-    public double getEncoderValue(){
+    public double getEncoderValue() {
         return revolutionCount;
     }
 
-    public void setPositionWithEncoder(double value){
+    public void setPositionWithEncoder(double value) {
         locked = true;
         m_elevatorLeft.setControl(lockPosition.withPosition(value));
     }
 
-    public void stopHere(){
+    public void stopHere() {
         locked = true;
         m_elevatorLeft.setControl(lockPosition.withPosition(revolutionCount).withSlot(0));
     }
@@ -134,7 +139,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /** Get height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
-    public double getHeight(){
+    public double getHeight() {
         if (!lasercanFailureCheck()) { // Run off LaserCan
             return getHeightLaserCan();
         } else { // Run off encoder
@@ -176,12 +181,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    public double getSetpoint(){
+    public double getSetpoint() {
         return m_elevatorLeft.getClosedLoopReference().getValue();
     }
 
-    public double getPosition(){
+    public double getPosition() {
         return m_elevatorLeft.getPosition().getValueAsDouble();
     }
-
 }

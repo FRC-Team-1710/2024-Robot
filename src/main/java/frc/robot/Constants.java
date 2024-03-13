@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.io.UncheckedIOException;
-
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -24,8 +22,11 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
+
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
+
+import java.io.UncheckedIOException;
 
 public final class Constants {
     public static final double stickDeadband = 0.07;
@@ -36,11 +37,17 @@ public final class Constants {
         public static final String kNoteCamera = "OnionRing";
 
         public static final Transform3d kRobotToCamFront = new Transform3d(
-                new Translation3d(Units.inchesToMeters(11.5), Units.inchesToMeters(-1.25), Units.inchesToMeters(14.75)),
+                new Translation3d(
+                        Units.inchesToMeters(11.5),
+                        Units.inchesToMeters(-1.25),
+                        Units.inchesToMeters(14.75)),
                 new Rotation3d(0, Units.degreesToRadians(15), 0));
 
         public static final Transform3d kRobotToCamBack = new Transform3d(
-                new Translation3d(Units.inchesToMeters(-7), Units.inchesToMeters(11), Units.inchesToMeters(14.5)),
+                new Translation3d(
+                        Units.inchesToMeters(-7),
+                        Units.inchesToMeters(11),
+                        Units.inchesToMeters(14.5)),
                 new Rotation3d(0, Units.degreesToRadians(15), Math.PI));
 
         // The layout of the AprilTags on the field
@@ -49,15 +56,18 @@ public final class Constants {
         // The standard deviations of our vision estimated poses, which affect correction rate
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
-        public static final Vector<N3> stateStdDevs = VecBuilder.fill(.5, .5, .5); // Encoder Odometry
+        public static final Vector<N3> stateStdDevs =
+                VecBuilder.fill(.5, .5, .5); // Encoder Odometry
 
         public static final Pose2d startingPoseBlue = new Pose2d(1.35, 5.55, new Rotation2d(0));
-        public static final Pose2d startingPoseRed = new Pose2d(15.19, 5.55, new Rotation2d(Math.PI));
+        public static final Pose2d startingPoseRed =
+                new Pose2d(15.19, 5.55, new Rotation2d(Math.PI));
     }
 
     private static AprilTagFieldLayout getFieldLayout() {
         try {
-            AprilTagFieldLayout attemptedKTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+            AprilTagFieldLayout attemptedKTagLayout =
+                    AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
             return attemptedKTagLayout;
         } catch (UncheckedIOException e) {
             DataLogManager.log(e.getMessage());
@@ -69,15 +79,16 @@ public final class Constants {
         public static final String canivore = "rex";
         public static final int pigeonID = 13;
 
-        public static final COTSTalonFXSwerveConstants chosenModule = COTSTalonFXSwerveConstants.SDS.MK4i
-                .Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
+        public static final COTSTalonFXSwerveConstants chosenModule =
+                COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(
+                        COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
         public static final double trackWidth = Units.inchesToMeters(20.75);
         public static final double wheelBase = Units.inchesToMeters(20.75);
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
-        /* Swerve Kinematics 
+        /* Swerve Kinematics
          * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
         public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
                 new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
@@ -132,7 +143,8 @@ public final class Constants {
         /** Meters per Second */
         public static final double maxSpeed = 4.5;
         /** Radians per Second */
-        public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity =
+                10.0; // TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Brake;
@@ -145,8 +157,8 @@ public final class Constants {
             public static final int angleMotorID = 3;
             public static final int canCoderID = 2;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(112.6757);
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants =
+                    new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /** Front Right Module - Module 1 */
@@ -155,8 +167,8 @@ public final class Constants {
             public static final int angleMotorID = 6;
             public static final int canCoderID = 5;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-80.5078);
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants =
+                    new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /** Back Left Module - Module 2 */
@@ -165,8 +177,8 @@ public final class Constants {
             public static final int angleMotorID = 9;
             public static final int canCoderID = 8;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-79.453125);
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants =
+                    new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /** Back Right Module - Module 3 */
@@ -175,8 +187,8 @@ public final class Constants {
             public static final int angleMotorID = 12;
             public static final int canCoderID = 11;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(112.06);
-            public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-                    canCoderID, angleOffset);
+            public static final SwerveModuleConstants constants =
+                    new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
     }
 
@@ -208,17 +220,20 @@ public final class Constants {
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
         public static final double kMaxAngularSpeedRadiansPerSecond = 9.424778;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = 12.56637;
-    
+
         public static final double kPXController = 1;
         public static final double kPYController = 1;
         public static final double kPThetaController = 1;
-    
-        public static final PathConstraints PathfindingConstraints = new PathConstraints(kMaxSpeedMetersPerSecond,
-                kMaxAccelerationMetersPerSecondSquared, kMaxAngularSpeedRadiansPerSecond,
+
+        public static final PathConstraints PathfindingConstraints = new PathConstraints(
+                kMaxSpeedMetersPerSecond,
+                kMaxAccelerationMetersPerSecondSquared,
+                kMaxAngularSpeedRadiansPerSecond,
                 kMaxAngularSpeedRadiansPerSecondSquared);
 
         /** Constraint for the motion profilied robot angle controller */
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-                kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+        public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+                new TrapezoidProfile.Constraints(
+                        kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 }

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 import frc.robot.Robot;
 
@@ -17,7 +18,8 @@ public class LEDSubsystem extends SubsystemBase {
     public DigitalOutput SkylerBright = new DigitalOutput(6); // Bit 4 (8)
 
     // Output bits to the LEDs
-    public DigitalOutput[] bits = { WalterLight, JesseBlinkman, GusBling, SkylerBright }; // Actual Outputs
+    public DigitalOutput[] bits = {WalterLight, JesseBlinkman, GusBling, SkylerBright
+    }; // Actual Outputs
     boolean[] output = new boolean[4]; // Computed Outputs
 
     // Booleans used for Easy input
@@ -26,19 +28,19 @@ public class LEDSubsystem extends SubsystemBase {
     private Boolean atSpeed = false;
 
     public Boolean[] inputBooleans = {
-            false, // Amp -0 Rainbow Pattern #1
-            false, // Source -1 Rainbow Pattern #2
-            false, // Climb -2 Rainbow Pattern #3
-            false, // Blank/DC -3 None
-            false, // Note Detected -4 White Solid
-            false, // Charging -5 Green Pulse (HasNote)
-            false, // At Speed -6 Green BLink (HasNote)
-            false, // Charging -7 Magenta Pulse (NoNote)
-            false, // At Speed -8 Magenta BLink (NoNote)
-            false, // Note in Intake -9 Orange Blink
-            false, // Note in Shooter -10 Orange Solid
-            false, // Alliance Color -11 Red Pulse
-            false // Alliance Color -12 Blue Pulse
+        false, // Amp -0 Rainbow Pattern #1
+        false, // Source -1 Rainbow Pattern #2
+        false, // Climb -2 Rainbow Pattern #3
+        false, // Blank/DC -3 None
+        false, // Note Detected -4 White Solid
+        false, // Charging -5 Green Pulse (HasNote)
+        false, // At Speed -6 Green BLink (HasNote)
+        false, // Charging -7 Magenta Pulse (NoNote)
+        false, // At Speed -8 Magenta BLink (NoNote)
+        false, // Note in Intake -9 Orange Blink
+        false, // Note in Shooter -10 Orange Solid
+        false, // Alliance Color -11 Red Pulse
+        false // Alliance Color -12 Blue Pulse
     };
 
     // Use subsystems
@@ -48,8 +50,11 @@ public class LEDSubsystem extends SubsystemBase {
     SwerveSubsystem swerve;
 
     /** Creates a new LEDSubsystem. */
-    public LEDSubsystem(VisionSubsystem m_VisionSubsystem, ShooterSubsystem m_ShooterSubsystem,
-            IntexerSubsystem m_IntexerSubsystem, SwerveSubsystem m_SwerveSubsystem) {
+    public LEDSubsystem(
+            VisionSubsystem m_VisionSubsystem,
+            ShooterSubsystem m_ShooterSubsystem,
+            IntexerSubsystem m_IntexerSubsystem,
+            SwerveSubsystem m_SwerveSubsystem) {
         this.vision = m_VisionSubsystem;
         this.shooter = m_ShooterSubsystem;
         this.intexer = m_IntexerSubsystem;
@@ -163,7 +168,9 @@ public class LEDSubsystem extends SubsystemBase {
 
         int trueIndex = 0; // Index of selected LED sequence
 
-        for (int i = 0; i < inputBooleans.length; i++) { // Picks the first true sequence based on priority
+        for (int i = 0;
+                i < inputBooleans.length;
+                i++) { // Picks the first true sequence based on priority
             if (inputBooleans[i]) {
                 trueIndex = i;
                 break;

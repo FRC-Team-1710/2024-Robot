@@ -4,14 +4,15 @@
 
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.Constants;
 import frc.robot.subsystems.ShooterSubsystem;
+
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 public class ManRizzt extends Command {
 
@@ -32,8 +33,7 @@ public class ManRizzt extends Command {
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
-    }
+    public void initialize() {}
 
     @Override
     public void execute() {
@@ -41,15 +41,16 @@ public class ManRizzt extends Command {
         speedValue = Math.pow(speedValue, 3);
 
         if (setAngle.getAsBoolean()) {
-            //m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
+            // m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
         } else {
             if (Math.abs(speedValue) > .0) {
                 wristIsLocked = false;
                 m_shooterSubsystem.setWristSpeedManual(speedValue);
             } else {
-                if (m_shooterSubsystem.isZeroed){
-                    if (!wristIsLocked){
-                        m_shooterSubsystem.setWristByAngle(m_shooterSubsystem.getCurrentShooterAngle());
+                if (m_shooterSubsystem.isZeroed) {
+                    if (!wristIsLocked) {
+                        m_shooterSubsystem.setWristByAngle(
+                                m_shooterSubsystem.getCurrentShooterAngle());
                         wristIsLocked = true;
                     }
                 } else {
@@ -66,6 +67,6 @@ public class ManRizzt extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        //m_shooterSubsystem.setWristSpeedManual(0);
+        // m_shooterSubsystem.setWristSpeedManual(0);
     }
 }

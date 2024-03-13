@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -20,7 +21,8 @@ public class ResetNoteInShooterPart2 extends Command {
     public final Timer timer = new Timer();
 
     /** Creates a new IntakeFromShooterPart2. */
-    public ResetNoteInShooterPart2(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
+    public ResetNoteInShooterPart2(
+            ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
         shooter = shooterSub;
         intexer = intex;
         this.controller = controller;
@@ -36,7 +38,7 @@ public class ResetNoteInShooterPart2 extends Command {
         controller.setRumble(RumbleType.kBothRumble, 0);
         shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
     }
-    
+
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {

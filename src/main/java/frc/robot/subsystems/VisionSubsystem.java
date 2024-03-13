@@ -24,8 +24,6 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants;
-import frc.robot.Robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -34,12 +32,16 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.Optional;
+import frc.robot.Constants;
+import frc.robot.Robot;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+
+import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera aprilTagCameraFront;
@@ -62,17 +64,29 @@ public class VisionSubsystem extends SubsystemBase {
         Constants.Vision.kTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
         photonEstimatorFront = new PhotonPoseEstimator(
-                Constants.Vision.kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, aprilTagCameraFront, Constants.Vision.kRobotToCamFront);
+                Constants.Vision.kTagLayout,
+                PoseStrategy.LOWEST_AMBIGUITY,
+                aprilTagCameraFront,
+                Constants.Vision.kRobotToCamFront);
 
         photonEstimatorBack = new PhotonPoseEstimator(
-                Constants.Vision.kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
+                Constants.Vision.kTagLayout,
+                PoseStrategy.LOWEST_AMBIGUITY,
+                aprilTagCameraBack,
+                Constants.Vision.kRobotToCamBack);
 
-        photonEstimatorFront.setLastPose(Robot.getAlliance() ? Constants.Vision.startingPoseRed : Constants.Vision.startingPoseBlue);
-        photonEstimatorBack.setLastPose(Robot.getAlliance() ? Constants.Vision.startingPoseRed : Constants.Vision.startingPoseBlue);
-        
+        photonEstimatorFront.setLastPose(
+                Robot.getAlliance()
+                        ? Constants.Vision.startingPoseRed
+                        : Constants.Vision.startingPoseBlue);
+        photonEstimatorBack.setLastPose(
+                Robot.getAlliance()
+                        ? Constants.Vision.startingPoseRed
+                        : Constants.Vision.startingPoseBlue);
+
         // 2024 field quality makes multitag impractical
-        //photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        //photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        // photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        // photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     /** Get the latest result from the front April Tag camera */
@@ -102,8 +116,7 @@ public class VisionSubsystem extends SubsystemBase {
         var visionEst = photonEstimatorFront.update();
         double latestTimestamp = aprilTagCameraFront.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastTimeStampFront) > 1e-5;
-        if (newResult)
-            lastTimeStampFront = latestTimestamp;
+        if (newResult) lastTimeStampFront = latestTimestamp;
         return visionEst;
     }
 
@@ -111,8 +124,7 @@ public class VisionSubsystem extends SubsystemBase {
         var visionEst = photonEstimatorBack.update();
         double latestTimestamp = aprilTagCameraBack.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestampBack) > 1e-5;
-        if (newResult)
-            lastEstTimestampBack = latestTimestamp;
+        if (newResult) lastEstTimestampBack = latestTimestamp;
         return visionEst;
     }
 
@@ -132,22 +144,22 @@ public class VisionSubsystem extends SubsystemBase {
         double avgDist = 0;
         for (var tgt : targets) {
             var tagPose = photonEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty())
-                continue;
+            if (tagPose.isEmpty()) continue;
             numTags++;
-            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+            avgDist += tagPose.get()
+                    .toPose2d()
+                    .getTranslation()
+                    .getDistance(estimatedPose.getTranslation());
         }
-        if (numTags == 0)
-            return estStdDevs;
+        if (numTags == 0) return estStdDevs;
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
-        //if (numTags > 1)
+        // if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (/*numTags == 1 && */avgDist > maxAcceptableRange)
+        if (avgDist > maxAcceptableRange)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else
-            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
 
         return estStdDevs;
     }
@@ -159,22 +171,22 @@ public class VisionSubsystem extends SubsystemBase {
         double avgDist = 0;
         for (var tgt : targets) {
             var tagPose = photonEstimatorBack.getFieldTags().getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty())
-                continue;
+            if (tagPose.isEmpty()) continue;
             numTags++;
-            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+            avgDist += tagPose.get()
+                    .toPose2d()
+                    .getTranslation()
+                    .getDistance(estimatedPose.getTranslation());
         }
-        if (numTags == 0)
-            return estStdDevs;
+        if (numTags == 0) return estStdDevs;
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
-        //if (numTags > 1)
+        // if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (/*numTags == 1 &&*/ avgDist > maxAcceptableRange)
+        if (avgDist > maxAcceptableRange)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else
-            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
 
         return estStdDevs;
     }

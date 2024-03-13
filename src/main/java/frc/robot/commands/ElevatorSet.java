@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ElevatorSet extends Command {
@@ -21,7 +22,7 @@ public class ElevatorSet extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        //m_elevator.setManualOverride(true);
+        // m_elevator.setManualOverride(true);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -32,8 +33,7 @@ public class ElevatorSet extends Command {
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-    }
+    public void end(boolean interrupted) {}
 
     // Returns true when the command should end.
     @Override

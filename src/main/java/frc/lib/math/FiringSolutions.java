@@ -1,5 +1,5 @@
 package frc.lib.math;
-// format:off
+// spotless:off
 public final class FiringSolutions {
     private static final double shooterHeight = 0.355;
     private static final double noteFallAccel = 9.8;
@@ -86,5 +86,5 @@ public final class FiringSolutions {
     public static double getRobotOffsetAngle(double robotVelocityPerpendicularToSpeaker, double shooterVelocityX){
         return Math.atan(robotVelocityPerpendicularToSpeaker / shooterVelocityX);
     }
-
+// spotless:on
 }

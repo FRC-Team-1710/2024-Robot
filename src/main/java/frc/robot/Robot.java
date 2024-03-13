@@ -4,25 +4,25 @@
 
 package frc.robot;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-import org.littletonrobotics.urcl.URCL;
-
-import com.ctre.phoenix6.SignalLogger;
-
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 import frc.lib.math.FiringSolutionsV3;
+
+import org.littletonrobotics.urcl.URCL;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -59,7 +59,10 @@ public class Robot extends TimedRobot {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         // Starts recording to data log
-        DataLogManager.start("/media/sda1/logs/", DateTimeFormatter.ofPattern("yyyy-MM-dd__HH-mm-ss").format(LocalDateTime.now())+".wpilog");
+        DataLogManager.start(
+                "/media/sda1/logs/",
+                DateTimeFormatter.ofPattern("yyyy-MM-dd__HH-mm-ss").format(LocalDateTime.now())
+                        + ".wpilog");
 
         // Record both DS control and joystick data
         DriverStation.startDataLog(DataLogManager.getLog());
@@ -70,8 +73,8 @@ public class Robot extends TimedRobot {
         URCL.start();
 
         // Log data from all CTRE devices
-        //SignalLogger.setPath("/media/sda1/logs/");
-        //SignalLogger.start();
+        // SignalLogger.setPath("/media/sda1/logs/");
+        // SignalLogger.start();
 
         // Output command scheduler to dashboard
         SmartDashboard.putData(CommandScheduler.getInstance());
@@ -84,7 +87,7 @@ public class Robot extends TimedRobot {
         redAlliance = checkRedAlliance();
 
         // idk if this is useful
-        //System.gc();
+        // System.gc();
     }
 
     /**
@@ -124,14 +127,13 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         m_robotContainer.stopAll();
 
-        if (m_autonomousCommand != null){
+        if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
     }
 
     @Override
-    public void disabledPeriodic() {
-    }
+    public void disabledPeriodic() {}
 
     /**
      * This autonomous runs the autonomous command selected by your
@@ -140,7 +142,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         redAlliance = checkRedAlliance();
-    
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         FiringSolutionsV3.setAlliance(redAlliance);
@@ -156,8 +158,7 @@ public class Robot extends TimedRobot {
 
     /** This function is called periodically during autonomous. */
     @Override
-    public void autonomousPeriodic() {
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void teleopInit() {
@@ -177,8 +178,7 @@ public class Robot extends TimedRobot {
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void testInit() {
@@ -188,6 +188,5 @@ public class Robot extends TimedRobot {
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() {
-    }
+    public void testPeriodic() {}
 }
