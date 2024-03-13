@@ -19,7 +19,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -29,7 +28,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     public LaserCan lasercan;
 
     // Falcon stuff
-    private final PositionDutyCycle m_requestPosition = new PositionDutyCycle(0);
     private final PositionDutyCycle lockPosition = new PositionDutyCycle(0);
     private final PIDController elevatorPID = new PIDController(0, 0, 0);
 
@@ -41,7 +39,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double revolutionCount;
     private double currentHeight;
     private double setHeight;
-    private boolean laser;
     private LaserCan.Measurement measurement;
 
     public boolean manualOverride = false;
@@ -83,8 +80,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("Elevator PID", elevatorPID);
 
         m_elevatorLeft.setPosition(0);
-
-        laser = false;
     }
 
     @Override
@@ -132,18 +127,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
-    public void setHeight(double height) { //TODO rewrite
+    public void setHeight(double height) {
         locked = true;
         setHeight = height;
-        if (!lasercanFailureCheck()) { // Run off LaserCan
-            m_elevatorLeft.set(elevatorPID.calculate(getHeightLaserCan(), height));
-            m_elevatorLeft.getFault_StatorCurrLimit().getValue();
-        } else { // Run off encoder
-            double rot = (height / (spoolCircumference * Math.PI)) * gearRatio;
-            if (getHeightEncoder() < Constants.Elevator.maxHeightMeters) {
-                m_elevatorLeft.set(elevatorPID.calculate(getHeightEncoder(), height));
-            }
-        }
+        m_elevatorLeft.set(elevatorPID.calculate(getHeight(), height));
     }
 
     /** Get height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
@@ -166,11 +153,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void resetElevatorEncoder() {
         m_elevatorLeft.setPosition(0);
-    }
-
-    //lasercan methods
-    public void useLaserCan(boolean laserCanOn) {
-        laser = laserCanOn;
     }
 
     /** Get height from LaserCan IN METERS */

@@ -37,6 +37,7 @@ public class TeleopSwerve extends Command {
     private BooleanSupplier shooterOverrideAmp;
     private BooleanSupplier shooterOverrideSpeaker;
     private BooleanSupplier intakeOverride;
+    private BooleanSupplier intakeOverrideNoMove;
 
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
     
@@ -45,7 +46,7 @@ public class TeleopSwerve extends Command {
     private boolean noteInside = false;
 
     public TeleopSwerve(SwerveSubsystem swerve, VisionSubsystem vision, ShooterSubsystem shooter, IntexerSubsystem intexer, DoubleSupplier translationSup, DoubleSupplier strafeSup,
-            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverrideAmp, BooleanSupplier shooterOverrideSpeaker, BooleanSupplier intake, Joystick controller) {
+            DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier shooterOverrideAmp, BooleanSupplier shooterOverrideSpeaker, BooleanSupplier intake, BooleanSupplier intakeNoMove, Joystick controller) {
         this.swerveSubsystem = swerve;
         this.vision = vision;
         this.shooterSubsystem = shooter;
@@ -59,6 +60,7 @@ public class TeleopSwerve extends Command {
         this.shooterOverrideAmp = shooterOverrideAmp;
         this.shooterOverrideSpeaker = shooterOverrideSpeaker;
         this.intakeOverride = intake;
+        this.intakeOverrideNoMove = intakeNoMove;
         this.controller = controller;
         SmartDashboard.putData("Lock On Rotation PID", rotationPID);
     }
@@ -92,7 +94,7 @@ public class TeleopSwerve extends Command {
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
-            if (pose.getX() >= 3){ // "TODO: fix this" -Micah
+            if (Robot.getAlliance() ? 16.54 - pose.getX() >= 3 : pose.getX() >= 3){
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else {
                 controller.setRumble(RumbleType.kBothRumble, 0);
@@ -106,9 +108,10 @@ public class TeleopSwerve extends Command {
                             currentSpeed.vyMetersPerSecond,
                             pose.getRotation().getRadians()));
             openLoop = false;
-                            
+
         } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
+            openLoop = false;
 
             if (FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4) {
 
@@ -126,10 +129,18 @@ public class TeleopSwerve extends Command {
 
             SmartDashboard.putNumber("Note Yaw", yawToNote);
 
-            //openLoop = false;
+            openLoop = false;
             rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
             translationVal = 0.35;
             robotCentric = true;
+
+        } else if (intakeOverrideNoMove.getAsBoolean() && result.hasTargets() && !noteInside) {
+            double yawToNote = Math.toRadians(result.getBestTarget().getYaw()) + swerveSubsystem.getGyroYaw().getRadians();
+
+            SmartDashboard.putNumber("Note Yaw", yawToNote);
+
+            openLoop = false;
+            rotationVal = rotationPID.calculate(yawToNote, swerveSubsystem.getGyroYaw().getRadians());
 
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);

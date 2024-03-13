@@ -40,7 +40,7 @@ public class RobotContainer {
 
     /* DRIVER BUTTONS */
     /** Driver X */
-    private final JoystickButton intakeNoVision = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton intakeNoMove = new JoystickButton(driver, XboxController.Button.kX.value);
     /** Driver A */
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kA.value);
     /** Driver B */
@@ -109,10 +109,10 @@ public class RobotContainer {
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
-    //private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem, m_Shoota, m_IntexerSubsystem, m_SwerveSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
     private final IntexerSubsystem m_IntexerSubsystem = new IntexerSubsystem();
     private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_SwerveSubsystem, m_ElevatorSubsystem);
+    private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem, m_ShooterSubsystem, m_IntexerSubsystem, m_SwerveSubsystem);
 
     private final SendableChooser<Command> autoChooser;
 
@@ -141,7 +141,8 @@ public class RobotContainer {
                         () -> false,
                         () -> targetAmp.getAsBoolean(),
                         () -> targetSpeaker.getAsBoolean(),
-                        () -> intex.getAsBoolean(), driver));
+                        () -> intex.getAsBoolean(),
+                        () -> intakeNoMove.getAsBoolean(), driver));
 
         m_ElevatorSubsystem.setDefaultCommand(
                 new ElevationManual(
@@ -151,9 +152,7 @@ public class RobotContainer {
         m_ShooterSubsystem.setDefaultCommand(new ManRizzt(m_ShooterSubsystem, () -> -mech.getRawAxis(rightVerticalAxis),
                 () -> shooterToSubwoofer.getAsBoolean()));
 
-        // Another option that allows you to specify the default auto by its name
-        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
-        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = AutoBuilder.buildAutoChooser("4 piece mcnugget");
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -185,7 +184,7 @@ public class RobotContainer {
                         .setPose(Robot.getAlliance() ? Constants.Vision.startingPoseRed : Constants.Vision.startingPoseBlue))));
 
         // Intexer
-        intex.or(intakeNoVision).whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
+        intex.or(intakeNoMove).whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
 
         // Shooter intake
@@ -193,10 +192,10 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
         // Move to Amp
-        driverUp.whileTrue(m_SwerveSubsystem.pathToAmpChain());
+        //driverUp.whileTrue(m_SwerveSubsystem.pathToAmpChain());
 
         // Move to Source
-        driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
+        //driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
 
         // Intake from Source
         intakeFromSource.whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, driver))
