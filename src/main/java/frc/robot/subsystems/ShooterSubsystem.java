@@ -4,25 +4,26 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.math.FiringSolutionsV3;
-import frc.lib.math.Interpolations;
-import frc.robot.Constants;
-
 import com.revrobotics.CANSparkBase;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import frc.lib.math.FiringSolutionsV3;
+import frc.lib.math.Interpolations;
+import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -53,19 +54,21 @@ public class ShooterSubsystem extends SubsystemBase {
     // Vars
     /** In m/s */
     private double shooterVelocity = 12.1;
+
     private double shooterAngleToSpeaker, shooterAngleToAmp;
     private boolean ENCFAIL = false;
     public boolean isZeroed = false;
     public boolean wristIsLocked = false;
     /** IN RADIANS */
     private double angleOffset = Constants.Shooter.angleOffsetManual;
+
     private double distanceToMovingSpeakerTarget = .94;
     public double lastWristAngleSetpoint = 0.0;
     public boolean manualOverride = false;
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
-    public boolean outOfAmpRange = false;
+    public boolean outsideAllianceWing = false;
 
     // Constants
     private final double wristAngleMax = 0.0;
@@ -139,19 +142,19 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        /* 
+        /*
         if (velocityP != SmartDashboard.getNumber("Velo P", velocityP)){
             velocityP = SmartDashboard.getNumber("Velo P", velocityP);
             topPID.setP(velocityP, 0);
             botPID.setP(velocityP, 0);
         }
-        
+
         if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)){
             velocityI = SmartDashboard.getNumber("Velo I", velocityI);
             topPID.setI(velocityI, 0);
             botPID.setI(velocityI, 0);
         }
-        
+
         if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)){
             velocityD = SmartDashboard.getNumber("Velo D", velocityD);
             topPID.setD(velocityD, 0);
@@ -160,15 +163,19 @@ public class ShooterSubsystem extends SubsystemBase {
         */
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
 
-        FiringSolutionsV3.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
-        FiringSolutionsV3.speakerTargetZ = SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.speakerTargetZ);
+        FiringSolutionsV3.slipPercent =
+                SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
+        FiringSolutionsV3.speakerTargetZ =
+                SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.speakerTargetZ);
 
-        SmartDashboard.putNumber("Top - Bottom error",
+        SmartDashboard.putNumber(
+                "Top - Bottom error",
                 m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
         SmartDashboard.putNumber("Current Angle Radians", getCurrentShooterAngle());
         SmartDashboard.putNumber("Current Velocity", getVelocity());
         SmartDashboard.putBoolean("shooter at speed", isShooterAtSpeed());
-        SmartDashboard.putNumber("Current Angle Degrees", Units.radiansToDegrees(getCurrentShooterAngle()));
+        SmartDashboard.putNumber(
+                "Current Angle Degrees", Units.radiansToDegrees(getCurrentShooterAngle()));
 
         // check for encoder failure
         if (m_WristEncoder.isConnected()) {
@@ -201,7 +208,6 @@ public class ShooterSubsystem extends SubsystemBase {
              * }
              */
         }
-
     }
 
     /** in RADIANs units MATTER */
@@ -226,8 +232,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getDistanceTo(double x, double y) {
-        return FiringSolutionsV3.getDistanceToTarget(swerveSubsystem.getPose().getX(), swerveSubsystem.getPose().getY(),
-                x, y);
+        return FiringSolutionsV3.getDistanceToTarget(
+                swerveSubsystem.getPose().getX(), swerveSubsystem.getPose().getY(), x, y);
     }
 
     public double getDistanceToSpeakerWhileMoving() {
@@ -275,7 +281,6 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
     }
 
-
     public void resetWristEncoders(double newOffset) {
         angleOffset = newOffset;
         m_WristEncoder.reset();
@@ -299,9 +304,11 @@ public class ShooterSubsystem extends SubsystemBase {
             shootaBot.stopMotor();
             shootaTop.stopMotor();
         } else {
-            botPID.setReference(velocity - SmartDashboard.getNumber("Top Bottom Offset", 400),
+            botPID.setReference(
+                    velocity - SmartDashboard.getNumber("Top Bottom Offset", 400),
                     CANSparkMax.ControlType.kVelocity);
-            topPID.setReference(velocity + SmartDashboard.getNumber("Top Bottom Offset", 400),
+            topPID.setReference(
+                    velocity + SmartDashboard.getNumber("Top Bottom Offset", 400),
                     CANSparkMax.ControlType.kVelocity);
         }
     }
@@ -346,7 +353,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setWristByAngle(double angle) {
         manualOverride = false;
         if (isZeroed) {
-            //manualOverride = false;
+            // manualOverride = false;
             updateWristAngleSetpoint(angle);
         }
     }
@@ -363,10 +370,11 @@ public class ShooterSubsystem extends SubsystemBase {
         m_Wrist.set(speed);
     }
 
-    public void setWristToBrake(){
+    public void setWristToBrake() {
         m_Wrist.setIdleMode(IdleMode.kBrake);
     }
-    public void setWristToCoast(){
+
+    public void setWristToCoast() {
         m_Wrist.setIdleMode(IdleMode.kCoast);
     }
 
@@ -381,51 +389,70 @@ public class ShooterSubsystem extends SubsystemBase {
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds chassisSpeeds = swerveSubsystem.getChassisSpeeds();
 
-        distanceToMovingSpeakerTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
-                FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
+        distanceToMovingSpeakerTarget = FiringSolutionsV3.getDistanceToMovingTarget(
+                pose.getX(),
+                pose.getY(),
+                FiringSolutionsV3.speakerTargetX,
+                FiringSolutionsV3.speakerTargetY,
+                chassisSpeeds.vxMetersPerSecond,
+                chassisSpeeds.vyMetersPerSecond,
+                pose.getRotation().getRadians());
 
         FiringSolutionsV3.updateSpeakerR(distanceToMovingSpeakerTarget);
 
         // shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
 
-        if (elevatorSubsystem.getHeight() > 0.3){
-            shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(distanceToMovingSpeakerTarget));
+        if (elevatorSubsystem.getHeight() > 0.3) {
+            shooterAngleToSpeaker =
+                    Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(
+                            distanceToMovingSpeakerTarget));
         } else {
-            shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+            shooterAngleToSpeaker = Math.toRadians(
+                    interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
         }
 
-        if (FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
-                FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                pose.getRotation().getRadians()) > FiringSolutionsV3.maxRangeWithR) {
-            outOfAmpRange = true;
+        if ((Robot.getAlliance() && pose.getX() < 16.54 - 5)
+                ^ (!Robot.getAlliance() && pose.getX() > 5)) {
+            outsideAllianceWing = true;
         } else {
-            if (outOfAmpRange) {
-                outOfAmpRange = false;
-                FiringSolutionsV3.resetAmpR();
-            }
+            outsideAllianceWing = false;
         }
 
-        SmartDashboard.putNumber("Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
+        SmartDashboard.putNumber(
+                "Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);
         SmartDashboard.putNumber("Calculated Angle Degrees", Math.toDegrees(shooterAngleToSpeaker));
-        SmartDashboard.putNumber("distance", FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(),
-                FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
+        SmartDashboard.putNumber(
+                "distance",
+                FiringSolutionsV3.getDistanceToTarget(
+                        pose.getX(),
+                        pose.getY(),
+                        FiringSolutionsV3.speakerTargetX,
+                        FiringSolutionsV3.speakerTargetY));
         SmartDashboard.putNumber("R", FiringSolutionsV3.getSpeakerR());
         SmartDashboard.putNumber("C", FiringSolutionsV3.C(distanceToMovingSpeakerTarget));
-        SmartDashboard.putNumber("quarticA",
-                FiringSolutionsV3.quarticA(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
-        SmartDashboard.putNumber("quarticC",
-                FiringSolutionsV3.quarticC(distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
-        SmartDashboard.putNumber("quarticE", FiringSolutionsV3.quarticE(distanceToMovingSpeakerTarget));
+        SmartDashboard.putNumber(
+                "quarticA",
+                FiringSolutionsV3.quarticA(
+                        distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
+        SmartDashboard.putNumber(
+                "quarticC",
+                FiringSolutionsV3.quarticC(
+                        distanceToMovingSpeakerTarget, FiringSolutionsV3.speakerTargetZ));
+        SmartDashboard.putNumber(
+                "quarticE", FiringSolutionsV3.quarticE(distanceToMovingSpeakerTarget));
         SmartDashboard.putNumber("Distance to Moving Target", distanceToMovingSpeakerTarget);
         SmartDashboard.putNumber("robot vx", chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("robot vy", chassisSpeeds.vyMetersPerSecond);
 
-        double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
-                FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, pose.getRotation().getRadians());
+        double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(
+                pose.getX(),
+                pose.getY(),
+                FiringSolutionsV3.ampTargetX,
+                FiringSolutionsV3.ampTargetY,
+                chassisSpeeds.vxMetersPerSecond,
+                chassisSpeeds.vyMetersPerSecond,
+                pose.getRotation().getRadians());
 
         FiringSolutionsV3.updateAmpR(distanceToMovingAmpTarget);
 

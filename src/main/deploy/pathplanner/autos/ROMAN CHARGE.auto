@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.72394368066646,
-      "y": 3.0614240800928165
+      "x": 0.744692763774372,
+      "y": 4.446330676429759
     },
-    "rotation": 0
+    "rotation": -61.949224233821454
   },
   "command": {
     "type": "sequential",
@@ -54,6 +54,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Fire Under Stage"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "backMidSourceLeft"
@@ -62,7 +68,25 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Force Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Idle Speed"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "idk what the naming scheme is"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
           }
         }
       ]

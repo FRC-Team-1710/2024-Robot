@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4174820372432768,
-      "y": 6.537032333323926
+      "x": 0.744692763774372,
+      "y": 4.446330676429759
     },
-    "rotation": 0
+    "rotation": -61.949224233821454
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "toMidAmpLeft"
+            "pathName": "toMidSourceRightAlt"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "backMidAmpLeft"
+            "pathName": "backMidSourceRightAlt"
           }
         },
         {
@@ -44,25 +44,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "toCloseLeft"
+            "pathName": "toMidSourceLeftAlt"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Idle Speed"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Note Sniffer2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "backCloseLeft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
           }
         }
       ]

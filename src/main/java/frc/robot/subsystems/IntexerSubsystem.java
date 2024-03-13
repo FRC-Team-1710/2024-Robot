@@ -4,13 +4,14 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class IntexerSubsystem extends SubsystemBase {
 
@@ -20,7 +21,6 @@ public class IntexerSubsystem extends SubsystemBase {
     private CANSparkBase shooterIntake;
     public boolean intakeThroughShooterPart2isReady = false;
     public boolean resetNoteInShooterPart2isReady = false;
-    
 
     /** Front Intake */
     private DigitalInput breakingBeam;
@@ -58,7 +58,7 @@ public class IntexerSubsystem extends SubsystemBase {
             shooterIntake.set(speed);
         }
     }
-    
+
     public void setFrontIntake(double speed) {
         if (speed == 0) {
             left.stopMotor();
@@ -70,7 +70,7 @@ public class IntexerSubsystem extends SubsystemBase {
     }
 
     public void setShooterIntake(double speed) {
-        if (speed == 0){
+        if (speed == 0) {
             shooterIntake.stopMotor();
         } else {
             shooterIntake.set(speed);
@@ -85,11 +85,11 @@ public class IntexerSubsystem extends SubsystemBase {
         return !beamKamen.get();
     }
 
-    public void setIntakeThroughShooterPart2Status(boolean value){
+    public void setIntakeThroughShooterPart2Status(boolean value) {
         intakeThroughShooterPart2isReady = value;
     }
 
-    public void resetNoteInShooterPart2Status(boolean value){
+    public void resetNoteInShooterPart2Status(boolean value) {
         resetNoteInShooterPart2isReady = value;
     }
 

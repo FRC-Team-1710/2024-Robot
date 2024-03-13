@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -18,7 +19,8 @@ public class IntakeThroughShooter extends Command {
     Joystick controller;
 
     /** Creates a new IntakeFromShooter. */
-    public IntakeThroughShooter(ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
+    public IntakeThroughShooter(
+            ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
         shooter = shooterSub;
         intexer = intex;
         this.controller = controller;
@@ -46,7 +48,7 @@ public class IntakeThroughShooter extends Command {
         shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
         intexer.setALL(0);
     }
-    
+
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {

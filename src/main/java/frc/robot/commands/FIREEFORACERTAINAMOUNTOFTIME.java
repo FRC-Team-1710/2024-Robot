@@ -4,42 +4,49 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
+import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class RizzLevel extends Command {
+public class FIREEFORACERTAINAMOUNTOFTIME extends Command {
+    private ShooterSubsystem shooter;
+    private IntexerSubsystem intexer;
+    private double time;
+    private Timer timer = new Timer();
 
-    ShooterSubsystem shooter;
-    double angle;
-
-    /** Creates a new RizzLevel. */
-    public RizzLevel(ShooterSubsystem noteAccelerator, double angleInRADIANS) {
-        shooter = noteAccelerator;
-        angle = angleInRADIANS;
-        addRequirements(noteAccelerator);
+    public FIREEFORACERTAINAMOUNTOFTIME(
+            ShooterSubsystem shooterSub, IntexerSubsystem intex, double time) {
+        shooter = shooterSub;
+        intexer = intex;
+        this.time = time;
         // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(intex);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        shooter.setWristByAngle(angle);
+        timer.reset();
+        timer.start();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {}
+    public void execute() {
+        intexer.setShooterIntake(.9);
+    }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        // shooter.manualWristSpeed(0);
+        intexer.setShooterIntake(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return true;
+        return timer.get() > time;
     }
 }

@@ -1,5 +1,5 @@
 package frc.lib.math;
-
+// spotless:off
 public class FiringSolutionsV2 {
 
     private static final double shooterHeight = 0.355;
@@ -141,5 +141,5 @@ public class FiringSolutionsV2 {
     public static double getShooterAngle() {
         return Math.acos(R);
     }
-
+// spotless:on
 }

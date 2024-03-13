@@ -9,25 +9,26 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 public class Interpolations {
 
     public InterpolatingDoubleTreeMap shooterSpeeds = new InterpolatingDoubleTreeMap();
-    public InterpolatingDoubleTreeMap bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds = new InterpolatingDoubleTreeMap();
+    public InterpolatingDoubleTreeMap bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds =
+            new InterpolatingDoubleTreeMap();
 
     private double offset = 1;
 
     public Interpolations() {
-         /* 
-        shooterSpeeds.put(1.25, 53.0);
-        shooterSpeeds.put(1.5, 48.0);
-        shooterSpeeds.put(1.75, 44.0);
-        shooterSpeeds.put(2.0, 41.0);
-        shooterSpeeds.put(2.25, 39.0);
-        shooterSpeeds.put(2.5, 37.5);
-        shooterSpeeds.put(2.75, 35.5);
-        shooterSpeeds.put(3.0, 34.0);
-        shooterSpeeds.put(3.25, 33.0);
-        shooterSpeeds.put(3.5, 32.0);
-        shooterSpeeds.put(4.0, 30.75);
-        shooterSpeeds.put(4.5, 29.75);
-*/
+        /*
+                shooterSpeeds.put(1.25, 53.0);
+                shooterSpeeds.put(1.5, 48.0);
+                shooterSpeeds.put(1.75, 44.0);
+                shooterSpeeds.put(2.0, 41.0);
+                shooterSpeeds.put(2.25, 39.0);
+                shooterSpeeds.put(2.5, 37.5);
+                shooterSpeeds.put(2.75, 35.5);
+                shooterSpeeds.put(3.0, 34.0);
+                shooterSpeeds.put(3.25, 33.0);
+                shooterSpeeds.put(3.5, 32.0);
+                shooterSpeeds.put(4.0, 30.75);
+                shooterSpeeds.put(4.5, 29.75);
+        */
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.25, 44.0);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.5, 39.5);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.75, 36.0);
@@ -52,7 +53,6 @@ public class Interpolations {
         shooterSpeeds.put(3.25, 31.0 + offset);
         shooterSpeeds.put(3.5, 30.0 + offset);
         shooterSpeeds.put(4.0, 28.25 + offset);
-
     }
 
     public double getShooterAngleFromInterpolation(double distanceToTarget) {

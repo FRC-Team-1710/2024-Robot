@@ -4,9 +4,10 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
@@ -37,7 +38,8 @@ public class IntexBestHex extends Command {
         if (in) { // Hood logic to run forwards or backwards
             if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
                 intexer.setALL(Constants.Intake.noteInsideSpeed);
-            } else if (!intexer.intakeBreak() && intexer.shooterBreak()) { // Stop note if at shooter
+            } else if (!intexer.intakeBreak()
+                    && intexer.shooterBreak()) { // Stop note if at shooter
                 controller.setRumble(RumbleType.kBothRumble, 0.75);
                 intexer.setALL(0);
             } else { // Note is not in robot
@@ -46,7 +48,6 @@ public class IntexBestHex extends Command {
         } else { // Outtake
             intexer.setALL(Constants.Intake.outakeSpeed);
         }
-        
     }
 
     // Called once the command ends or is interrupted.

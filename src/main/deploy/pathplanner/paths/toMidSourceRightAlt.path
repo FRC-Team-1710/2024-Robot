@@ -3,33 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8981397630253705,
-        "y": 6.980826883268969
+        "x": 0.744692763774372,
+        "y": 4.446330676429759
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4009020939657093,
-        "y": 6.4075411001178315
+        "x": 2.44965088504999,
+        "y": 2.47643858708145
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.055760653089004,
-        "y": 5.565161990181464
+        "x": 6.798043049767811,
+        "y": 2.378941004912889
       },
       "prevControl": {
-        "x": 2.2683053822164663,
-        "y": 6.2437451620746485
+        "x": 5.452576415841669,
+        "y": 0.9067275141676178
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3 Note Top Alt"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.25,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
@@ -43,9 +55,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "McNugget paths",
+  "folder": "Midfield Paths",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -59.63572899983965,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -10,8 +10,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -26,7 +28,11 @@ public class AimBot extends Command {
     private Timer timer = new Timer();
 
     /** Creates a new AimBot. */
-    public AimBot(ShooterSubsystem shooterSubsystem, SwerveSubsystem swerve, IntexerSubsystem intexer, double speed) {
+    public AimBot(
+            ShooterSubsystem shooterSubsystem,
+            SwerveSubsystem swerve,
+            IntexerSubsystem intexer,
+            double speed) {
         this.shooter = shooterSubsystem;
         this.speed = speed;
         this.intexer = intexer;
@@ -46,8 +52,23 @@ public class AimBot extends Command {
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
-        double rotationVal = rotationPID.calculate(swerveSubsystem.getHeading().getRadians(),
-                FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX,
+        double offset;
+        if (Robot.getAlliance()) {
+            if (pose.getRotation().getRadians() > 0) {
+                offset = -Math.toRadians(180);
+            } else {
+                offset = Math.toRadians(180);
+            }
+        } else {
+            offset = 0;
+        }
+
+        double rotationVal = rotationPID.calculate(
+                pose.getRotation().getRadians() + offset,
+                FiringSolutionsV3.getAngleToMovingTarget(
+                        pose.getX(),
+                        pose.getY(),
+                        FiringSolutionsV3.speakerTargetX,
                         FiringSolutionsV3.speakerTargetY,
                         currentSpeed.vxMetersPerSecond,
                         currentSpeed.vyMetersPerSecond,
