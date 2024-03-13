@@ -18,9 +18,8 @@ public class LEDSubsystem extends SubsystemBase {
     public DigitalOutput SkylerBright = new DigitalOutput(6); // Bit 4 (8)
 
     // Output bits to the LEDs
-    public DigitalOutput[] bits = {WalterLight, JesseBlinkman, GusBling, SkylerBright
-    }; // Actual Outputs
-    boolean[] output = new boolean[4]; // Computed Outputs
+    public DigitalOutput[] bits = {WalterLight, JesseBlinkman, GusBling, SkylerBright}; // Actual Outputs
+    private boolean[] output = new boolean[4]; // Computed Outputs
 
     // Booleans used for Easy input
     private Boolean hasNote = false;
@@ -40,7 +39,7 @@ public class LEDSubsystem extends SubsystemBase {
         false, // Note in Intake -9 Orange Blink
         false, // Note in Shooter -10 Orange Solid
         false, // Alliance Color -11 Red Pulse
-        false // Alliance Color -12 Blue Pulse
+        false  // Alliance Color -12 Blue Pulse
     };
 
     // Use subsystems
