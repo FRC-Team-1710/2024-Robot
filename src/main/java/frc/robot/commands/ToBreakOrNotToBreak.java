@@ -6,9 +6,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntexerSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class ToBreakOrNotToBreak extends Command {
     IntexerSubsystem intexer;
+    LEDSubsystem ledSubsystem;
 
     /** Creates a new ToBreakOrNotToBreak. */
     public ToBreakOrNotToBreak(IntexerSubsystem intexer) {

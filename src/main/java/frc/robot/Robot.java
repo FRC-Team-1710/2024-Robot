@@ -109,7 +109,7 @@ public class Robot extends TimedRobot {
         return redAlliance;
     }
 
-    public boolean checkRedAlliance() {
+    public static boolean checkRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             return alliance.get() == DriverStation.Alliance.Red;

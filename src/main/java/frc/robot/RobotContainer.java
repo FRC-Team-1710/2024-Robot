@@ -109,7 +109,7 @@ public class RobotContainer {
     /* Subsystems */
     private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem(m_VisionSubsystem);
-    // private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem);
+    //private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(m_VisionSubsystem, m_Shoota, m_IntexerSubsystem, m_SwerveSubsystem);
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
     private final IntexerSubsystem m_IntexerSubsystem = new IntexerSubsystem();
     private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_SwerveSubsystem, m_ElevatorSubsystem);
@@ -151,8 +151,6 @@ public class RobotContainer {
         m_ShooterSubsystem.setDefaultCommand(new ManRizzt(m_ShooterSubsystem, () -> -mech.getRawAxis(rightVerticalAxis),
                 () -> shooterToSubwoofer.getAsBoolean()));
 
-        // m_LEDSubsystem.setAllianceColor();
-
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -179,7 +177,8 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Shooter
-        targetSpeaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_ShooterSubsystem, m_IntexerSubsystem)); // Main fire
+        Speaker.or(targetAmp).and(Shoot).whileTrue(new FIREEE(m_ShooterSubsystem, m_IntexerSubsystem)); // Main fire
+
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
                 new InstantCommand(() -> m_SwerveSubsystem

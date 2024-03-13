@@ -12,18 +12,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class ManRizzt extends Command {
 
     ShooterSubsystem m_shooterSubsystem;
+    LEDSubsystem ledSubsystem;
     private DoubleSupplier speed;
     BooleanSupplier setAngle;
     double lastWristSetpoint = 0.0;
     boolean wristIsLocked = false;
 
-    public ManRizzt(ShooterSubsystem shooterSubsystem, DoubleSupplier speed, BooleanSupplier setAngle) {
+    public ManRizzt(ShooterSubsystem subsystem, LEDSubsystem ledSubsystem, DoubleSupplier speed, BooleanSupplier setAngle) {
         // Use addRequirements() here to declare subsystem dependencies.
-        m_shooterSubsystem = shooterSubsystem;
+        m_shooterSubsystem = subsystem;
+        this.ledSubsystem = ledSubsystem;
         this.setAngle = setAngle;
         this.speed = speed;
         SmartDashboard.putNumber("Set Wrist Angle", 0);
@@ -61,6 +64,7 @@ public class ManRizzt extends Command {
 
     @Override
     public boolean isFinished() {
+        ledSubsystem.ReadyToFire(true);
         return false;
     }
 
