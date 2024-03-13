@@ -31,11 +31,11 @@ public class MissileLock extends Command {
     @Override
     public void execute() {
         if (target == "amp") {
-            if (shooter.getDistanceTo(FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4) {
+            if (shooter.outsideAllianceWing) {
                 shooter.PointShoot(Math.toRadians(55),
-                        FiringSolutionsV3.convertToRPM(12));
+                        FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
             } else {
-                shooter.setShooterVelocity(FiringSolutionsV3.convertToRPM(12));
+                shooter.setShooterVelocity(FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
             }
         } else {
             shooter.PointShoot(shooter.getCalculatedAngleToSpeaker(),
@@ -47,7 +47,7 @@ public class MissileLock extends Command {
     @Override
     public void end(boolean interrupted) {
         //shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        if (target != "amp" || shooter.getDistanceTo(FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4){
+        if (target != "amp" || shooter.outsideAllianceWing){
             shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
         }
     }

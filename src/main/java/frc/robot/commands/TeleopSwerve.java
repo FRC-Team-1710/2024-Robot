@@ -76,14 +76,17 @@ public class TeleopSwerve extends Command {
         double rotationVal;
 
         double offset;
+        double ampLockOffset;
 
         if (Robot.getAlliance()){
+            ampLockOffset = 16.54 - 5;
             if (pose.getRotation().getRadians() > 0){
                 offset = -Math.toRadians(180);
             } else {
                 offset = Math.toRadians(180);
             }
         } else {
+            ampLockOffset = 5;
             offset = 0;
         }
 
@@ -92,7 +95,7 @@ public class TeleopSwerve extends Command {
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
-            if (pose.getX() >= 3){ // "TODO: fix this" -Micah
+            if (shooterSubsystem.getDistanceToSpeakerWhileMoving() >= 3.5){
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else {
                 controller.setRumble(RumbleType.kBothRumble, 0);
@@ -110,8 +113,7 @@ public class TeleopSwerve extends Command {
         } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
-            if (FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.trueAmpX, FiringSolutionsV3.trueAmpY) > 4) {
-
+            if ((Robot.getAlliance() && pose.getX() < 16.54 - 5) ^ (!Robot.getAlliance() && pose.getX() > 5)) {
                 rotationVal = rotationPID.calculate(pose.getRotation().getRadians() + offset,
                         FiringSolutionsV3.getAngleToMovingTarget(pose.getX(), pose.getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
                                 currentSpeed.vxMetersPerSecond,

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.FiringSolutionsV3;
 import frc.lib.math.Interpolations;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.RelativeEncoder;
@@ -65,7 +66,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
-    public boolean outOfAmpRange = false;
+    public boolean outsideAllianceWing = false;
 
     // Constants
     private final double wristAngleMax = 0.0;
@@ -395,16 +396,10 @@ public class ShooterSubsystem extends SubsystemBase {
             shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
         }
 
-        if (FiringSolutionsV3.getDistanceToMovingTarget(pose.getX(), pose.getY(),
-                FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                pose.getRotation().getRadians()) > FiringSolutionsV3.maxRangeWithR) {
-            outOfAmpRange = true;
+        if ((Robot.getAlliance() && pose.getX() < 16.54 - 5) ^ (!Robot.getAlliance() && pose.getX() > 5)) {
+            outsideAllianceWing = true;
         } else {
-            if (outOfAmpRange) {
-                outOfAmpRange = false;
-                FiringSolutionsV3.resetAmpR();
-            }
+            outsideAllianceWing = false;
         }
 
         SmartDashboard.putNumber("Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
