@@ -12,12 +12,10 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class FIREEE extends Command {
     private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
-    private LEDSubsystem ledSubsystem;
 
-    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex, LEDSubsystem ledSubsystem) {
+    public FIREEE(ShooterSubsystem shooterSub, IntexerSubsystem intex) {
         shooter = shooterSub;
         intexer = intex;
-        this.ledSubsystem = ledSubsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(intex);
     }
