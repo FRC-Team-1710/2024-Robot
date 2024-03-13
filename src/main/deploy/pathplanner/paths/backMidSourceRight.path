@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.417802479310422,
-        "y": 0.8092299319990566
+        "x": 6.651796676514969,
+        "y": 0.70198259161364
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.048097705126527,
-        "y": 0.7979593804318251
+        "x": 5.6670710966125295,
+        "y": 1.2284695353208006
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom wing line"
     },
     {
       "anchor": {
-        "x": 2.868890488374794,
-        "y": 2.515437619949907
+        "x": 1.3479282065452507,
+        "y": 3.9584018360435778
       },
       "prevControl": {
-        "x": 3.933276408891291,
-        "y": 1.5842649119057797
-      },
-      "nextControl": {
-        "x": 2.556898225435399,
-        "y": 2.7883824933930974
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.41,
-        "y": 5.57
-      },
-      "prevControl": {
-        "x": 1.5039243380149394,
-        "y": 5.030875239898781
+        "x": 1.5429233708823726,
+        "y": 2.993175772574823
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SHoot from bottomn"
     }
   ],
   "rotationTargets": [],
@@ -49,13 +33,13 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 8.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -48.64118525790135,
     "rotateFast": false
   },
   "reversed": false,

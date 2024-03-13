@@ -81,6 +81,8 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putData(PDH);
 
+        redAlliance = checkRedAlliance();
+
         // idk if this is useful
         //System.gc();
     }

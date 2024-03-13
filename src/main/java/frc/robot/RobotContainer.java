@@ -39,14 +39,14 @@ public class RobotContainer {
     private final int rightTrigger = XboxController.Axis.kRightTrigger.value;
 
     /* DRIVER BUTTONS */
-    /** Driver B */
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kB.value);
+    /** Driver X */
+    private final JoystickButton intakeNoVision = new JoystickButton(driver, XboxController.Button.kX.value);
     /** Driver A */
     private final JoystickButton Shoot = new JoystickButton(driver, XboxController.Button.kA.value);
+    /** Driver B */
+    private final JoystickButton forceShoot = new JoystickButton(driver, XboxController.Button.kB.value);
     /** Driver Y */
-    private final JoystickButton forceShoot = new JoystickButton(driver, XboxController.Button.kY.value);
-    /** Driver X */
-    private final JoystickButton driverX = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton intakeFromSource = new JoystickButton(driver, XboxController.Button.kY.value);
     /** Driver RB */
     private final JoystickButton intex = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     /** Driver LB */
@@ -67,14 +67,14 @@ public class RobotContainer {
     private final JoystickButton resetOdom = new JoystickButton(driver, XboxController.Button.kStart.value);
 
     /* MECH BUTTONS */
-    /** Mech B */
-    private final JoystickButton shooterToAntiDefense = new JoystickButton(mech, XboxController.Button.kB.value);
+    /** Mech X */
+    private final JoystickButton shooterToAntiDefense = new JoystickButton(mech, XboxController.Button.kX.value);
     /** Mech A */
     private final JoystickButton shooterToIntake = new JoystickButton(mech, XboxController.Button.kA.value);
     /** Mech Y */
     private final JoystickButton shooterToAmp = new JoystickButton(mech, XboxController.Button.kY.value);
-    /** Mech X */
-    private final JoystickButton shooterToSubwoofer = new JoystickButton(mech, XboxController.Button.kX.value);
+    /** Mech B */
+    private final JoystickButton shooterToSubwoofer = new JoystickButton(mech, XboxController.Button.kB.value);
     /** Mech RB */
     private final JoystickButton primeShooterSpeedSpeaker = new JoystickButton(mech, XboxController.Button.kRightBumper.value);
     /** Mech LB */
@@ -129,14 +129,16 @@ public class RobotContainer {
         NamedCommands.registerCommand("Stop Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
         NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
         NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
+        NamedCommands.registerCommand("Fire Under Stage", new InstantCommand(() -> m_ShooterSubsystem.setWristByAngle(Math.toRadians(10))));
+        NamedCommands.registerCommand("Force Shoot", new FIREEFORACERTAINAMOUNTOFTIME(m_ShooterSubsystem, m_IntexerSubsystem, .2));
 
         m_SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
-                        m_SwerveSubsystem, m_VisionSubsystem, m_ShooterSubsystem,
+                        m_SwerveSubsystem, m_VisionSubsystem, m_ShooterSubsystem, m_IntexerSubsystem,
                         () -> -driver.getRawAxis(leftVerticalAxis),
                         () -> -driver.getRawAxis(leftHorizontalAxis),
                         () -> -driver.getRawAxis(rightHorizontalAxis),
-                        () -> robotCentric.getAsBoolean(),
+                        () -> false,
                         () -> targetAmp.getAsBoolean(),
                         () -> targetSpeaker.getAsBoolean(),
                         () -> intex.getAsBoolean(), driver));
@@ -181,10 +183,10 @@ public class RobotContainer {
         // Reset Odometry
         resetOdom.onTrue(new InstantCommand(() -> m_SwerveSubsystem.zeroHeading()).alongWith(
                 new InstantCommand(() -> m_SwerveSubsystem
-                        .setPose(Constants.Vision.startingPose))));
+                        .setPose(Robot.getAlliance() ? Constants.Vision.startingPoseRed : Constants.Vision.startingPoseBlue))));
 
         // Intexer
-        intex.whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
+        intex.or(intakeNoVision).whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
 
         // Shooter intake
@@ -198,7 +200,7 @@ public class RobotContainer {
         driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
 
         // Intake from Source
-        driverX.whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, driver))
+        intakeFromSource.whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, driver))
                 .onFalse(new IntakeThroughShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, driver));
 
         /* MECH BUTTONS */

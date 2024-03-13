@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6022294159701613,
-        "y": 4.1159435424278135
+        "x": 1.9329136995566167,
+        "y": 3.3539168265984998
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3610924813659686,
-        "y": 4.356024795515781
+        "x": 3.288130091699615,
+        "y": 2.6031854439005797
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.0196231716467223,
-        "y": 4.912666546975921
+        "x": 6.5835483689969765,
+        "y": 0.8189796902159131
       },
       "prevControl": {
-        "x": 2.1833413338408816,
-        "y": 4.674105796350148
+        "x": 5.218582218637122,
+        "y": 1.540461798263264
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -12.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "McNugget paths",
+  "folder": "Midfield Paths",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -50.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

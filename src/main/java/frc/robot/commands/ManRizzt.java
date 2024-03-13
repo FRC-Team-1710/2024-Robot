@@ -41,7 +41,7 @@ public class ManRizzt extends Command {
         speedValue = Math.pow(speedValue, 3);
 
         if (setAngle.getAsBoolean()) {
-            m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
+            //m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
         } else {
             if (Math.abs(speedValue) > .0) {
                 wristIsLocked = false;

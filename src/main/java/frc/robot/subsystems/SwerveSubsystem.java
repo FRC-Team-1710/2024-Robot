@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
+import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -126,7 +127,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
                 getModulePositions(),
-                Constants.Vision.startingPose,
+                Robot.getAlliance() ? Constants.Vision.startingPoseRed : Constants.Vision.startingPoseBlue,
                 Constants.Vision.stateStdDevs,
                 Constants.Vision.kSingleTagStdDevs);
 
@@ -135,7 +136,7 @@ public class SwerveSubsystem extends SubsystemBase {
         swervePublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("Swerve Module States", SwerveModuleState.struct).publish();
 
-        SmartDashboard.putData(gyro);
+        SmartDashboard.putData("Gyro", gyro);
         SmartDashboard.putData(this);
         SmartDashboard.putData("field", m_field);
 
@@ -272,7 +273,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
         updateModuleStates();
         SwerveModulePosition[] modulePositions = getModulePositions();
-
+ 
         // Correct pose estimate with multiple vision measurements
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedPoseFront();
         if (OptionalEstimatedPoseFront.isPresent()) {
@@ -317,6 +318,10 @@ public class SwerveSubsystem extends SubsystemBase {
         //SmartDashboard.putString("Obodom", getPose().toString());
         SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
+        SmartDashboard.putNumber("Angle to target", Math.toDegrees(FiringSolutionsV3.getAngleToMovingTarget(getPose().getX(), getPose().getY(), FiringSolutionsV3.ampTargetX, FiringSolutionsV3.ampTargetY,
+                                getChassisSpeeds().vxMetersPerSecond,
+                                getChassisSpeeds().vyMetersPerSecond,
+                                getPose().getRotation().getRadians())));
 
     }
 

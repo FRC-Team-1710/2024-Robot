@@ -25,6 +25,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -66,8 +67,8 @@ public class VisionSubsystem extends SubsystemBase {
         photonEstimatorBack = new PhotonPoseEstimator(
                 Constants.Vision.kTagLayout, PoseStrategy.LOWEST_AMBIGUITY, aprilTagCameraBack, Constants.Vision.kRobotToCamBack);
 
-        photonEstimatorFront.setLastPose(Constants.Vision.startingPose);
-        photonEstimatorBack.setLastPose(Constants.Vision.startingPose);
+        photonEstimatorFront.setLastPose(Robot.getAlliance() ? Constants.Vision.startingPoseRed : Constants.Vision.startingPoseBlue);
+        photonEstimatorBack.setLastPose(Robot.getAlliance() ? Constants.Vision.startingPoseRed : Constants.Vision.startingPoseBlue);
         
         // 2024 field quality makes multitag impractical
         //photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);

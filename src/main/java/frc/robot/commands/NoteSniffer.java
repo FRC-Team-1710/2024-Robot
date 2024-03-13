@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -27,7 +28,7 @@ public class NoteSniffer extends Command {
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
     private Timer timer = new Timer();
     private boolean noteInside = false;
-    private double translationVal;
+    private double translationVal = .35;
 
     /** Creates a new IntakeWithVision. */
     public NoteSniffer(SwerveSubsystem swerve, VisionSubsystem vision, IntexerSubsystem intexer,
@@ -55,8 +56,9 @@ public class NoteSniffer extends Command {
 
         PhotonPipelineResult result = vision.getLatestResultN();
         double rotationVal;
+        boolean overMidfield = Robot.getAlliance() ? (16.54 - swerveSubsystem.getPose().getX()) > 8.3 : swerveSubsystem.getPose().getX() > 8.3;
 
-        if (intexer.intakeBreak()) {
+        if (intexer.intakeBreak() || overMidfield) {
             noteInside = true;
             translationVal = 0;
             rotationVal = 0;
@@ -102,6 +104,6 @@ public class NoteSniffer extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return intexer.shooterBreak() || timer.get() > 3;
+        return intexer.shooterBreak() || timer.get() > 2;
     }
 }

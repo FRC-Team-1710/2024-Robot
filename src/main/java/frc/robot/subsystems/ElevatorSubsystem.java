@@ -128,11 +128,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     /** Get height from motor encoder */
     public double getHeightEncoder() {
-        return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI) + 0.2;
+        return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI);
     }
 
     /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
-    public void setHeight(double height) {
+    public void setHeight(double height) { //TODO rewrite
         locked = true;
         setHeight = height;
         if (!lasercanFailureCheck()) { // Run off LaserCan
@@ -141,7 +141,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         } else { // Run off encoder
             double rot = (height / (spoolCircumference * Math.PI)) * gearRatio;
             if (getHeightEncoder() < Constants.Elevator.maxHeightMeters) {
-                m_elevatorLeft.setControl(m_requestPosition.withPosition(rot).withSlot(1));
+                m_elevatorLeft.set(elevatorPID.calculate(getHeightEncoder(), height));
             }
         }
     }
