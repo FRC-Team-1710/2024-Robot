@@ -1,7 +1,7 @@
 package frc.lib.util;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-
+// spotless:off
 public class SwerveModuleConstants {
     public final int driveMotorID;
     public final int angleMotorID;
@@ -22,3 +22,4 @@ public class SwerveModuleConstants {
         this.angleOffset = angleOffset;
     }
 }
+// spotless:on

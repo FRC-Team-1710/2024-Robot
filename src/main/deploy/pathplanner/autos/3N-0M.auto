@@ -1,0 +1,73 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.89943932856987,
+      "y": 3.782906188140168
+    },
+    "rotation": 1.0416266760099369
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toRightCloseFromRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

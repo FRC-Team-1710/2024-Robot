@@ -4,45 +4,54 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.Constants;
+import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ZeroWrist extends Command {
-    ShooterSubsystem shooter;
-    public final Timer timer = new Timer();
+public class ResetNoteInShooter extends Command {
+    private ShooterSubsystem shooter;
+    private IntexerSubsystem intexer;
 
-    /** Creates a new ZeroWrist. */
-    public ZeroWrist(ShooterSubsystem shooter) {
-        this.shooter = shooter;
-        addRequirements(shooter);
+    Joystick controller;
+
+    /** Creates a new IntakeFromShooter. */
+    public ResetNoteInShooter(
+            ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
+        shooter = shooterSub;
+        intexer = intex;
+        this.controller = controller;
         // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(shooterSub, intex);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        timer.reset();
-        timer.start();
+        shooter.setWristByAngle(.66);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.manualWristSpeed(.45);
+        intexer.setALL(Constants.Intake.outakeSpeed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.resetWristEncoders(Constants.Shooter.angleOffsetAuto);
+        shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
+        intexer.setALL(0);
     }
 
     // Returns true when the command should end.
     @Override
-    public boolean isFinished() { // Shooter should be hitting hard stop or reach timeout
-        if (shooter.isWristMotorStalled() || timer.get() >= 1.5) {
+    public boolean isFinished() {
+        if (intexer.intakeBreak()) {
+            controller.setRumble(RumbleType.kBothRumble, 0.75);
             return true;
         } else {
             return false;

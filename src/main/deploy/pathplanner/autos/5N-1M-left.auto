@@ -1,0 +1,121 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3479282065452507,
+      "y": 6.620085829245293
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toMidAmpLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backMidAmpLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toCloseRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backCloseRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -4,42 +4,59 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+
+import frc.robot.Constants;
+import frc.robot.subsystems.ShooterSubsystem;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterSubsystem;
-
 public class ManRizzt extends Command {
 
-    ShooterSubsystem shooterSubsystem;
+    ShooterSubsystem m_shooterSubsystem;
     private DoubleSupplier speed;
     BooleanSupplier setAngle;
+    double lastWristSetpoint = 0.0;
+    boolean wristIsLocked = false;
 
     public ManRizzt(ShooterSubsystem subsystem, DoubleSupplier speed, BooleanSupplier setAngle) {
         // Use addRequirements() here to declare subsystem dependencies.
-        shooterSubsystem = subsystem;
+        m_shooterSubsystem = subsystem;
         this.setAngle = setAngle;
         this.speed = speed;
         SmartDashboard.putNumber("Set Wrist Angle", 0);
-        addRequirements(shooterSubsystem);
+        addRequirements(m_shooterSubsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
-    }
+    public void initialize() {}
 
     @Override
     public void execute() {
-        double speedValue = speed.getAsDouble() * 0.5;
-        
-        speedValue = Math.pow(speed.getAsDouble(), 3);
-        if (setAngle.getAsBoolean()){
-            shooterSubsystem.setWristPosition(SmartDashboard.getNumber("Set Wrist Angle", 0));
+        double speedValue = MathUtil.applyDeadband(speed.getAsDouble(), Constants.stickDeadband);
+        speedValue = Math.pow(speedValue, 3);
+
+        if (setAngle.getAsBoolean()) {
+            // m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
         } else {
-            shooterSubsystem.manualWristSpeed(speedValue);
+            if (Math.abs(speedValue) > .0) {
+                wristIsLocked = false;
+                m_shooterSubsystem.setWristSpeedManual(speedValue);
+            } else {
+                if (m_shooterSubsystem.isZeroed) {
+                    if (!wristIsLocked) {
+                        m_shooterSubsystem.setWristByAngle(
+                                m_shooterSubsystem.getCurrentShooterAngle());
+                        wristIsLocked = true;
+                    }
+                } else {
+                    m_shooterSubsystem.setWristSpeedManual(0);
+                }
+            }
         }
     }
 
@@ -50,6 +67,6 @@ public class ManRizzt extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        shooterSubsystem.manualWristSpeed(0);
+        // m_shooterSubsystem.setWristSpeedManual(0);
     }
 }

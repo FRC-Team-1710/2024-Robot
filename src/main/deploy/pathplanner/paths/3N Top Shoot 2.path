@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.755077047615666,
+        "y": 5.505607227681089
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.299589943374272,
+        "y": 5.098637580035078
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8966611698070783,
+        "y": 4.6478800976884465
+      },
+      "prevControl": {
+        "x": 2.203112957932501,
+        "y": 4.995742093990707
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -20.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "McNugget paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.9774373943047189,
+        "y": 7.068574707220673
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4525645005705963,
+        "y": 6.373314171129768
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.62197994481459,
+        "y": 6.303149244475128
+      },
+      "prevControl": {
+        "x": 2.2009903848867527,
+        "y": 6.338231707802447
+      },
+      "nextControl": {
+        "x": 3.102052624207869,
+        "y": 6.263143187859021
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.873254470155664,
+        "y": 6.537032333323926
+      },
+      "prevControl": {
+        "x": 3.4392388686731197,
+        "y": 6.418028055498066
+      },
+      "nextControl": {
+        "x": 4.598292045586939,
+        "y": 6.735832958845405
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.323329621018216,
+        "y": 6.958021893251764
+      },
+      "prevControl": {
+        "x": 4.880368383741278,
+        "y": 6.831969463656056
+      },
+      "nextControl": {
+        "x": 5.929464796776777,
+        "y": 7.130508343843873
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.544549336129553,
+        "y": 7.380566970160069
+      },
+      "prevControl": {
+        "x": 6.118532123104131,
+        "y": 7.203599136543003
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Midfield Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

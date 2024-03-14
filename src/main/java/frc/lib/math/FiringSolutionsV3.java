@@ -1,34 +1,44 @@
 package frc.lib.math;
-// format:off
+// spotless:off
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class FiringSolutionsV3 {
 
+    // Robot Values
     private static final double defaultShooterHeight = 0.42672;
-    private static final double laserCANOffset = 0;
     private static double shooterHeight = 0.42672;
-
+    private static final double laserCANOffset = 0;
+    public static final double maxShooterAngle = Math.toRadians(70);
+    public static double slipPercent = 0.5324;
+    private static double shooterVelocity = 10.0;
     private static final double noteFallAccel = 9.8;
-    private static final double maxShooterAngle = Math.toRadians(70);
-    private static final double ampTargetXBlue = 1.84;
-    private static final double ampTargetXRed = 14.7;
-    
-    public static final double speakerTargetY = 5.55;
-    public static final double ampTargetY = 8.0;
+
+    // Amp Values (used for targeting from afar)
+    private static final double ampTargetXRed = 15.91;
+    private static final double ampTargetXBlue = 16.54 - ampTargetXRed;
+    public static double ampTargetX;
+    public static final double ampTargetY = 7;
     public static final double ampTargetZ = .125;
 
-    public static double speakerTargetXOffset = .24;
-    public static double speakerTargetZ = 1.92;
-    public static double slipPercent = 0.5324;
+    // True Amp Values
+    private static final double trueAmpXBlue = 1.8415;
+    private static final double trueAmpXRed = 16.54 - trueAmpXBlue;
+    public static double trueAmpX;
+    public static final double trueAmpY = 8.2;
 
+    // Speaker Values
+    public static double speakerTargetXOffset = .24;
     private static double speakerTargetXBlue = 0.0 + speakerTargetXOffset;
     private static double speakerTargetXRed = 16.54 - speakerTargetXOffset;
     public static double speakerTargetX;
-    public static double ampTargetX;
-    private static double shooterVelocity = 10.0;
+    public static final double speakerTargetY = 5.55;
+    public static double speakerTargetZ = 1.92;
+
+    //R Values
     private static double speakerR, ampR, customR = 1.0;
+    public static double maxRangeWithR = 11.25;
 
     private FiringSolutionsV3() {
     }
@@ -37,13 +47,15 @@ public class FiringSolutionsV3 {
         if (redAlliance) {
             speakerTargetX = speakerTargetXRed;
             ampTargetX = ampTargetXRed;
+            trueAmpX = trueAmpXRed;
         } else {
             speakerTargetX = speakerTargetXBlue;
             ampTargetX = ampTargetXBlue;
+            trueAmpX = trueAmpXBlue;
         }
     }
 
-    public static void updateHeight(double laserCANValue){
+    public static void updateHeight(double laserCANValue) {
         shooterHeight = defaultShooterHeight + (laserCANValue - laserCANOffset);
     }
 
@@ -55,7 +67,8 @@ public class FiringSolutionsV3 {
         return Math.abs(Math.sqrt(Math.pow(targetX - robotX, 2) + Math.pow(targetY - robotY, 2)));
     }
 
-    public static double getRobotVelocityTowardsTarget(double robotX, double targetX, double robotVelocityX, double robotVelocityY,
+    public static double getRobotVelocityTowardsTarget(double robotX, double targetX, double robotVelocityX,
+            double robotVelocityY,
             double angleToTarget, double robotHeading) {
         if (robotX <= targetX) {
             if (robotVelocityX == 0) {
@@ -76,7 +89,8 @@ public class FiringSolutionsV3 {
         }
     }
 
-    public static double getRobotVelocityPerpendicularToTarget(double robotX, double targetX, double robotVelocityX, double robotVelocityY,
+    public static double getRobotVelocityPerpendicularToTarget(double robotX, double targetX, double robotVelocityX,
+            double robotVelocityY,
             double angleToSpeaker, double robotHeading) {
         if (robotX <= targetX) {
             if (robotVelocityX == 0) {
@@ -184,7 +198,7 @@ public class FiringSolutionsV3 {
         return Math.acos(customR);
     }
 
-    public static void resetAllR(){
+    public static void resetAllR() {
         resetSpeakerR();
         resetAmpR();
         resetCustomR();
@@ -259,40 +273,78 @@ public class FiringSolutionsV3 {
                                  // is based on the same as the input translate2ds)
     }
 
-    public static double getAngleToMovingTarget(double robotX, double robotY, double targetX, double targetY, double robotVelocityX,
+    public static double getAngleToMovingTarget(double robotX, double robotY, double targetX, double targetY,
+            double robotVelocityX,
             double robotVelocityY, double robotHeading) {
-        return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
-                getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
-                        getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
-                getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
-                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getY() - robotY)
-                / (movingTarget(robotX, robotY, targetX, targetY,
+        //if (robotX >= targetX) {
+            return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
+                    getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                            getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                    getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                            getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                    .get().getY() - robotY)
+                    / (movingTarget(robotX, robotY, targetX, targetY,
+                            getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                    getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                            getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                    getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                            .get().getX() - robotX));
+        /*} else {
+            if (robotY >= targetY) {
+                return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
                         getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
                                 getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
                         getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
-                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getX() - robotX));
+                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                        .get().getY() - robotY)
+                        / (movingTarget(robotX, robotY, targetX, targetY,
+                                getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                        getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                                getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                        getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                                .get().getX() - robotX)) + Math.toRadians(180);
+            } else {
+                return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
+                        getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                        getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                        .get().getY() - robotY)
+                        / (movingTarget(robotX, robotY, targetX, targetY,
+                                getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                        getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
+                                getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
+                                        getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                                .get().getX() - robotX)) - Math.toRadians(180);
+            }
+        }*/
+
     }
 
-    public static double getDistanceToMovingTarget(double robotX, double robotY, double targetX, double targetY, double robotVelocityX,
+    public static double getDistanceToMovingTarget(double robotX, double robotY, double targetX, double targetY,
+            double robotVelocityX,
             double robotVelocityY, double robotHeading) {
         return Math.abs(Math.sqrt(
-                Math.pow(movingTarget(robotX, robotY, targetX, targetY, 
+                Math.pow(movingTarget(robotX, robotY, targetX, targetY,
                         getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
                                 getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
                         getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
-                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getX() - robotX, 2)
+                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                        .get().getX() - robotX, 2)
                         + Math.pow(
                                 movingTarget(robotX, robotY, targetX, targetY,
                                         getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
                                                 getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
-                                        getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
-                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading)).get().getY() - robotY,
+                                        getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX,
+                                                robotVelocityY,
+                                                getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
+                                        .get().getY() - robotY,
                                 2)));
     }
-    
+
     /** Convert meters per second to rotations per minute */
     public static double convertToRPM(double velocity) {
         return (60 * velocity) / (slipPercent * Math.PI * .1016);
     }
-
+// spotless:on
 }

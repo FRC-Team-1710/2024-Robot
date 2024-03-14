@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RizzLevel extends Command {
@@ -23,30 +24,22 @@ public class RizzLevel extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-
+        shooter.setWristByAngle(angle);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {
-        if (shooter.isZeroed){
-            shooter.setWristPosition(angle);
-        }
-    }
+    public void execute() {}
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        //shooter.manualWristSpeed(0);
+        // shooter.manualWristSpeed(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (shooter.isZeroed){
-            return shooter.getAngle() >= (angle - Math.toRadians(.5)) && shooter.getAngle() < (angle + Math.toRadians(.5));
-        } else {
-            return true;
-        }
+        return true;
     }
 }

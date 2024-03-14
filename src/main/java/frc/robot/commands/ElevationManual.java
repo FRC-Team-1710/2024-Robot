@@ -4,11 +4,14 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
+
+import java.util.function.DoubleSupplier;
 
 public class ElevationManual extends Command {
     private ElevatorSubsystem m_elevatorSubsystem;
@@ -16,6 +19,7 @@ public class ElevationManual extends Command {
     DoubleSupplier axis;
     Boolean locked = false;
     double lockedValue = 0.0;
+    double lastElevatorSetpoint = 0.0;
 
     public ElevationManual(ElevatorSubsystem elevate, DoubleSupplier control) {
         m_elevatorSubsystem = elevate;
@@ -25,23 +29,25 @@ public class ElevationManual extends Command {
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
-    }
+    public void initialize() {}
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double value = axis.getAsDouble();
+        lastElevatorSetpoint = m_elevatorSubsystem.getSetpoint();
 
+        double value = axis.getAsDouble();
+        value = MathUtil.applyDeadband(value, Constants.stickDeadband);
         value = Math.pow(value, 3);
 
-        if (Math.abs(value) > .05) { // Crime zone
-            m_elevatorSubsystem.setManualOverride(true);
-            m_elevatorSubsystem.ManSpin(value);
-        } else {
-            m_elevatorSubsystem.setManualOverride(false);
-            lockedValue = m_elevatorSubsystem.getEncoderValue();
-        }
+        //        if (Math.abs(value) > .1) { // Crime zone
+        m_elevatorSubsystem.ManSpin(value);
+        /*         } else {
+            if (!m_elevatorSubsystem.locked){
+                lastElevatorSetpoint = m_elevatorSubsystem.getPosition();
+                m_elevatorSubsystem.setPositionWithEncoder(lastElevatorSetpoint);
+            }
+        }*/
 
         SmartDashboard.putBoolean("locked", locked);
         SmartDashboard.putNumber("locked value", lockedValue);
@@ -49,8 +55,7 @@ public class ElevationManual extends Command {
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-    }
+    public void end(boolean interrupted) {}
 
     // Returns true when the command should end.
     @Override

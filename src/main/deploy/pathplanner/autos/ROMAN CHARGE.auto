@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.744692763774372,
+      "y": 4.446330676429759
+    },
+    "rotation": -61.949224233821454
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toMidSourceRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backMidSourceRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "toMidSourceLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Fire Under Stage"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "backMidSourceLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Force Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Idle Speed"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "idk what the naming scheme is"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

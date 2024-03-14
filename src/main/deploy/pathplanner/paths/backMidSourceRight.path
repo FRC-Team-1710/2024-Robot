@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.651796676514969,
+        "y": 0.70198259161364
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.6670710966125295,
+        "y": 1.2284695353208006
+      },
+      "isLocked": false,
+      "linkedName": "bottom wing line"
+    },
+    {
+      "anchor": {
+        "x": 1.3479282065452507,
+        "y": 3.9584018360435778
+      },
+      "prevControl": {
+        "x": 1.5429233708823726,
+        "y": 2.993175772574823
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "SHoot from bottomn"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -48.64118525790135,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Midfield Paths",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

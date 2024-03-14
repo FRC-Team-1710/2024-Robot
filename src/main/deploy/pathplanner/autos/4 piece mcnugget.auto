@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.55,
+      "y": 7.0
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3N Top 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3N Top Shoot 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3N Top Shoot 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3N Grab Note 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3N Top Shoot 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Idle Speed"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
