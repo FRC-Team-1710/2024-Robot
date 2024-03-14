@@ -67,7 +67,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // laser can pid shenanigans
         elevatorPID.setP(3);
-        elevatorPID.setI(0);
+        elevatorPID.setI(0.5);
         elevatorPID.setD(0);
         elevatorPID.setTolerance(0.02);
 

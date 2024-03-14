@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.commands.*;
@@ -298,10 +297,12 @@ public class RobotContainer {
 
         /* THIRD CONTROLLER */
         // Characterization tests
+        /*
         dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
         quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
         quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
+        */
     }
 
     public void stopAll() {
