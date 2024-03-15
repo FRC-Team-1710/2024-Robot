@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.time.Instant;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -92,7 +94,7 @@ public class RobotContainer {
     /** Mech Left */
     private final Trigger mechLeft = new Trigger(() -> mech.getPOV() == 270);
     /** Mech Start */
-    private final JoystickButton autoZeroShooter = new JoystickButton(mech, XboxController.Button.kStart.value);
+    private final JoystickButton resetOdomToPodium = new JoystickButton(mech, XboxController.Button.kStart.value);
     /** Mech Back */
     private final JoystickButton zeroShooter = new JoystickButton(mech, XboxController.Button.kBack.value);
     /** Mech RS */
@@ -262,9 +264,10 @@ public class RobotContainer {
                 .and(zeroShooter)
                 .onTrue(new InstantCommand(() -> m_ShooterSubsystem.resetWristEncoders(
                         Constants.Shooter.angleOffsetManual))); // Set encoder to zero
-        // autoZeroShooter.onTrue(new ZeroRizz(m_ShooterSubsystem)
-        //        .andThen(new RizzLevel(m_ShooterSubsystem,
-        // Constants.Shooter.intakeAngleRadians)));
+
+        // Reset Odom to Podium
+        resetOdomToPodium.onTrue(new InstantCommand(() -> m_SwerveSubsystem.setPoseToPodium()).alongWith(new InstantCommand(() -> m_LEDSubsystem.NoteDetected(true))))
+            .onFalse(new InstantCommand(() -> m_LEDSubsystem.NoteDetected(true)));
 
         // Intake Preset
         shooterToIntake
