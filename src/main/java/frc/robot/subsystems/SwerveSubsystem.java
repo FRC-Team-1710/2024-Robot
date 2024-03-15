@@ -240,7 +240,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setPoseToPodium(){
-        double xPos = Robot.getAlliance() ? (16.54 - 2.95) : 2.95;
+        double xPos = Robot.getAlliance() ? (16.54 - (2.95 - .245)) : (2.95 - .245);
         swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(xPos, 4.1, new Rotation2d(getPose().getRotation().getRadians())));
     }
 

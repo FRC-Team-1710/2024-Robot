@@ -266,8 +266,7 @@ public class RobotContainer {
                         Constants.Shooter.angleOffsetManual))); // Set encoder to zero
 
         // Reset Odom to Podium
-        resetOdomToPodium.onTrue(new InstantCommand(() -> m_SwerveSubsystem.setPoseToPodium()).alongWith(new InstantCommand(() -> m_LEDSubsystem.NoteDetected(true))))
-            .onFalse(new InstantCommand(() -> m_LEDSubsystem.NoteDetected(true)));
+        resetOdomToPodium.onTrue(new InstantCommand(() -> m_SwerveSubsystem.setPoseToPodium()));
 
         // Intake Preset
         shooterToIntake
