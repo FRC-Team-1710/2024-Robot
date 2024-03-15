@@ -112,8 +112,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::setPose, // Method to reset odometry (will be called if your auto has a
                 // starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
-                // ChassisSpeeds
+                this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig(
                         new PIDConstants(5, 0, 0), // Translation PID constants
                         new PIDConstants(5, 0.0, 0.0), // Rotation PID constants
@@ -150,12 +149,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
             m_field.getObject("field").setPoses(poses);
-
+/* 
             if (poses.isEmpty()) {
                 followingPath = false;
             } else {
                 followingPath = true;
             }
+*/
         });
 
         this.vision = vision;
@@ -420,11 +420,11 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command pathToMidfieldChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(
-                    new Pose2d(6.29, 4.08, Rotation2d.fromDegrees(180)),
+                    new Pose2d(5.84, 4.1024, Rotation2d.fromDegrees(180)),
                     Constants.Auto.PathfindingConstraints);
         } else {
-            return AutoBuilder.pathfindToPose(
-                    new Pose2d(10.26, 4.10, Rotation2d.fromDegrees(0)),
+            return AutoBuilder.pathfindToPoseFlipped(
+                    new Pose2d(5.84, 4.1024, Rotation2d.fromDegrees(0)),
                     Constants.Auto.PathfindingConstraints);
         }
     }

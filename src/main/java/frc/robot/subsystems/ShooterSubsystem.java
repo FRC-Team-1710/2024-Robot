@@ -16,7 +16,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -68,7 +70,11 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
+    private double interpolationOffset = 0;
+
     public boolean outsideAllianceWing = false;
+
+    private Joystick controller;
 
     // Constants
     private final double wristAngleMax = 0.0;
@@ -80,9 +86,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private SwerveSubsystem swerveSubsystem;
     private ElevatorSubsystem elevatorSubsystem;
 
-    public ShooterSubsystem(SwerveSubsystem swerve, ElevatorSubsystem elevator) {
+    public ShooterSubsystem(SwerveSubsystem swerve, ElevatorSubsystem elevator, Joystick controller) {
         swerveSubsystem = swerve;
         elevatorSubsystem = elevator;
+
+        this.controller = controller;
 
         m_Wrist = new CANSparkMax(13, MotorType.kBrushless);
         shootaTop = new CANSparkMax(11, MotorType.kBrushless); // leader
@@ -162,6 +170,13 @@ public class ShooterSubsystem extends SubsystemBase {
         }
         */
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
+        boolean shooterAtSpeed = isShooterAtSpeed();
+
+        if (shooterAtSpeed){
+            controller.setRumble(RumbleType.kBothRumble, .2);
+        } else {
+            controller.setRumble(RumbleType.kBothRumble, 0);
+        }
 
         FiringSolutionsV3.slipPercent =
                 SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
@@ -173,7 +188,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
         SmartDashboard.putNumber("Current Angle Radians", getCurrentShooterAngle());
         SmartDashboard.putNumber("Current Velocity", getVelocity());
-        SmartDashboard.putBoolean("shooter at speed", isShooterAtSpeed());
+        SmartDashboard.putBoolean("shooter at speed", shooterAtSpeed);
         SmartDashboard.putNumber(
                 "Current Angle Degrees", Units.radiansToDegrees(getCurrentShooterAngle()));
 
@@ -384,6 +399,14 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
+    public void offsetUP() {
+        interpolationOffset += 0.5;
+    }
+
+    public void offsetDOWN() {
+        interpolationOffset -= 0.5;
+    }
+
     public void updateShooterMath() { // Shooter Math
 
         Pose2d pose = swerveSubsystem.getPose();
@@ -405,10 +428,10 @@ public class ShooterSubsystem extends SubsystemBase {
         if (elevatorSubsystem.getHeight() > 0.3) {
             shooterAngleToSpeaker =
                     Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(
-                            distanceToMovingSpeakerTarget));
+                            distanceToMovingSpeakerTarget) + interpolationOffset);
         } else {
             shooterAngleToSpeaker = Math.toRadians(
-                    interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget));
+                    interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget) + interpolationOffset);
         }
 
         if ((Robot.getAlliance() && pose.getX() < 16.54 - 5)
@@ -418,6 +441,7 @@ public class ShooterSubsystem extends SubsystemBase {
             outsideAllianceWing = false;
         }
 
+        SmartDashboard.putNumber("Interpolation Offset", interpolationOffset);
         SmartDashboard.putNumber(
                 "Target Velocity RPM", FiringSolutionsV3.convertToRPM(shooterVelocity));
         SmartDashboard.putNumber("Calculated Angle Radians", shooterAngleToSpeaker);

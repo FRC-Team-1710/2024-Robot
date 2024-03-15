@@ -111,7 +111,7 @@ public class RobotContainer {
     private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
     private final IntexerSubsystem m_IntexerSubsystem = new IntexerSubsystem();
     private final ShooterSubsystem m_ShooterSubsystem =
-            new ShooterSubsystem(m_SwerveSubsystem, m_ElevatorSubsystem);
+            new ShooterSubsystem(m_SwerveSubsystem, m_ElevatorSubsystem, mech);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(
             m_VisionSubsystem, m_ShooterSubsystem, m_IntexerSubsystem, m_SwerveSubsystem);
 
@@ -177,9 +177,11 @@ public class RobotContainer {
 
         // Lock on to speaker
         targetSpeaker
-                .whileTrue(new MissileLock(m_ShooterSubsystem, "speaker"))
+                .whileTrue(new MissileLock(m_ShooterSubsystem, "speaker"));
+        primeShooterSpeedSpeaker.negate().and(targetSpeaker)
                 .onFalse(new InstantCommand(() ->
                         m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
+
         targetAmp
                 .whileTrue(new MissileLock(m_ShooterSubsystem, "amp"))
                 .onFalse(new InstantCommand(() ->
@@ -210,8 +212,8 @@ public class RobotContainer {
                 .whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
                 .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
-        // Move to Amp
-        // driverUp.whileTrue(m_SwerveSubsystem.pathToAmpChain());
+        // Move to Center Stage
+        driverUp.whileTrue(m_SwerveSubsystem.pathToMidfieldChain());
 
         // Move to Source
         // driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
@@ -233,11 +235,27 @@ public class RobotContainer {
                         m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
         // Elevator
-        elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters)
-                .alongWith(
-                        new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)));
-        elevatorUp.onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters)
-                .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
+        // elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem,
+        // Constants.Elevator.minHeightMeters)
+        //        .alongWith(
+        //              new RizzLevel(m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)));
+        // elevatorUp.onTrue(new ElevatorSet(m_ElevatorSubsystem,
+        // Constants.Elevator.maxHeightMeters)
+        //        .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
+
+        mechLT.negate()
+                .and(elevatorDown)
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters)
+                        .alongWith(new RizzLevel(
+                                m_ShooterSubsystem, Constants.Shooter.intakeAngleRadians)));
+
+        mechLT.negate()
+                .and(elevatorUp)
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters)
+                        .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
+
+        mechLT.and(elevatorUp).onTrue(new InstantCommand(() -> m_ShooterSubsystem.offsetUP()));
+        mechLT.and(elevatorDown).onTrue(new InstantCommand(() -> m_ShooterSubsystem.offsetDOWN()));
 
         // Zero wrist
         mechLT.negate()

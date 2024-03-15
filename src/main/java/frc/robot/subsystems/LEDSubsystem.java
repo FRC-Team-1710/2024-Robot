@@ -116,13 +116,13 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[5] = false;
             inputBooleans[6] = false;
         }
-
+/*
         // Check if pathfinding
         if (SwerveSubsystem.followingPath) {
             inputBooleans[0] = true;
         } else {
             inputBooleans[0] = false;
-        }
+        }*/
 
         // Check beam breaks
         if (intexer.intakeBreak()) {
@@ -147,6 +147,9 @@ public class LEDSubsystem extends SubsystemBase {
             } else if (shooter.getVelocity() > Constants.Shooter.idleSpeedRPM + 500) { // Charging
                 inputBooleans[5] = true;
                 inputBooleans[6] = false;
+            } else {
+                inputBooleans[5] = false;
+                inputBooleans[6] = false;
             }
             inputBooleans[7] = false;
             inputBooleans[8] = false;
@@ -156,6 +159,9 @@ public class LEDSubsystem extends SubsystemBase {
                 inputBooleans[8] = true;
             } else if (shooter.getVelocity() > Constants.Shooter.idleSpeedRPM + 500) { // Charging
                 inputBooleans[7] = true;
+                inputBooleans[8] = false;
+            } else {
+                inputBooleans[7] = false;
                 inputBooleans[8] = false;
             }
             inputBooleans[5] = false;

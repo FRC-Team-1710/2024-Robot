@@ -192,7 +192,7 @@ public class TeleopSwerve extends Command {
             strafeVal = -strafeVal;
         }
 
-        if (intexerSubsystem.intakeBreak()) {
+        if (intexerSubsystem.intakeBreak() && intakeOverride.getAsBoolean()) {
             translationVal = 0;
             rotationVal = 0;
             noteInside = true;
