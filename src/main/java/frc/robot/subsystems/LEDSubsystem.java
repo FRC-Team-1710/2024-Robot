@@ -70,20 +70,20 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private void set() { // Decimal phase
-        var results = vision.getLatestResultN();
+        //var results = vision.getLatestResultN();
 
         // Note Detected
-        if (results.hasTargets()) {
+        /*if (results.hasTargets()) {
             NoteDetected(true);
         } else {
             NoteDetected(false);
-        }
+        }*/
 
         // Driver Station Connected
         if (DriverStation.isDSAttached()) {
-            inputBooleans[1] = false;
+            inputBooleans[0] = false;
         } else {
-            inputBooleans[1] = true;
+            inputBooleans[0] = true;
         }
 
         if (Robot.checkRedAlliance()) {

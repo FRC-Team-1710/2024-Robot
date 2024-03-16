@@ -204,9 +204,9 @@ public class RobotContainer {
 
         // Intexer
         intex.or(intakeNoMove)
-                .whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver))
-                .onFalse(new ResetNoteInShooterPart2(
-                        m_ShooterSubsystem, m_IntexerSubsystem, driver));
+                .whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
+                //.onFalse(new ResetNoteInShooterPart2(
+                //        m_ShooterSubsystem, m_IntexerSubsystem, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
 
         // Shooter intake
@@ -222,7 +222,7 @@ public class RobotContainer {
 
         // Intake from Source
         intakeFromSource
-                .whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, driver))
+                .whileTrue(new IntakeThroughShooter(m_ShooterSubsystem, m_IntexerSubsystem, m_LEDSubsystem, driver))
                 .onFalse(new IntakeThroughShooterPart2(
                         m_ShooterSubsystem, m_IntexerSubsystem, driver));
 

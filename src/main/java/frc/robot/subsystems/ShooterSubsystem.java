@@ -70,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
-    private double interpolationOffset = 0;
+    private double interpolationOffset = 3;
 
     public boolean outsideAllianceWing = false;
 
@@ -196,9 +196,11 @@ public class ShooterSubsystem extends SubsystemBase {
         if (m_WristEncoder.isConnected()) {
             ENCFAIL = false;
         } else {
+            isZeroed = false;
             ENCFAIL = true;
         }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
+        SmartDashboard.putBoolean("Is Wrist Zeroed", isZeroed);
 
         updateShooterMath();
 
