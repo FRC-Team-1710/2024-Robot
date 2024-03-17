@@ -204,7 +204,7 @@ public final class Constants {
         public static final double angleOffsetBottom = Units.degreesToRadians(-1);
         public static final double wristAngleMax = Units.degreesToRadians(62.7);
         public static final double wristAngleMin = Units.degreesToRadians(-28.8);
-        public static final double angleOffsetManual = Units.degreesToRadians(62.7);
+        public static final double angleOffsetManual = Units.degreesToRadians(67.6);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }
 

@@ -56,6 +56,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Vars
     /** In m/s */
     private double shooterVelocity = 12.1;
+    private boolean revEncoderHasFailed = false;
 
     private double shooterAngleToSpeaker, shooterAngleToAmp;
     private boolean ENCFAIL = false;
@@ -70,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
-    private double interpolationOffset = 3;
+    private double interpolationOffset = 4;
 
     public boolean outsideAllianceWing = false;
 
@@ -187,8 +188,10 @@ public class ShooterSubsystem extends SubsystemBase {
                 "Top - Bottom error",
                 m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
         SmartDashboard.putNumber("Current Angle Radians", getCurrentShooterAngle());
+        SmartDashboard.putNumber("REV Encoder Angle", revEncoderAngle());
         SmartDashboard.putNumber("Current Velocity", getVelocity());
         SmartDashboard.putBoolean("shooter at speed", shooterAtSpeed);
+        SmartDashboard.putBoolean("REV Encoder Has Failed", revEncoderHasFailed);
         SmartDashboard.putNumber(
                 "Current Angle Degrees", Units.radiansToDegrees(getCurrentShooterAngle()));
 
@@ -197,6 +200,7 @@ public class ShooterSubsystem extends SubsystemBase {
             ENCFAIL = false;
         } else {
             isZeroed = false;
+            revEncoderHasFailed = true;
             ENCFAIL = true;
         }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
@@ -208,6 +212,7 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel Right Current", shootaBot.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
+        SmartDashboard.putNumber("Wrist Built-in Encoder", motorEncoderAngle());
 
         if (isZeroed) {
             if (!manualOverride) {
@@ -229,11 +234,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** in RADIANs units MATTER */
     public double getCurrentShooterAngle() {
-        if (!ENCFAIL) {
-            return ((m_WristEncoder.get() * 2 * Math.PI) / 4) + angleOffset;
+        if (!ENCFAIL && !revEncoderHasFailed) {
+            return revEncoderAngle() + angleOffset;
         } else {
-            return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
+            return motorEncoderAngle() + angleOffset;
         }
+    }
+    
+    public double revEncoderAngle() {
+        return ((m_WristEncoder.get() * 2 * Math.PI) / 4);
+    }
+
+    public double motorEncoderAngle() {
+        return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
     }
 
     public double getCalculatedAngleToAmp() {
@@ -301,6 +314,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void resetWristEncoders(double newOffset) {
         angleOffset = newOffset;
         m_WristEncoder.reset();
+        revEncoderHasFailed = false;
         m_PositionEncoder.setPosition(0);
         isZeroed = true;
     }
