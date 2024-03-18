@@ -70,20 +70,20 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private void set() { // Decimal phase
-        var results = vision.getLatestResultN();
+        // var results = vision.getLatestResultN();
 
         // Note Detected
-        if (results.hasTargets()) {
+        /*if (results.hasTargets()) {
             NoteDetected(true);
         } else {
             NoteDetected(false);
-        }
+        }*/
 
         // Driver Station Connected
         if (DriverStation.isDSAttached()) {
-            inputBooleans[1] = false;
+            inputBooleans[0] = false;
         } else {
-            inputBooleans[1] = true;
+            inputBooleans[0] = true;
         }
 
         if (Robot.checkRedAlliance()) {
@@ -116,13 +116,13 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[5] = false;
             inputBooleans[6] = false;
         }
-
+        /*
         // Check if pathfinding
         if (SwerveSubsystem.followingPath) {
             inputBooleans[0] = true;
         } else {
             inputBooleans[0] = false;
-        }
+        }*/
 
         // Check beam breaks
         if (intexer.intakeBreak()) {
@@ -147,6 +147,9 @@ public class LEDSubsystem extends SubsystemBase {
             } else if (shooter.getVelocity() > Constants.Shooter.idleSpeedRPM + 500) { // Charging
                 inputBooleans[5] = true;
                 inputBooleans[6] = false;
+            } else {
+                inputBooleans[5] = false;
+                inputBooleans[6] = false;
             }
             inputBooleans[7] = false;
             inputBooleans[8] = false;
@@ -156,6 +159,9 @@ public class LEDSubsystem extends SubsystemBase {
                 inputBooleans[8] = true;
             } else if (shooter.getVelocity() > Constants.Shooter.idleSpeedRPM + 500) { // Charging
                 inputBooleans[7] = true;
+                inputBooleans[8] = false;
+            } else {
+                inputBooleans[7] = false;
                 inputBooleans[8] = false;
             }
             inputBooleans[5] = false;

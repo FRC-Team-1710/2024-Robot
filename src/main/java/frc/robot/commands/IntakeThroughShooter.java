@@ -10,19 +10,25 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class IntakeThroughShooter extends Command {
     private ShooterSubsystem shooter;
     private IntexerSubsystem intexer;
+    private LEDSubsystem leds;
 
     Joystick controller;
 
     /** Creates a new IntakeFromShooter. */
     public IntakeThroughShooter(
-            ShooterSubsystem shooterSub, IntexerSubsystem intex, Joystick controller) {
+            ShooterSubsystem shooterSub,
+            IntexerSubsystem intex,
+            LEDSubsystem LEDs,
+            Joystick controller) {
         shooter = shooterSub;
         intexer = intex;
+        leds = LEDs;
         this.controller = controller;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSub, intex);
@@ -32,6 +38,7 @@ public class IntakeThroughShooter extends Command {
     @Override
     public void initialize() {
         shooter.setWristByAngle(.66);
+        leds.sourceTele(true);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -47,6 +54,7 @@ public class IntakeThroughShooter extends Command {
         shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
         shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
         intexer.setALL(0);
+        leds.sourceTele(false);
     }
 
     // Returns true when the command should end.

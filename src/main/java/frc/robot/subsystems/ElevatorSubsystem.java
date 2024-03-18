@@ -131,14 +131,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI);
     }
 
-    /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
+    /**
+     * Set height IN METERS. Will run off LaserCan but will switch to encoder if it
+     * fails
+     */
     public void setHeight(double height) {
         locked = true;
         setHeight = height;
         m_elevatorLeft.set(elevatorPID.calculate(getHeight(), height));
     }
 
-    /** Get height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
+    /**
+     * Get height IN METERS. Will run off LaserCan but will switch to encoder if it
+     * fails
+     */
     public double getHeight() {
         if (!lasercanFailureCheck()) { // Run off LaserCan
             return getHeightLaserCan();

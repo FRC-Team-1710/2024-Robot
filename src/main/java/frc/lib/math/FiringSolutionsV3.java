@@ -29,7 +29,7 @@ public class FiringSolutionsV3 {
     public static final double trueAmpY = 8.2;
 
     // Speaker Values
-    public static double speakerTargetXOffset = .24;
+    public static double speakerTargetXOffset = .18;
     private static double speakerTargetXBlue = 0.0 + speakerTargetXOffset;
     private static double speakerTargetXRed = 16.54 - speakerTargetXOffset;
     public static double speakerTargetX;
