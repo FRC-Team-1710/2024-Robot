@@ -16,9 +16,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -56,6 +56,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Vars
     /** In m/s */
     private double shooterVelocity = 12.1;
+
     private boolean revEncoderHasFailed = false;
 
     private double shooterAngleToSpeaker, shooterAngleToAmp;
@@ -87,7 +88,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private SwerveSubsystem swerveSubsystem;
     private ElevatorSubsystem elevatorSubsystem;
 
-    public ShooterSubsystem(SwerveSubsystem swerve, ElevatorSubsystem elevator, Joystick controller) {
+    public ShooterSubsystem(
+            SwerveSubsystem swerve, ElevatorSubsystem elevator, Joystick controller) {
         swerveSubsystem = swerve;
         elevatorSubsystem = elevator;
 
@@ -173,7 +175,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
         boolean shooterAtSpeed = isShooterAtSpeed();
 
-        if (shooterAtSpeed){
+        if (shooterAtSpeed) {
             controller.setRumble(RumbleType.kBothRumble, .2);
         } else {
             controller.setRumble(RumbleType.kBothRumble, 0);
@@ -240,7 +242,7 @@ public class ShooterSubsystem extends SubsystemBase {
             return motorEncoderAngle() + angleOffset;
         }
     }
-    
+
     public double revEncoderAngle() {
         return ((m_WristEncoder.get() * 2 * Math.PI) / 4);
     }
@@ -444,10 +446,12 @@ public class ShooterSubsystem extends SubsystemBase {
         if (elevatorSubsystem.getHeight() > 0.3) {
             shooterAngleToSpeaker =
                     Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(
-                            distanceToMovingSpeakerTarget) + interpolationOffset);
+                                    distanceToMovingSpeakerTarget)
+                            + interpolationOffset);
         } else {
             shooterAngleToSpeaker = Math.toRadians(
-                    interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget) + interpolationOffset);
+                    interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget)
+                            + interpolationOffset);
         }
 
         if ((Robot.getAlliance() && pose.getX() < 16.54 - 5)

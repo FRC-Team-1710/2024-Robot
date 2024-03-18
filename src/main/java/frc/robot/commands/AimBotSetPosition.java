@@ -33,7 +33,8 @@ public class AimBotSetPosition extends Command {
             ShooterSubsystem shooterSubsystem,
             SwerveSubsystem swerve,
             IntexerSubsystem intexer,
-            double speed, double angle) {
+            double speed,
+            double angle) {
         this.shooter = shooterSubsystem;
         this.speed = speed;
         this.angle = angle;
@@ -88,7 +89,6 @@ public class AimBotSetPosition extends Command {
             timer.start();
             intexer.setShooterIntake(.9);
         }
-
     }
 
     // Called once the command ends or is interrupted.

@@ -70,7 +70,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private void set() { // Decimal phase
-        //var results = vision.getLatestResultN();
+        // var results = vision.getLatestResultN();
 
         // Note Detected
         /*if (results.hasTargets()) {
@@ -116,7 +116,7 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[5] = false;
             inputBooleans[6] = false;
         }
-/*
+        /*
         // Check if pathfinding
         if (SwerveSubsystem.followingPath) {
             inputBooleans[0] = true;

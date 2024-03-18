@@ -22,7 +22,10 @@ public class IntakeThroughShooter extends Command {
 
     /** Creates a new IntakeFromShooter. */
     public IntakeThroughShooter(
-            ShooterSubsystem shooterSub, IntexerSubsystem intex, LEDSubsystem LEDs, Joystick controller) {
+            ShooterSubsystem shooterSub,
+            IntexerSubsystem intex,
+            LEDSubsystem LEDs,
+            Joystick controller) {
         shooter = shooterSub;
         intexer = intex;
         leds = LEDs;

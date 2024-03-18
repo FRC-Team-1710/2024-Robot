@@ -109,26 +109,24 @@ public class SwerveSubsystem extends SubsystemBase {
             new SwerveModuleState()
         };
 
-        // Auto setup
+        // Auto setup spotless:off
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
-                this::setPose, // Method to reset odometry (will be called if your auto has a
-                // starting pose)
+                this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig(
                         new PIDConstants(5, 0, 0), // Translation PID constants
                         new PIDConstants(5, 0.0, 0.0), // Rotation PID constants
                         4.5, // Max module speed, in m/s
-                        0.37268, // Drive base radius in meters. Distance from robot center to
-                        // furthest module.
+                        0.37268, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig(true, true, .5, .25)),
                 checkRedAlliance(),
                 this // Reference to this subsystem to set requirements
-                );
+                ); // spotless:on
 
         SwerveModulePosition[] modulePositions = getModulePositions();
-        
+
         // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
@@ -140,7 +138,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Vision.stateStdDevs,
                 Constants.Vision.kSingleTagStdDevs);
 
-        encoderOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), modulePositions);
+        encoderOdometry = new SwerveDriveOdometry(
+                Constants.Swerve.swerveKinematics, getGyroYaw(), modulePositions);
 
         // Logging
         posePublisher = NetworkTableInstance.getDefault()
@@ -159,13 +158,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
             m_field.getObject("field").setPoses(poses);
-/* 
-            if (poses.isEmpty()) {
-                followingPath = false;
-            } else {
-                followingPath = true;
-            }
-*/
         });
 
         this.vision = vision;
@@ -251,9 +243,12 @@ public class SwerveSubsystem extends SubsystemBase {
         encoderOdometry.resetPosition(getGyroYaw(), modPositions, pose);
     }
 
-    public void setPoseToPodium(){
+    public void setPoseToPodium() {
         double xPos = Robot.getAlliance() ? (16.54 - (2.95 - .245)) : (2.95 - .245);
-        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(xPos, 4.1, new Rotation2d(getPose().getRotation().getRadians())));
+        swerveOdomEstimator.resetPosition(
+                getGyroYaw(),
+                getModulePositions(),
+                new Pose2d(xPos, 4.1, new Rotation2d(getPose().getRotation().getRadians())));
     }
 
     public Rotation2d getHeading() {
