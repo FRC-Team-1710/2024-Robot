@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -62,6 +63,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Vars
     private final VisionSubsystem vision;
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
+    private final SwerveDriveOdometry encoderOdometry;
     private SwerveModuleState[] swerveModuleStates;
     public static boolean followingPath = false;
 
@@ -82,6 +84,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Logging
     private Field2d m_field = new Field2d();
     private StructPublisher<Pose2d> posePublisher;
+    private StructPublisher<Pose2d> posePublisher2;
     private StructArrayPublisher<SwerveModuleState> swervePublisher;
 
     // Constructor
@@ -112,8 +115,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::setPose, // Method to reset odometry (will be called if your auto has a
                 // starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE
-                // ChassisSpeeds
+                this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig(
                         new PIDConstants(5, 0, 0), // Translation PID constants
                         new PIDConstants(5, 0.0, 0.0), // Rotation PID constants
@@ -125,20 +127,27 @@ public class SwerveSubsystem extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
                 );
 
+        SwerveModulePosition[] modulePositions = getModulePositions();
+        
         // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
-                getModulePositions(),
+                modulePositions,
                 Robot.getAlliance()
                         ? Constants.Vision.startingPoseRed
                         : Constants.Vision.startingPoseBlue,
                 Constants.Vision.stateStdDevs,
                 Constants.Vision.kSingleTagStdDevs);
 
+        encoderOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), modulePositions);
+
         // Logging
         posePublisher = NetworkTableInstance.getDefault()
                 .getStructTopic("Fused Pose", Pose2d.struct)
+                .publish();
+        posePublisher2 = NetworkTableInstance.getDefault()
+                .getStructTopic("Encoder Pose", Pose2d.struct)
                 .publish();
         swervePublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("Swerve Module States", SwerveModuleState.struct)
@@ -150,12 +159,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
             m_field.getObject("field").setPoses(poses);
-
+/* 
             if (poses.isEmpty()) {
                 followingPath = false;
             } else {
                 followingPath = true;
             }
+*/
         });
 
         this.vision = vision;
@@ -236,7 +246,14 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setPose(Pose2d pose) {
-        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        SwerveModulePosition[] modPositions = getModulePositions();
+        swerveOdomEstimator.resetPosition(getGyroYaw(), modPositions, pose);
+        encoderOdometry.resetPosition(getGyroYaw(), modPositions, pose);
+    }
+
+    public void setPoseToPodium(){
+        double xPos = Robot.getAlliance() ? (16.54 - (2.95 - .245)) : (2.95 - .245);
+        swerveOdomEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(xPos, 4.1, new Rotation2d(getPose().getRotation().getRadians())));
     }
 
     public Rotation2d getHeading() {
@@ -288,6 +305,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
         updateModuleStates();
         SwerveModulePosition[] modulePositions = getModulePositions();
+        Rotation2d gyroYaw = getGyroYaw();
 
         // Correct pose estimate with multiple vision measurements
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedPoseFront();
@@ -315,11 +333,13 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Logging
-        swerveOdomEstimator.update(getGyroYaw(), modulePositions);
+        swerveOdomEstimator.update(gyroYaw, modulePositions);
+        encoderOdometry.update(gyroYaw, modulePositions);
 
         m_field.setRobotPose(getPose());
 
         posePublisher.set(getPose());
+        posePublisher2.set(encoderOdometry.getPoseMeters());
         swervePublisher.set(swerveModuleStates);
 
         for (SwerveModule mod : mSwerveMods) {
@@ -334,7 +354,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // SmartDashboard.putString("Obodom", getPose().toString());
-        SmartDashboard.putNumber("Gyro", getGyroYaw().getDegrees());
+        SmartDashboard.putNumber("Gyro", gyroYaw.getDegrees());
         SmartDashboard.putNumber("Heading", getHeading().getDegrees());
         SmartDashboard.putNumber(
                 "Angle to target",
@@ -420,11 +440,11 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command pathToMidfieldChain() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(
-                    new Pose2d(6.29, 4.08, Rotation2d.fromDegrees(180)),
+                    new Pose2d(5.84, 4.1024, Rotation2d.fromDegrees(180)),
                     Constants.Auto.PathfindingConstraints);
         } else {
-            return AutoBuilder.pathfindToPose(
-                    new Pose2d(10.26, 4.10, Rotation2d.fromDegrees(0)),
+            return AutoBuilder.pathfindToPoseFlipped(
+                    new Pose2d(5.84, 4.1024, Rotation2d.fromDegrees(0)),
                     Constants.Auto.PathfindingConstraints);
         }
     }

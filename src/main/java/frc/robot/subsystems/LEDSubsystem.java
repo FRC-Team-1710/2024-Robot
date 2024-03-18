@@ -19,7 +19,8 @@ public class LEDSubsystem extends SubsystemBase {
     public DigitalOutput SkylerBright = new DigitalOutput(6); // Bit 4 (8)
 
     // Output bits to the LEDs
-    public DigitalOutput[] bits = {WalterLight, JesseBlinkman, GusBling, SkylerBright}; // Actual Outputs
+    public DigitalOutput[] bits = {WalterLight, JesseBlinkman, GusBling, SkylerBright
+    }; // Actual Outputs
     private boolean[] output = new boolean[4]; // Computed Outputs
 
     // Booleans used for Easy input
@@ -40,7 +41,7 @@ public class LEDSubsystem extends SubsystemBase {
         false, // Note in Intake -9 Orange Blink
         false, // Note in Shooter -10 Orange Solid
         false, // Alliance Color -11 Red Pulse
-        false  // Alliance Color -12 Blue Pulse
+        false // Alliance Color -12 Blue Pulse
     };
 
     // Use subsystems
@@ -50,7 +51,11 @@ public class LEDSubsystem extends SubsystemBase {
     SwerveSubsystem swerve;
 
     /** Creates a new LEDSubsystem. */
-    public LEDSubsystem(VisionSubsystem m_VisionSubsystem, ShooterSubsystem m_ShooterSubsystem, IntexerSubsystem m_IntexerSubsystem, SwerveSubsystem m_SwerveSubsystem) {
+    public LEDSubsystem(
+            VisionSubsystem m_VisionSubsystem,
+            ShooterSubsystem m_ShooterSubsystem,
+            IntexerSubsystem m_IntexerSubsystem,
+            SwerveSubsystem m_SwerveSubsystem) {
         this.vision = m_VisionSubsystem;
         this.shooter = m_ShooterSubsystem;
         this.intexer = m_IntexerSubsystem;
@@ -65,20 +70,20 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private void set() { // Decimal phase
-        var results = vision.getLatestResultN();
+        //var results = vision.getLatestResultN();
 
         // Note Detected
-        if (results.hasTargets()) {
+        /*if (results.hasTargets()) {
             NoteDetected(true);
         } else {
             NoteDetected(false);
-        }
+        }*/
 
         // Driver Station Connected
         if (DriverStation.isDSAttached()) {
-            inputBooleans[1] = false;
+            inputBooleans[0] = false;
         } else {
-            inputBooleans[1] = true;
+            inputBooleans[0] = true;
         }
 
         if (Robot.checkRedAlliance()) {
@@ -111,13 +116,13 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[5] = false;
             inputBooleans[6] = false;
         }
-
+/*
         // Check if pathfinding
         if (SwerveSubsystem.followingPath) {
             inputBooleans[0] = true;
         } else {
             inputBooleans[0] = false;
-        }
+        }*/
 
         // Check beam breaks
         if (intexer.intakeBreak()) {
@@ -142,6 +147,9 @@ public class LEDSubsystem extends SubsystemBase {
             } else if (shooter.getVelocity() > Constants.Shooter.idleSpeedRPM + 500) { // Charging
                 inputBooleans[5] = true;
                 inputBooleans[6] = false;
+            } else {
+                inputBooleans[5] = false;
+                inputBooleans[6] = false;
             }
             inputBooleans[7] = false;
             inputBooleans[8] = false;
@@ -151,6 +159,9 @@ public class LEDSubsystem extends SubsystemBase {
                 inputBooleans[8] = true;
             } else if (shooter.getVelocity() > Constants.Shooter.idleSpeedRPM + 500) { // Charging
                 inputBooleans[7] = true;
+                inputBooleans[8] = false;
+            } else {
+                inputBooleans[7] = false;
                 inputBooleans[8] = false;
             }
             inputBooleans[5] = false;
@@ -166,7 +177,9 @@ public class LEDSubsystem extends SubsystemBase {
 
         int trueIndex = 0; // Index of selected LED sequence
 
-        for (int i = 0; i < inputBooleans.length; i++) { // Picks the first true sequence based on priority
+        for (int i = 0;
+                i < inputBooleans.length;
+                i++) { // Picks the first true sequence based on priority
             if (inputBooleans[i]) {
                 trueIndex = i;
                 break;
