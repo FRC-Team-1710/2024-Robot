@@ -4,6 +4,11 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
@@ -16,10 +21,23 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -31,6 +49,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     // Falcon stuff
     private final PositionDutyCycle lockPosition = new PositionDutyCycle(0);
     private final PIDController elevatorPID = new PIDController(0, 0, 0);
+    private ElevatorFeedforward elevatorFF = new ElevatorFeedforward(0, 0, 0);
+   // private final Feedforward  elevatorFeedForward
 
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
@@ -44,6 +64,15 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public boolean manualOverride = false;
     public boolean locked = false;
+
+    /// Characterization stuff
+    final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+    final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+    final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(null, null, null));
 
     public ElevatorSubsystem() {
         m_elevatorLeft = new TalonFX(20); // left leader
@@ -70,7 +99,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorPID.setI(0);
         elevatorPID.setD(0);
         elevatorPID.setTolerance(0.02);
-
+        //silly feed forward
+       //elevatorFF.calculate(currentHeight);
         try {
             lasercan.setRangingMode(RangingMode.SHORT);
         } catch (ConfigurationFailedException e) {
@@ -81,6 +111,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("Elevator PID", elevatorPID);
 
         m_elevatorLeft.setPosition(0);
+
     }
 
     @Override
@@ -131,14 +162,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         return (revolutionCount / gearRatio) * (spoolCircumference * Math.PI);
     }
 
-    /** Set height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
+    /**
+     * Set height IN METERS. Will run off LaserCan but will switch to encoder if it
+     * fails
+     */
     public void setHeight(double height) {
         locked = true;
         setHeight = height;
         m_elevatorLeft.set(elevatorPID.calculate(getHeight(), height));
     }
 
-    /** Get height IN METERS. Will run off LaserCan but will switch to encoder if it fails */
+    /**
+     * Get height IN METERS. Will run off LaserCan but will switch to encoder if it
+     * fails
+     */
     public double getHeight() {
         if (!lasercanFailureCheck()) { // Run off LaserCan
             return getHeightLaserCan();
@@ -188,4 +225,32 @@ public class ElevatorSubsystem extends SubsystemBase {
     public double getPosition() {
         return m_elevatorLeft.getPosition().getValueAsDouble();
     }
+
+    // sysId stuff
+    public void sysidroutine(SysIdRoutineLog log) {
+        log.motor("Elevator left")
+                .voltage(m_appliedVoltage.mut_replace(m_elevatorLeft.getMotorVoltage().getValueAsDouble(), Volts))
+                .linearPosition(
+                        m_distance.mut_replace(getHeight(), Meters))
+                .linearVelocity(
+                        m_velocity.mut_replace(m_elevatorLeft.getVelocity().getValueAsDouble(), MetersPerSecond));
+    }
+
+    /*
+     * sysId commands
+     * public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+     * return new SequentialCommandGroup(
+     * new InstantCommand(this::resetElevatorEncoder, this),
+     * new WaitCommand(0.5),
+     * m_sysIdRoutine.quasistatic(direction));
+     * }
+     * 
+     * public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+     * return new SequentialCommandGroup(
+     * new InstantCommand(this::resetElevatorEncoder, this),
+     * new WaitCommand(0.5),
+     * m_sysIdRoutine.dynamic(direction));
+     * }
+     */
+
 }
