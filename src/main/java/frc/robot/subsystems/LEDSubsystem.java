@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.nio.file.Path;
+
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,10 +30,10 @@ public class LEDSubsystem extends SubsystemBase {
     private Boolean atSpeed = false;
 
     public Boolean[] inputBooleans = {
-        false, // Amp -0 Rainbow Pattern #1
-        false, // Source -1 Rainbow Pattern #2
-        false, // Climb -2 Rainbow Pattern #3
-        false, // Blank/DC -3 None
+        false, // Disconnected -0 Loading Bounce 
+        false, // Pathfinding -1 Rainbow Pattern #1
+        false, // Climb -2 Rainbow Pattern #2
+        false, // Blank -3 None
         false, // Note Detected -4 White Solid
         false, // Charging -5 Green Pulse (HasNote)
         false, // At Speed -6 Green BLink (HasNote)
@@ -76,42 +78,42 @@ public class LEDSubsystem extends SubsystemBase {
 
         // Driver Station Connected
         if (DriverStation.isDSAttached()) {
-            inputBooleans[1] = false;
+            Disconnected(false);
         } else {
-            inputBooleans[1] = true;
+            Disconnected(true);
         }
 
         if (Robot.checkRedAlliance()) {
-            inputBooleans[11] = true;
-            inputBooleans[12] = false;
+            RedAlliance(true);
+            BlueAlliance(false);
         } else {
-            inputBooleans[11] = false;
-            inputBooleans[12] = true;
+            RedAlliance(false);
+            BlueAlliance(true);
         }
 
         // Check if pathfinding
         if (SwerveSubsystem.followingPath) {
-            inputBooleans[0] = true;
+            Pathfinding(true);
         } else {
-            inputBooleans[0] = false;
+            Pathfinding(false);
         }
 
         // Check beam breaks
         if (intexer.intakeBreak()) {
-            inputBooleans[9] = true; // Intake
-            inputBooleans[10] = false; // Shooter
+            NoteInIntake(true); // Intake
+            NoteInShooter(false); // Shooter
             hasNote = true;
         } else if (intexer.shooterBreak()) {
-            inputBooleans[9] = false; // Intake
-            inputBooleans[10] = true; // Shooter
+            NoteInIntake(false); // Intake
+            NoteInShooter(true); // Shooter
             hasNote = true;
         } else {
-            inputBooleans[9] = false; // Intake
-            inputBooleans[10] = false; // Shooter
+            NoteInIntake(false); // Intake
+            NoteInShooter(false); // Shooter
             hasNote = false;
         }
 
-        // Charging or At Speed with Note or without Note
+        // Charging or At Speed with Note or without Note !Boolean References See Above(inputBooleans)!
         if (hasNote) { // Has Note
             if (shooter.isShooterAtSpeed()) { // At speed
                 inputBooleans[5] = false;
@@ -192,12 +194,8 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     // SET FUNCTIONS
-    public void ampTele(boolean amp) {
-        inputBooleans[0] = amp;
-    }
-
-    public void sourceTele(boolean source) {
-        inputBooleans[1] = source;
+    public void Pathfinding(boolean pathfinding) {
+        inputBooleans[1] = pathfinding;
     }
 
     public void climbTele(boolean climb) {
@@ -228,13 +226,15 @@ public class LEDSubsystem extends SubsystemBase {
         inputBooleans[4] = note;
     }
 
-    /* DISCLAIMER: DISCONTINUED */
-    public void setAllianceColor() {
-        inputBooleans[11] = Robot.getAlliance(); // True is Red
-        inputBooleans[12] = !Robot.getAlliance(); // False is Blue
+    public void BlueAlliance(boolean blueAlliance) {
+        inputBooleans[12] = blueAlliance;
+    }
+    
+    public void RedAlliance(boolean redAlliance) {
+        inputBooleans[13] = redAlliance;
     }
 
     public void Disconnected(boolean disconnected) { // NOT CONFIRMED TO BE IN FINAL
-        inputBooleans[3] = disconnected;
+        inputBooleans[0] = disconnected;
     }
 }
