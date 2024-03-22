@@ -54,10 +54,10 @@ public final class Constants {
         public static final AprilTagFieldLayout kTagLayout = getFieldLayout();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1, 1, 999);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
         public static final Vector<N3> stateStdDevs =
-                VecBuilder.fill(.5, .5, .5); // Encoder Odometry
+                VecBuilder.fill(1, 1, .5); // Encoder Odometry
 
         public static final Pose2d startingPoseBlue = new Pose2d(1.35, 5.55, new Rotation2d(0));
         public static final Pose2d startingPoseRed =
@@ -141,7 +141,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.5;
+        public static final double maxSpeed = 4;
         /** Radians per Second */
         public static final double maxAngularVelocity =
                 10.0; // TODO: This must be tuned to specific robot

@@ -72,7 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
-    private double interpolationOffset = 4;
+    private double interpolationOffset = 5;
 
     public boolean outsideAllianceWing = false;
 
@@ -127,13 +127,14 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setI(velocityI, 0);
         topPID.setD(velocityD, 0);
 
+        m_VelocityEncoder.setMeasurementPeriod(16);
+        m_VelocityEncoder.setAverageDepth(2);
+
         m_Wrist.burnFlash();
         shootaBot.burnFlash();
         shootaTop.burnFlash();
 
         m_pidWrist = new PIDController(positionP, positionI, positionD);
-
-        m_VelocityEncoder.setMeasurementPeriod(20);
 
         SmartDashboard.putNumber("set velocity", shooterVelocity);
 

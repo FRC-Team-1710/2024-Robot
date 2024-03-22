@@ -12,8 +12,6 @@ public class Interpolations {
     public InterpolatingDoubleTreeMap bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds =
             new InterpolatingDoubleTreeMap();
 
-    private double offset = 1;
-
     public Interpolations() {
         /*
                 shooterSpeeds.put(1.25, 53.0);
@@ -41,18 +39,18 @@ public class Interpolations {
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.5, 21.25);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.75, 20.0);
 
-        shooterSpeeds.put(1.25, 56.0 + offset);
-        shooterSpeeds.put(1.35, 53.0 + offset);
-        shooterSpeeds.put(1.5, 50.0 + offset);
-        shooterSpeeds.put(1.75, 46.0 + offset);
-        shooterSpeeds.put(2.0, 42.0 + offset);
-        shooterSpeeds.put(2.25, 38.5 + offset);
-        shooterSpeeds.put(2.5, 35.5 + offset);
-        shooterSpeeds.put(2.75, 33.75 + offset);
-        shooterSpeeds.put(3.0, 32.25 + offset);
-        shooterSpeeds.put(3.25, 31.0 + offset);
-        shooterSpeeds.put(3.5, 30.0 + offset);
-        shooterSpeeds.put(4.0, 28.25 + offset);
+        shooterSpeeds.put(1.25, 56.0);
+        shooterSpeeds.put(1.35, 53.0);
+        shooterSpeeds.put(1.5, 50.0);
+        shooterSpeeds.put(1.75, 46.0);
+        shooterSpeeds.put(2.0, 42.0);
+        shooterSpeeds.put(2.25, 38.5);
+        shooterSpeeds.put(2.5, 35.5);
+        shooterSpeeds.put(2.75, 33.75);
+        shooterSpeeds.put(3.0, 32.25);
+        shooterSpeeds.put(3.25, 31.0);
+        shooterSpeeds.put(3.5, 30.0);
+        shooterSpeeds.put(4.0, 28.25);
     }
 
     public double getShooterAngleFromInterpolation(double distanceToTarget) {

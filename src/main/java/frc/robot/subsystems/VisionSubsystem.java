@@ -54,7 +54,7 @@ public class VisionSubsystem extends SubsystemBase {
     private double lastTimeStampFront = 0;
     private double lastEstTimestampBack = 0;
 
-    private final double maxAcceptableRange = 2.75;
+    private final double maxAcceptableRange = 4;
 
     public VisionSubsystem() {
         aprilTagCameraFront = new PhotonCamera(Constants.Vision.kAprilTagCameraFront);
