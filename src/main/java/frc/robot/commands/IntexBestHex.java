@@ -38,6 +38,7 @@ public class IntexBestHex extends Command {
         if (in) { // Hood logic to run forwards or backwards
             if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
                 intexer.setALL(Constants.Intake.noteInsideSpeed);
+                controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else if (!intexer.intakeBreak()
                     && intexer.shooterBreak()) { // Stop note if at shooter
                 controller.setRumble(RumbleType.kBothRumble, 0.75);
