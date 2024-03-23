@@ -75,7 +75,7 @@ public class TeleopSwerve extends Command {
         this.intakeOverrideNoMove = intakeNoMove;
         this.controller = controller;
 
-        rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+        // rotationPID.enableContinuousInput(-Math.PI, Math.PI);
 
         SmartDashboard.putData("Lock On Rotation PID", rotationPID);
 
@@ -94,7 +94,7 @@ public class TeleopSwerve extends Command {
                 MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal;
-/*
+
         double offset;
         double ampLockOffset;
 
@@ -109,7 +109,7 @@ public class TeleopSwerve extends Command {
             ampLockOffset = 5;
             offset = 0;
         }
-*/
+
         /* Exponential Drive */
         translationVal = Math.copySign(Math.pow(translationVal, 2), translationVal);
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
@@ -124,7 +124,7 @@ public class TeleopSwerve extends Command {
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
             rotationVal = rotationPID.calculate(
-                    pose.getRotation().getRadians(),
+                    pose.getRotation().getRadians() + offset,
                     FiringSolutionsV3.getAngleToMovingTarget(
                             pose.getX(),
                             pose.getY(),
