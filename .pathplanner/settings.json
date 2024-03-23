@@ -1,11 +1,13 @@
 {
-  "robotWidth": 0.85,
-  "robotLength": 0.85,
+  "robotWidth": 0.863,
+  "robotLength": 0.939,
   "holonomicMode": true,
   "pathFolders": [
-    "McNugget paths",
-    "Midfield Paths",
-    "Close"
+    "4piece",
+    "Close",
+    "other",
+    "roman charge",
+    "toothy grin"
   ],
   "autoFolders": [
     "Testing"

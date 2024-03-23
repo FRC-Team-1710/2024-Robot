@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "other",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

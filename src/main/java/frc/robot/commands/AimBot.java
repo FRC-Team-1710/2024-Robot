@@ -37,6 +37,9 @@ public class AimBot extends Command {
         this.speed = speed;
         this.intexer = intexer;
         this.swerveSubsystem = swerve;
+
+        rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+
         addRequirements(shooterSubsystem, swerve);
     }
 
@@ -51,7 +54,7 @@ public class AimBot extends Command {
     public void execute() {
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
-
+/*
         double offset;
         if (Robot.getAlliance()) {
             if (pose.getRotation().getRadians() > 0) {
@@ -62,9 +65,9 @@ public class AimBot extends Command {
         } else {
             offset = 0;
         }
-
+*/
         double rotationVal = rotationPID.calculate(
-                pose.getRotation().getRadians() + offset,
+                pose.getRotation().getRadians(),
                 FiringSolutionsV3.getAngleToMovingTarget(
                         pose.getX(),
                         pose.getY(),

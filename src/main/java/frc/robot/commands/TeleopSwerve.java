@@ -64,7 +64,6 @@ public class TeleopSwerve extends Command {
         this.vision = vision;
         this.shooterSubsystem = shooter;
         this.intexerSubsystem = intexer;
-        addRequirements(swerve);
 
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
@@ -76,9 +75,11 @@ public class TeleopSwerve extends Command {
         this.intakeOverrideNoMove = intakeNoMove;
         this.controller = controller;
 
-        rotationPID.enableContinuousInput(-180, 180);
+        rotationPID.enableContinuousInput(-Math.PI, Math.PI);
 
         SmartDashboard.putData("Lock On Rotation PID", rotationPID);
+
+        addRequirements(swerve);
     }
 
     @Override
@@ -195,7 +196,7 @@ public class TeleopSwerve extends Command {
             strafeVal = -strafeVal;
         }
 
-        if (intexerSubsystem.intakeBreak() && intakeOverride.getAsBoolean()) {
+        if ((intexerSubsystem.intakeBreak() || intexerSubsystem.shooterBreak()) && intakeOverride.getAsBoolean()) {
             translationVal = 0;
             rotationVal = 0;
             noteInside = true;
