@@ -56,8 +56,7 @@ public final class Constants {
         // The standard deviations of our vision estimated poses, which affect correction rate
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1, 1, 999);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
-        public static final Vector<N3> stateStdDevs =
-                VecBuilder.fill(1, 1, .5); // Encoder Odometry
+        public static final Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, .5);
 
         public static final Pose2d startingPoseBlue = new Pose2d(1.35, 5.55, new Rotation2d(0));
         public static final Pose2d startingPoseRed =

@@ -173,19 +173,48 @@ public class ShooterSubsystem extends SubsystemBase {
             botPID.setD(velocityD, 0);
         }
         */
+
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
-        boolean shooterAtSpeed = isShooterAtSpeed();
-
-        if (shooterAtSpeed) {
-            controller.setRumble(RumbleType.kBothRumble, .2);
-        } else {
-            controller.setRumble(RumbleType.kBothRumble, 0);
-        }
-
         FiringSolutionsV3.slipPercent =
                 SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
         FiringSolutionsV3.speakerTargetZ =
                 SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.speakerTargetZ);
+
+        boolean shooterAtSpeed = isShooterAtSpeed();
+
+        if (shooterAtSpeed) {
+            controller.setRumble(RumbleType.kBothRumble, .25);
+        } else {
+            controller.setRumble(RumbleType.kBothRumble, 0);
+        }
+
+        // check for encoder failure
+        if (m_WristEncoder.isConnected()) {
+            ENCFAIL = false;
+        } else {
+            isZeroed = false;
+            revEncoderHasFailed = true;
+            ENCFAIL = true;
+        }
+
+        if (isZeroed) {
+            if (!manualOverride) {
+                m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), lastWristAngleSetpoint));
+            }
+
+            // Implement whenever build stops throwing
+            /*
+            if (getCurrentShooterAngle() > wristAngleUpperBound){
+                m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
+                wristAngleUpperBound));
+                } else if (getCurrentShooterAngle() < wristAngleLowerBound){
+                    m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
+                    wristAngleLowerBound));
+                    }
+                   */
+        }
+
+        updateShooterMath();
 
         SmartDashboard.putNumber(
                 "Top - Bottom error",
@@ -197,42 +226,13 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("REV Encoder Has Failed", revEncoderHasFailed);
         SmartDashboard.putNumber(
                 "Current Angle Degrees", Units.radiansToDegrees(getCurrentShooterAngle()));
-
-        // check for encoder failure
-        if (m_WristEncoder.isConnected()) {
-            ENCFAIL = false;
-        } else {
-            isZeroed = false;
-            revEncoderHasFailed = true;
-            ENCFAIL = true;
-        }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
         SmartDashboard.putBoolean("Is Wrist Zeroed", isZeroed);
-
-        updateShooterMath();
-
         SmartDashboard.putNumber("Flywheel Left Current", shootaTop.getOutputCurrent());
         SmartDashboard.putNumber("Flywheel Right Current", shootaBot.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
         SmartDashboard.putNumber("Wrist Built-in Encoder", motorEncoderAngle());
-
-        if (isZeroed) {
-            if (!manualOverride) {
-                m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), lastWristAngleSetpoint));
-            }
-
-            // Implement whenever build stops throwing
-            /*
-             * if (getCurrentShooterAngle() > wristAngleUpperBound){
-             * m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
-             * wristAngleUpperBound));
-             * } else if (getCurrentShooterAngle() < wristAngleLowerBound){
-             * m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
-             * wristAngleLowerBound));
-             * }
-             */
-        }
     }
 
     /** in RADIANs units MATTER */
