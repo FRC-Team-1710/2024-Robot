@@ -276,7 +276,7 @@ public class FiringSolutionsV3 {
     public static double getAngleToMovingTarget(double robotX, double robotY, double targetX, double targetY,
             double robotVelocityX,
             double robotVelocityY, double robotHeading) {
-        //if (robotX >= targetX) {
+        if (robotX >= targetX) {
             return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
                     getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
                             getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
@@ -289,7 +289,7 @@ public class FiringSolutionsV3 {
                             getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
                                     getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
                             .get().getX() - robotX));
-        /*} else {
+        } else {
             if (robotY >= targetY) {
                 return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
                         getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
@@ -317,7 +317,7 @@ public class FiringSolutionsV3 {
                                         getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
                                 .get().getX() - robotX)) - Math.toRadians(180);
             }
-        }*/
+        }
 
     }
 

@@ -75,7 +75,7 @@ public class TeleopSwerve extends Command {
         this.intakeOverrideNoMove = intakeNoMove;
         this.controller = controller;
 
-        // rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+        rotationPID.enableContinuousInput(-Math.PI, Math.PI);
 
         SmartDashboard.putData("Lock On Rotation PID", rotationPID);
 
@@ -95,21 +95,6 @@ public class TeleopSwerve extends Command {
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal;
 
-        double offset;
-        double ampLockOffset;
-
-        if (Robot.getAlliance()) {
-            ampLockOffset = 16.54 - 5;
-            if (pose.getRotation().getRadians() > 0) {
-                offset = -Math.toRadians(180);
-            } else {
-                offset = Math.toRadians(180);
-            }
-        } else {
-            ampLockOffset = 5;
-            offset = 0;
-        }
-
         /* Exponential Drive */
         translationVal = Math.copySign(Math.pow(translationVal, 2), translationVal);
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
@@ -121,17 +106,17 @@ public class TeleopSwerve extends Command {
                 controller.setRumble(RumbleType.kBothRumble, 0);
             }
 
-            ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
+            //ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
             rotationVal = rotationPID.calculate(
-                    pose.getRotation().getRadians() + offset,
+                    pose.getRotation().getRadians(),
                     FiringSolutionsV3.getAngleToMovingTarget(
                             pose.getX(),
                             pose.getY(),
                             FiringSolutionsV3.speakerTargetX,
                             FiringSolutionsV3.speakerTargetY,
-                            currentSpeed.vxMetersPerSecond,
-                            currentSpeed.vyMetersPerSecond,
+                            0,
+                            0,
                             pose.getRotation().getRadians()));
             openLoop = false;
 
