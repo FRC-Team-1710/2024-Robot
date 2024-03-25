@@ -54,7 +54,7 @@ public class VisionSubsystem extends SubsystemBase {
     private double lastTimeStampFront = 0;
     private double lastEstTimestampBack = 0;
 
-    private final double maxAcceptableRange = 4;
+    private final double maxAcceptableRange = 3.5;
 
     public VisionSubsystem() {
         aprilTagCameraFront = new PhotonCamera(Constants.Vision.kAprilTagCameraFront);
@@ -83,10 +83,6 @@ public class VisionSubsystem extends SubsystemBase {
                 Robot.getAlliance()
                         ? Constants.Vision.startingPoseRed
                         : Constants.Vision.startingPoseBlue);
-
-        // 2024 field quality makes multitag impractical
-        // photonEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        // photonEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     /** Get the latest result from the front April Tag camera */

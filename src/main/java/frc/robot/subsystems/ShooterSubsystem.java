@@ -36,7 +36,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private RelativeEncoder m_VelocityEncoder;
     private RelativeEncoder m_VelocityEncoder2;
+    /** NEO Encoder */
     private RelativeEncoder m_PositionEncoder;
+    /** REV Encoder */
     private DutyCycleEncoder m_WristEncoder;
 
     // PID
@@ -75,6 +77,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private double interpolationOffset = 5;
 
     public boolean outsideAllianceWing = false;
+
+    private double lastAngle;
 
     private Joystick controller;
 
@@ -198,6 +202,10 @@ public class ShooterSubsystem extends SubsystemBase {
         }
 
         if (isZeroed) {
+            if (Math.abs(getRevEncoderAngle() - lastAngle) > 1.5){
+                revEncoderHasFailed = true;
+            }
+
             if (!manualOverride) {
                 m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), lastWristAngleSetpoint));
             }
@@ -220,7 +228,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 "Top - Bottom error",
                 m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
         SmartDashboard.putNumber("Current Angle Radians", getCurrentShooterAngle());
-        SmartDashboard.putNumber("REV Encoder Angle", revEncoderAngle());
+        SmartDashboard.putNumber("REV Encoder Angle", getRevEncoderAngle());
         SmartDashboard.putNumber("Current Velocity", getVelocity());
         SmartDashboard.putBoolean("shooter at speed", shooterAtSpeed);
         SmartDashboard.putBoolean("REV Encoder Has Failed", revEncoderHasFailed);
@@ -232,23 +240,24 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel Right Current", shootaBot.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
-        SmartDashboard.putNumber("Wrist Built-in Encoder", motorEncoderAngle());
+        SmartDashboard.putNumber("Wrist Built-in Encoder", getMotorEncoderAngle());
+        SmartDashboard.putNumber("Angle Offset", angleOffset);
     }
 
     /** in RADIANs units MATTER */
     public double getCurrentShooterAngle() {
         if (!ENCFAIL && !revEncoderHasFailed) {
-            return revEncoderAngle() + angleOffset;
+            return getRevEncoderAngle() + angleOffset;
         } else {
-            return motorEncoderAngle() + angleOffset;
+            return getMotorEncoderAngle() + angleOffset;
         }
     }
 
-    public double revEncoderAngle() {
+    public double getRevEncoderAngle() {
         return ((m_WristEncoder.get() * 2 * Math.PI) / 4);
     }
 
-    public double motorEncoderAngle() {
+    public double getMotorEncoderAngle() {
         return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
     }
 
@@ -319,6 +328,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_WristEncoder.reset();
         revEncoderHasFailed = false;
         m_PositionEncoder.setPosition(0);
+        lastAngle = getRevEncoderAngle();
         isZeroed = true;
     }
 
