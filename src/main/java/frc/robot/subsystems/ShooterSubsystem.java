@@ -158,25 +158,7 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        /*
-        if (velocityP != SmartDashboard.getNumber("Velo P", velocityP)){
-            velocityP = SmartDashboard.getNumber("Velo P", velocityP);
-            topPID.setP(velocityP, 0);
-            botPID.setP(velocityP, 0);
-        }
-
-        if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)){
-            velocityI = SmartDashboard.getNumber("Velo I", velocityI);
-            topPID.setI(velocityI, 0);
-            botPID.setI(velocityI, 0);
-        }
-
-        if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)){
-            velocityD = SmartDashboard.getNumber("Velo D", velocityD);
-            topPID.setD(velocityD, 0);
-            botPID.setD(velocityD, 0);
-        }
-        */
+        // tempPIDTuning();
 
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
         FiringSolutionsV3.slipPercent =
@@ -209,17 +191,6 @@ public class ShooterSubsystem extends SubsystemBase {
             if (!manualOverride) {
                 m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(), lastWristAngleSetpoint));
             }
-
-            // Implement whenever build stops throwing
-            /*
-            if (getCurrentShooterAngle() > wristAngleUpperBound){
-                m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
-                wristAngleUpperBound));
-                } else if (getCurrentShooterAngle() < wristAngleLowerBound){
-                    m_Wrist.set(m_pidWrist.calculate(getCurrentShooterAngle(),
-                    wristAngleLowerBound));
-                    }
-                   */
         }
 
         updateShooterMath();
@@ -242,6 +213,26 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
         SmartDashboard.putNumber("Wrist Built-in Encoder", getMotorEncoderAngle());
         SmartDashboard.putNumber("Angle Offset", angleOffset);
+    }
+
+    private void tempPIDTuning() {
+        if (velocityP != SmartDashboard.getNumber("Velo P", velocityP)){
+            velocityP = SmartDashboard.getNumber("Velo P", velocityP);
+            topPID.setP(velocityP, 0);
+            botPID.setP(velocityP, 0);
+        }
+
+        if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)){
+            velocityI = SmartDashboard.getNumber("Velo I", velocityI);
+            topPID.setI(velocityI, 0);
+            botPID.setI(velocityI, 0);
+        }
+
+        if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)){
+            velocityD = SmartDashboard.getNumber("Velo D", velocityD);
+            topPID.setD(velocityD, 0);
+            botPID.setD(velocityD, 0);
+        }
     }
 
     /** in RADIANs units MATTER */
@@ -294,7 +285,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** Get whether shooter is at target speed */
     public boolean isShooterAtSpeed() { // Copied from Hudson but made it better
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 80) {
+        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 200) {// TODO Adjust
             speedTimer.start();
         } else {
             speedTimer.reset();
