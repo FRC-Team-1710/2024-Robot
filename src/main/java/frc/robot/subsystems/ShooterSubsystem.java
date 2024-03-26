@@ -58,9 +58,8 @@ public class ShooterSubsystem extends SubsystemBase {
     /** In m/s */
     private double shooterVelocity = 12.1;
 
-    private boolean CanEncoderHasFailed = false;
-
     private double shooterAngleToSpeaker, shooterAngleToAmp;
+    private boolean CanEncoderHasFailed = false;
     private boolean ENCFAIL = false;
     public boolean isZeroed = false;
     public boolean wristIsLocked = false;
@@ -105,7 +104,9 @@ public class ShooterSubsystem extends SubsystemBase {
         m_VelocityEncoder2 = shootaBot.getEncoder();
         m_PositionEncoder = m_Wrist.getEncoder();
         m_WristEncoder = new CANcoder(0);
-        CANcoderConfiguration configs = new CANcoderConfiguration();
+
+        // CANcoderConfiguration configs = new CANcoderConfiguration();
+        // m_WristEncoder.getConfigurator().apply(configs);
 
         // Spark Max Setup
         shootaTop.restoreFactoryDefaults();
@@ -208,14 +209,6 @@ public class ShooterSubsystem extends SubsystemBase {
          * }
          */
 
-        if (m_WristEncoder.getFaultField().getValueAsDouble() > 0) {
-            ENCFAIL = false;
-        } else {
-            isZeroed = false;
-            CanEncoderHasFailed = true;
-            ENCFAIL = true;
-
-        }
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
         SmartDashboard.putBoolean("Is Wrist Zeroed", isZeroed);
 
@@ -324,15 +317,20 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
     }
 
+    /** The proper wrist encoder reset method. USE ONLY THIS ONE */
     public void resetWristEncoders(double newOffset) {
         angleOffset = newOffset;
-        m_WristEncoder.setPosition(newOffset);
+        m_WristEncoder.setPosition(0);
         CanEncoderHasFailed = false;
         m_PositionEncoder.setPosition(0);
         isZeroed = true;
     }
 
-    /** Wrist Encoder Reset */
+    public void useBuiltInEncoder(boolean enable) {
+        CanEncoderHasFailed = enable;
+    }
+
+    /** Wrist Encoder Reset DO NOT USE */
     public void restartWristEncoders() {
         m_WristEncoder.setPosition(0);
         m_PositionEncoder.setPosition(0);
@@ -368,10 +366,9 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    /** Reset wrist encoder to given value */
+    /** Reset wrist encoder to given value DO NOT USE */
     public void setWristEncoderOffset(double newPosition) {
         m_WristEncoder.setPosition(newPosition);
-
     }
 
     public void setWristAngleLowerBound(double wristAngleLowerBound) {
