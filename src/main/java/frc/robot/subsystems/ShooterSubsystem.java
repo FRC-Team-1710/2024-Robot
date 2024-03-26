@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Vars
     /** In m/s */
-    private double shooterVelocity = 14.75;
+    private double shooterVelocity = 12.1;
 
     private boolean revEncoderHasFailed = false;
 
