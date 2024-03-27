@@ -235,7 +235,6 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(() ->
                         m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
-        // Elevator
         // elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem,
         // Constants.Elevator.minHeightMeters)
         //        .alongWith(
@@ -244,6 +243,7 @@ public class RobotContainer {
         // Constants.Elevator.maxHeightMeters)
         //        .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
 
+        // Elevator
         mechLT.negate()
                 .and(elevatorDown)
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters)
@@ -255,6 +255,7 @@ public class RobotContainer {
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters)
                         .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
 
+        // Adjust offset
         mechLT.and(elevatorUp).onTrue(new InstantCommand(() -> m_ShooterSubsystem.offsetUP()));
         mechLT.and(elevatorDown).onTrue(new InstantCommand(() -> m_ShooterSubsystem.offsetDOWN()));
 
@@ -310,6 +311,7 @@ public class RobotContainer {
         mechLT.and(mechLeftStick)
                 .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.setElevatorSpeedManual(0)));
 
+        // Reset wrist from bottom
         mechLT.and(zeroShooter)
                 .onTrue(new InstantCommand(() -> m_ShooterSubsystem.resetWristEncoders(
                         Constants.Shooter.angleOffsetBottom)));

@@ -197,6 +197,14 @@ public class ShooterSubsystem extends SubsystemBase {
          * }
          */
 
+        if (m_WristEncoder.getFault_Hardware().getValue() || m_WristEncoder.getFault_BadMagnet().getValue()){
+            ENCFAIL = true;
+            CanEncoderHasFailed = true;
+            isZeroed = false;
+        } else {
+            ENCFAIL = false;
+        }
+
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
         SmartDashboard.putBoolean("Is Wrist Zeroed", isZeroed);
 
@@ -296,7 +304,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** Get whether shooter is at target speed */
     public boolean isShooterAtSpeed() { // Copied from Hudson but made it better
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 200) {// TODO Adjust
+        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 100) {// TODO Adjust
             speedTimer.start();
         } else {
             speedTimer.reset();
