@@ -1,0 +1,58 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Elevator PID": "PIDController",
+      "/SmartDashboard/ElevatorSubsystem": "Subsystem",
+      "/SmartDashboard/Gyro": "Gyro",
+      "/SmartDashboard/IntexerSubsystem": "Subsystem",
+      "/SmartDashboard/Lock On Rotation PID": "PIDController",
+      "/SmartDashboard/Mech2d": "Mechanism2d",
+      "/SmartDashboard/Mech_2d": "Subsystem",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/ShooterSubsystem": "Subsystem",
+      "/SmartDashboard/SwerveSubsystem": "Subsystem",
+      "/SmartDashboard/Wrist PID": "PIDController",
+      "/SmartDashboard/field": "Field2d"
+    },
+    "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Mech2d": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "Publishers": {
+        "open": true
+      },
+      "open": true
+    },
+    "visible": true
+  }
+}

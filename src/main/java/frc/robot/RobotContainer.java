@@ -114,7 +114,8 @@ public class RobotContainer {
             new ShooterSubsystem(m_SwerveSubsystem, m_ElevatorSubsystem, mech);
     private final LEDSubsystem m_LEDSubsystem = new LEDSubsystem(
             m_VisionSubsystem, m_ShooterSubsystem, m_IntexerSubsystem, m_SwerveSubsystem);
-
+private final Mech_2d M_mech_2d=
+new Mech_2d(m_ShooterSubsystem, m_ElevatorSubsystem);
     private final SendableChooser<Command> autoChooser;
 
     /**
@@ -134,7 +135,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Fire Under Stage", new InstantCommand(() -> m_ShooterSubsystem.setWristByAngle(Math.toRadians(10))));
         NamedCommands.registerCommand("Force Shoot", new FIREEFORACERTAINAMOUNTOFTIME(m_ShooterSubsystem, m_IntexerSubsystem, .2));
         // spotless:on
-
+       
         m_SwerveSubsystem.setDefaultCommand(new TeleopSwerve(
                 m_SwerveSubsystem,
                 m_VisionSubsystem,

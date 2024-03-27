@@ -18,11 +18,18 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
+  
     // Devices
     public TalonFX m_elevatorLeft; // left leader
     public TalonFX m_elevatorRight;
@@ -44,8 +51,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public boolean manualOverride = false;
     public boolean locked = false;
-
-    public ElevatorSubsystem() {
+    
+    public ElevatorSubsystem(){
+       
         m_elevatorLeft = new TalonFX(20); // left leader
         m_elevatorRight = new TalonFX(21);
         lasercan = new LaserCan(22);
@@ -85,6 +93,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+      
+
         // This method will be called once per scheduler run
         updateHeightLaserCan();
         SmartDashboard.putNumber("Encoder Height", getHeightEncoder());
