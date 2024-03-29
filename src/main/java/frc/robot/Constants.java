@@ -45,9 +45,9 @@ public final class Constants {
 
         public static final Transform3d kRobotToCamBack = new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(-25), //-7
-                        Units.inchesToMeters(11), //11
-                        Units.inchesToMeters(14.5)), //14.5
+                        Units.inchesToMeters(-25), // -7
+                        Units.inchesToMeters(11),
+                        Units.inchesToMeters(14.5)),
                 new Rotation3d(0, Units.degreesToRadians(16.5), Math.PI));
 
         // The layout of the AprilTags on the field

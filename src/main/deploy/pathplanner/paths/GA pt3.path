@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.527648950784839,
+        "y": 6.990576641485824
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2571145665495758,
+        "y": 6.419669800176037
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.9134141831229043,
+        "y": 5.606110974692258
+      },
+      "prevControl": {
+        "x": 2.163516887667757,
+        "y": 6.220774732552172
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "GA pt3 stop"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Greedy Autos",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

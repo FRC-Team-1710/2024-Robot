@@ -65,7 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
     private final SwerveDriveOdometry encoderOdometry;
     private SwerveModuleState[] swerveModuleStates;
-    public static boolean followingPath = false;
+    private SwerveModulePosition[] swerveModulePositions;
 
     // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -125,13 +125,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
                 ); // spotless:on
 
-        SwerveModulePosition[] modulePositions = getModulePositions();
+        swerveModulePositions = getModulePositions();
 
         // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
-                modulePositions,
+                swerveModulePositions,
                 Robot.getAlliance()
                         ? Constants.Vision.startingPoseRed
                         : Constants.Vision.startingPoseBlue,
@@ -139,7 +139,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Vision.kSingleTagStdDevs);
 
         encoderOdometry = new SwerveDriveOdometry(
-                Constants.Swerve.swerveKinematics, getGyroYaw(), modulePositions);
+                Constants.Swerve.swerveKinematics, getGyroYaw(), swerveModulePositions);
 
         // Logging
         posePublisher = NetworkTableInstance.getDefault()
@@ -238,9 +238,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setPose(Pose2d pose) {
-        SwerveModulePosition[] modPositions = getModulePositions();
-        swerveOdomEstimator.resetPosition(getGyroYaw(), modPositions, pose);
-        encoderOdometry.resetPosition(getGyroYaw(), modPositions, pose);
+        swerveOdomEstimator.resetPosition(getGyroYaw(), swerveModulePositions, pose);
+        encoderOdometry.resetPosition(getGyroYaw(), swerveModulePositions, pose);
     }
 
     public void setPoseToPodium() {
@@ -299,7 +298,7 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         updateModuleStates();
-        SwerveModulePosition[] modulePositions = getModulePositions();
+        swerveModulePositions = getModulePositions();
         Rotation2d gyroYaw = getGyroYaw();
 
         // Correct pose estimate with multiple vision measurements
@@ -328,8 +327,8 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         // Logging
-        swerveOdomEstimator.update(gyroYaw, modulePositions);
-        encoderOdometry.update(gyroYaw, modulePositions);
+        swerveOdomEstimator.update(gyroYaw, swerveModulePositions);
+        encoderOdometry.update(gyroYaw, swerveModulePositions);
 
         m_field.setRobotPose(getPose());
 
@@ -342,7 +341,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     "Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber(
                     "Mod " + mod.moduleNumber + " Angle",
-                    modulePositions[mod.moduleNumber].angle.getDegrees());
+                    swerveModulePositions[mod.moduleNumber].angle.getDegrees());
             SmartDashboard.putNumber(
                     "Mod " + mod.moduleNumber + " Velocity",
                     swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
