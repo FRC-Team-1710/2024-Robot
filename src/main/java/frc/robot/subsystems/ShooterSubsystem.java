@@ -511,6 +511,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Distance to Moving Target", distanceToMovingSpeakerTarget);
         SmartDashboard.putNumber("robot vx", chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("robot vy", chassisSpeeds.vyMetersPerSecond);
+        SmartDashboard.putNumber("dist to speaker", FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
+        SmartDashboard.putNumber("adjusted target distance", distanceToMovingSpeakerTarget - FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
 
         double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(
                 pose.getX(),
@@ -522,7 +524,6 @@ public class ShooterSubsystem extends SubsystemBase {
                 pose.getRotation().getRadians());
 
         FiringSolutionsV3.updateAmpR(distanceToMovingAmpTarget);
-
         shooterAngleToAmp = FiringSolutionsV3.getShooterAngleFromAmpR();
     }
 }
