@@ -106,7 +106,7 @@ public class TeleopSwerve extends Command {
                 controller.setRumble(RumbleType.kBothRumble, 0);
             }
 
-            //ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
+            ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
             rotationVal = rotationPID.calculate(
                     pose.getRotation().getRadians(),
@@ -115,8 +115,8 @@ public class TeleopSwerve extends Command {
                             pose.getY(),
                             FiringSolutionsV3.speakerTargetX,
                             FiringSolutionsV3.speakerTargetY,
-                            0,
-                            0,
+                            currentSpeed.vxMetersPerSecond,
+                            currentSpeed.vyMetersPerSecond,
                             pose.getRotation().getRadians()));
             openLoop = false;
 
