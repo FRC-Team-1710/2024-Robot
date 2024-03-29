@@ -16,6 +16,7 @@ public class IntexBestHex extends Command {
 
     IntexerSubsystem intexer;
     boolean in;
+    boolean noteIn;
     Joystick controller;
 
     /** Creates a new IntexBestHex. */
@@ -35,12 +36,18 @@ public class IntexBestHex extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        if(intexer.intakeBreak()){
+            noteIn = true;
+        }
+        else if(intexer.shooterBreak()){
+            noteIn=false;
+        }
+
         if (in) { // Hood logic to run forwards or backwards
-            if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
+            if (noteIn) { // If note is not at shooter yet
                 intexer.setALL(Constants.Intake.noteInsideSpeed);
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
-            } else if (!intexer.intakeBreak()
-                    && intexer.shooterBreak()) { // Stop note if at shooter
+            } else if (!noteIn && intexer.shooterBreak()) { // Stop note if at shooter
                 controller.setRumble(RumbleType.kBothRumble, 0.75);
                 intexer.setALL(0);
             } else { // Note is not in robot

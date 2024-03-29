@@ -69,6 +69,7 @@ public class IntexerSubsystem extends SubsystemBase {
         }
     }
 
+
     public void setShooterIntake(double speed) {
         if (speed == 0) {
             shooterIntake.stopMotor();
