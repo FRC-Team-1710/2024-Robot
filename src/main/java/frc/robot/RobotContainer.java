@@ -279,9 +279,9 @@ public class RobotContainer {
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.ampHeight));
 
         // Subwoofer Preset
-        shooterToSubwoofer
+        /*shooterToSubwoofer
                 .onTrue(new RizzLevel(m_ShooterSubsystem, Math.toRadians(57)))
-                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));*/
 
         // Anti-Defense Preset
         shooterToAntiDefense.onTrue(new ElevatorSet(

@@ -198,7 +198,7 @@ public final class Constants {
     }
 
     public static final class Shooter {
-        public static final double intakeAngleRadians = 0.56;
+        public static final double intakeAngleRadians = 0.6;
         public static final double idleSpeedRPM = 1300;
         public static final double angleOffsetBottom = Units.degreesToRadians(-4.2);
         public static final double wristAngleMax = Units.degreesToRadians(62.7);

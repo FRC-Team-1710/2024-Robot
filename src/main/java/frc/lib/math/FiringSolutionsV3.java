@@ -344,7 +344,7 @@ public class FiringSolutionsV3 {
 
     /** Convert meters per second to rotations per minute */
     public static double convertToRPM(double velocity) {
-        return (60 * velocity) / (slipPercent * Math.PI * .1016);
+        return (60 * velocity) / (2 * slipPercent * Math.PI * .1016);
     }
 // spotless:on
 }
