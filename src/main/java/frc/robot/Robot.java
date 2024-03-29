@@ -74,6 +74,7 @@ public class Robot extends TimedRobot {
         // PortForwarder.add(5800, "10.17.10.11", 5800);
 
         SmartDashboard.putData(PDH);
+        PDH.setSwitchableChannel(true);
 
         redAlliance = checkRedAlliance();
 

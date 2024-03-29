@@ -75,7 +75,7 @@ public final class Constants {
     }
 
     public static final class Swerve {
-        public static final String canivore = "rex";
+        public static final String canivore = "uno";
         public static final int pigeonID = 13;
 
         public static final COTSTalonFXSwerveConstants chosenModule =
@@ -192,7 +192,7 @@ public final class Constants {
     }
 
     public static final class Intake {
-        public static final double noteOutsideSpeed = 0.5;
+        public static final double noteOutsideSpeed = 0.65;
         public static final double noteInsideSpeed = 0.25;
         public static final double outakeSpeed = -0.5;
     }
@@ -200,10 +200,10 @@ public final class Constants {
     public static final class Shooter {
         public static final double intakeAngleRadians = 0.56;
         public static final double idleSpeedRPM = 1300;
-        public static final double angleOffsetBottom = Units.degreesToRadians(-1);
+        public static final double angleOffsetBottom = Units.degreesToRadians(-4.2);
         public static final double wristAngleMax = Units.degreesToRadians(62.7);
         public static final double wristAngleMin = Units.degreesToRadians(-28.8);
-        public static final double angleOffsetManual = Units.degreesToRadians(67.6);
+        public static final double angleOffsetTop = Units.degreesToRadians(65);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }
 

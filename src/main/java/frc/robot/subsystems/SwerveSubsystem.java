@@ -34,6 +34,8 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -302,6 +304,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Rotation2d gyroYaw = getGyroYaw();
 
         // Correct pose estimate with multiple vision measurements
+        // https://www.chiefdelphi.com/t/odometry-not-working-only-during-matches/460307/4?u=andrewsk
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedPoseFront();
         if (OptionalEstimatedPoseFront.isPresent()) {
 
@@ -311,7 +314,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     vision.getEstimationStdDevsFront(estimatedPose.estimatedPose.toPose2d()));
 
             swerveOdomEstimator.addVisionMeasurement(
-                    estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+                    estimatedPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
         }
 
         Optional<EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
@@ -323,7 +326,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     vision.getEstimationStdDevsBack(estimatedPose2.estimatedPose.toPose2d()));
 
             swerveOdomEstimator.addVisionMeasurement(
-                    estimatedPose2.estimatedPose.toPose2d(), estimatedPose2.timestampSeconds);
+                    estimatedPose2.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
         }
 
         // Logging

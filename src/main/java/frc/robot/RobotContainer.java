@@ -263,7 +263,7 @@ public class RobotContainer {
         mechLT.negate()
                 .and(zeroShooter)
                 .onTrue(new InstantCommand(() -> m_ShooterSubsystem.resetWristEncoders(
-                        Constants.Shooter.angleOffsetManual))); // Set encoder to zero
+                        Constants.Shooter.angleOffsetTop))); // Set encoder to zero
 
         // Reset Odom to Podium
         resetOdomToPodium.onTrue(new InstantCommand(() -> m_SwerveSubsystem.setPoseToPodium()));

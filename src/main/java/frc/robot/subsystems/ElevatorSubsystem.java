@@ -46,8 +46,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     public boolean locked = false;
 
     public ElevatorSubsystem() {
-        m_elevatorLeft = new TalonFX(20); // left leader
-        m_elevatorRight = new TalonFX(21);
+        m_elevatorLeft = new TalonFX(21); // left leader
+        m_elevatorRight = new TalonFX(20);
         lasercan = new LaserCan(22);
 
         // Falcon setup

@@ -65,7 +65,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public boolean isZeroed = false;
     public boolean wristIsLocked = false;
     /** IN RADIANS */
-    private double angleOffset = Constants.Shooter.angleOffsetManual;
+    private double angleOffset = Constants.Shooter.angleOffsetTop;
 
     private double distanceToMovingSpeakerTarget = .94;
     public double lastWristAngleSetpoint = 0.0;
@@ -76,8 +76,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private double interpolationOffset = 5;
 
     public boolean outsideAllianceWing = false;
-
-    private double lastAngle;
 
     private Joystick controller;
 
@@ -106,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
         m_VelocityEncoder = shootaTop.getEncoder();
         m_VelocityEncoder2 = shootaBot.getEncoder();
         m_PositionEncoder = m_Wrist.getEncoder();
-        m_WristEncoder = new CANcoder(0);
+        m_WristEncoder = new CANcoder(54);
 
         // CANcoderConfiguration configs = new CANcoderConfiguration();
         // m_WristEncoder.getConfigurator().apply(configs);
@@ -339,8 +337,8 @@ public class ShooterSubsystem extends SubsystemBase {
         m_WristEncoder.setPosition(0);
         CanEncoderHasFailed = false;
         m_PositionEncoder.setPosition(0);
-        lastAngle = getCanCoderAngle();
         isZeroed = true;
+        lastWristAngleSetpoint = newOffset;
     }
 
     public void useBuiltInEncoder(boolean enable) {
