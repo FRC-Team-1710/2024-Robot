@@ -47,8 +47,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private SparkPIDController topPID;
 
     // PID Constants
-    private double velocityP = 0.0001;
-    private double velocityI = 5.2e-7;
+    private double velocityP = 0.0006;
+    private double velocityI = 7e-7;
     private double velocityD = 0;
 
     private double positionP = 1;
@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Vars
     /** In m/s */
-    private double shooterVelocity = 12.1;
+    private double shooterVelocity = 17.10; // real
 
     private double shooterAngleToSpeaker, shooterAngleToAmp;
     private boolean CanEncoderHasFailed = false;
@@ -73,7 +73,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
-    private double interpolationOffset = 5;
+    private double interpolationOffset = -1.5;
 
     public boolean outsideAllianceWing = false;
 
@@ -302,7 +302,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** Get whether shooter is at target speed */
     public boolean isShooterAtSpeed() { // Copied from Hudson but made it better
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 100) {// TODO Adjust
+        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 150) {// TODO Adjust
             speedTimer.start();
         } else {
             speedTimer.reset();
@@ -318,11 +318,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Check if wrist motor is exceeding stall current, used for zeroing */
     public boolean isWristMotorStalled() {
-        if (m_Wrist.getOutputCurrent() > m_WristCurrentMax) {
-            return true;
-        } else {
-            return false;
-        }
+        return m_Wrist.getOutputCurrent() > m_WristCurrentMax;
     }
 
     public void PointShoot(double PointAngle, double launchVelocity) {

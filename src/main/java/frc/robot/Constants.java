@@ -38,14 +38,14 @@ public final class Constants {
 
         public static final Transform3d kRobotToCamFront = new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(25),
+                        Units.inchesToMeters(30),
                         Units.inchesToMeters(-1.25),
                         Units.inchesToMeters(14.75)),
                 new Rotation3d(0, Units.degreesToRadians(15), 0));
 
         public static final Transform3d kRobotToCamBack = new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(-25), // -7
+                        Units.inchesToMeters(-30), // -7
                         Units.inchesToMeters(11),
                         Units.inchesToMeters(14.5)),
                 new Rotation3d(0, Units.degreesToRadians(16.5), Math.PI));
@@ -140,7 +140,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4;
+        public static final double maxSpeed = 4.25;
         /** Radians per Second */
         public static final double maxAngularVelocity =
                 10.0; // TODO: This must be tuned to specific robot
@@ -203,15 +203,15 @@ public final class Constants {
         public static final double angleOffsetBottom = Units.degreesToRadians(-4.2);
         public static final double wristAngleMax = Units.degreesToRadians(62.7);
         public static final double wristAngleMin = Units.degreesToRadians(-28.8);
-        public static final double angleOffsetTop = Units.degreesToRadians(65);
+        public static final double angleOffsetTop = Units.degreesToRadians(64.8);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
     }
 
     public static final class Elevator {
         public static final double maxHeightMeters = 0.61;
-        public static final double minHeightMeters = -0.01;
-        public static final double ampHeight = 0.513;
-        public static final double antiBozoSmileToasterAhhGoonBotShooterHeight = .5;
+        public static final double minHeightMeters = -0.015;
+        public static final double ampHeight = 0.555;
+        public static final double antiBozoSmileToasterAhhGoonBotShooterHeight = .522;
     }
 
     public static final class Auto {

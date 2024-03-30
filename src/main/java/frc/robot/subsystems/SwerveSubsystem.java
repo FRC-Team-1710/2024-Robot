@@ -34,7 +34,6 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -309,24 +308,28 @@ public class SwerveSubsystem extends SubsystemBase {
         if (OptionalEstimatedPoseFront.isPresent()) {
 
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
+            Pose2d estPose = estimatedPose.estimatedPose.toPose2d();
 
-            swerveOdomEstimator.setVisionMeasurementStdDevs(
-                    vision.getEstimationStdDevsFront(estimatedPose.estimatedPose.toPose2d()));
+            if (Math.abs(estPose.getTranslation().getDistance(getPose().getTranslation())) < 1){
+                swerveOdomEstimator.setVisionMeasurementStdDevs(
+                        vision.getEstimationStdDevsFront(estPose));
 
-            swerveOdomEstimator.addVisionMeasurement(
-                    estimatedPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+                swerveOdomEstimator.addVisionMeasurement(estPose, Timer.getFPGATimestamp());
+            }
         }
 
         Optional<EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
         if (OptionalEstimatedPoseBack.isPresent()) {
 
-            final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseBack.get();
+            final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseFront.get();
+            Pose2d estPose2 = estimatedPose2.estimatedPose.toPose2d();
 
-            swerveOdomEstimator.setVisionMeasurementStdDevs(
-                    vision.getEstimationStdDevsBack(estimatedPose2.estimatedPose.toPose2d()));
+            if (Math.abs(estPose2.getTranslation().getDistance(getPose().getTranslation())) < 1){
+                swerveOdomEstimator.setVisionMeasurementStdDevs(
+                        vision.getEstimationStdDevsFront(estPose2));
 
-            swerveOdomEstimator.addVisionMeasurement(
-                    estimatedPose2.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+                swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
+            }
         }
 
         // Logging
@@ -425,11 +428,11 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command pathToAmp() {
         if (!Robot.getAlliance()) {
             return AutoBuilder.pathfindToPose(
-                    new Pose2d(1.84, 7.59, Rotation2d.fromDegrees(90.37)),
+                    new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(90)),
                     Constants.Auto.PathfindingConstraints);
         } else {
-            return AutoBuilder.pathfindToPose(
-                    new Pose2d(14.74, 7.52, Rotation2d.fromDegrees(90.37)),
+            return AutoBuilder.pathfindToPoseFlipped(
+                    new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(90)),
                     Constants.Auto.PathfindingConstraints);
         }
     }

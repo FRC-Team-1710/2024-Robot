@@ -36,8 +36,7 @@ public class MissileLock extends Command {
                         Math.toRadians(55),
                         FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
             } else {
-                shooter.setShooterVelocity(
-                        FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+                shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
             }
         } else {
             shooter.PointShoot(

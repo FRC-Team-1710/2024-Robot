@@ -101,7 +101,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("LaserCan Ambient", measurement != null ? measurement.ambient : 0);
         revolutionCount = m_elevatorLeft.getPosition().getValueAsDouble();
 
-        // FiringSolutionsV3.updateHeight(getHeight()); //TODO: test this
+        // FiringSolutionsV3.updateHeight(getHeight());
     }
 
     public void setElevatorSpeedManual(double value) {
