@@ -14,7 +14,7 @@ public class IntexForAutosByAutos extends Command {
 
     private IntexerSubsystem intexer;
     private ShooterSubsystem shooter;
-
+    private  boolean noteInTake;
     /** Creates a new IntexForAutosByAutos. */
     public IntexForAutosByAutos(IntexerSubsystem intexerSub, ShooterSubsystem shooterSubsystem) {
         this.intexer = intexerSub;
@@ -24,7 +24,13 @@ public class IntexForAutosByAutos extends Command {
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {}
+    public void initialize() {
+    if (intexer.intakeBreak() && !intexer.shooterBreak()) {
+        noteInTake=true;
+    }else{
+    noteInTake=false;
+    }
+    }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
@@ -33,9 +39,11 @@ public class IntexForAutosByAutos extends Command {
 
         if (intexer.intakeBreak() && !intexer.shooterBreak()) { // If note is not at shooter yet
             intexer.setALL(Constants.Intake.noteInsideSpeed);
+            noteInTake=true;
         } else if (intexer.shooterBreak()) { // Stop note if at shooter
             intexer.setALL(0);
-        } else { // Note is not in robot
+            noteInTake = false;
+        } else if(!noteInTake) { // Note is not in robot
             intexer.setFrontIntake(Constants.Intake.noteOutsideSpeed);
             intexer.setShooterIntake(Constants.Intake.noteInsideSpeed);
         }
