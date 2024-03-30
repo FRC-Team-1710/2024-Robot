@@ -49,7 +49,7 @@ public class NoteSniffer extends Command {
     public void initialize() {
         timer.reset();
         timer.start();
-        translationVal = .35;
+        translationVal = .4;
         noteInside = false;
     }
 

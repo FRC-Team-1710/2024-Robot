@@ -1,0 +1,64 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.802268146103989,
+        "y": 0.7702308991316326
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.242306831407013,
+        "y": 1.3162173592755742
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.527648950784839,
+        "y": 3.3344173101647874
+      },
+      "prevControl": {
+        "x": 3.3368788827838953,
+        "y": 2.856679157538838
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TJ Shoot pos"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.25,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -28.610459665965333,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "straight as tj",
+  "previewStartingState": {
+    "rotation": 0.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

@@ -5,7 +5,7 @@
       "x": 0.744692763774372,
       "y": 4.446330676429759
     },
-    "rotation": -61.949224233821454
+    "rotation": -58.969140791087156
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TG 1"
+            "pathName": "TJ 1"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TG 2"
+            "pathName": "TJ 2"
           }
         },
         {
@@ -44,19 +44,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TG 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Idle Speed"
+            "pathName": "TJ 3"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TJ 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Idle Speed"
           }
         }
       ]

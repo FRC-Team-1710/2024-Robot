@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "toMidSourceRight"
+            "pathName": "RC 1"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "backMidSourceRight"
+            "pathName": "RC 2"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "toMidSourceLeft"
+            "pathName": "RC 3"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "backMidSourceLeft"
+            "pathName": "RC 4"
           }
         },
         {
@@ -80,7 +80,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "idk what the naming scheme is"
+            "pathName": "RC 5"
           }
         },
         {
