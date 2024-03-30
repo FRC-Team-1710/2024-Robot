@@ -26,7 +26,7 @@ public class Interpolations {
                 shooterSpeeds.put(3.5, 32.0);
                 shooterSpeeds.put(4.0, 30.75);
                 shooterSpeeds.put(4.5, 29.75);
-        */
+        
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.25, 44.0);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.5, 39.5);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.75, 36.0);
@@ -37,7 +37,7 @@ public class Interpolations {
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.0, 24.5);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.25, 22.5);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.5, 21.25);
-        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.75, 20.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.75, 20.0);*/
 
         /*shooterSpeeds.put(1.25, 56.0);
         shooterSpeeds.put(1.35, 53.0);
@@ -70,6 +70,20 @@ public class Interpolations {
         shooterSpeeds.put(4.5, 33.0);
         shooterSpeeds.put(4.75, 32.66);
         shooterSpeeds.put(5.0, 32.33);
+
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.25, 50.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.33, 47.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.5, 43.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.75, 39.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(2.0, 36.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(2.25, 34.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(2.5, 32.5);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(2.75, 31.25);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.0, 30.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.25, 29.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.5, 28.0);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.75, 27.25);
+        bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(4.0, 26.5);
 
     }
 
