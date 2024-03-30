@@ -73,7 +73,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
 
-    private double interpolationOffset = -1.5;
+    private double interpolationOffset = -2.5;
 
     public boolean outsideAllianceWing = false;
 
