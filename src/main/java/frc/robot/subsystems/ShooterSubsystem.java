@@ -46,9 +46,14 @@ public class ShooterSubsystem extends SubsystemBase {
     private SparkPIDController botPID;
     private SparkPIDController topPID;
 
-    // PID Constants
+    /* PID Constants
     private double velocityP = 0.0006;
     private double velocityI = 7e-7;
+    private double velocityD = 0; */
+
+    // Old PID Constants
+    private double velocityP = 0.0004;
+    private double velocityI = 5.6e-7;
     private double velocityD = 0;
 
     private double positionP = 1;
@@ -72,10 +77,11 @@ public class ShooterSubsystem extends SubsystemBase {
     public boolean manualOverride = false;
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
+    public boolean outsideAllianceWing = false;
+    private boolean wristCoast = false;
 
     private double interpolationOffset = -2.5;
 
-    public boolean outsideAllianceWing = false;
 
     private Joystick controller;
 
@@ -159,7 +165,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
 
-        // tempPIDTuning();
+        tempPIDTuning();
 
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
         boolean shooterAtSpeed = isShooterAtSpeed();
@@ -229,6 +235,15 @@ public class ShooterSubsystem extends SubsystemBase {
              * wristAngleLowerBound));
              * }
              */
+        }
+
+        if (SmartDashboard.getBoolean("Wrist Coast", wristCoast) != wristCoast) {
+            wristCoast = SmartDashboard.getBoolean("Wrist Coast", wristCoast);
+            if (wristCoast){
+                setWristToCoast();
+            } else {
+                setWristToBrake();
+            }
         }
     }
 
@@ -466,7 +481,8 @@ public class ShooterSubsystem extends SubsystemBase {
         if (elevatorSubsystem.getHeight() > 0.3) {
             shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(
                     distanceToMovingSpeakerTarget)
-                    + interpolationOffset);
+                    + interpolationOffset + 1.0
+                    );
         } else {
             shooterAngleToSpeaker = Math.toRadians(
                     interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget)

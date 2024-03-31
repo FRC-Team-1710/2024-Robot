@@ -40,9 +40,9 @@ public class ManRizzt extends Command {
         double speedValue = MathUtil.applyDeadband(speed.getAsDouble(), Constants.stickDeadband);
         speedValue = Math.pow(speedValue, 3);
 
-        if (setAngle.getAsBoolean()) {
-            m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
-        } else {
+        //if (setAngle.getAsBoolean()) {
+        //    m_shooterSubsystem.setWristByAngle(SmartDashboard.getNumber("Set Wrist Angle", 0));
+        //} else {
             if (Math.abs(speedValue) > .0) {
                 wristIsLocked = false;
                 m_shooterSubsystem.setWristSpeedManual(speedValue);
@@ -57,7 +57,7 @@ public class ManRizzt extends Command {
                     m_shooterSubsystem.setWristSpeedManual(0);
                 }
             }
-        }
+       // }
     }
 
     @Override

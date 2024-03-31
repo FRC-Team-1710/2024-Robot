@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -40,6 +39,9 @@ public class AimBotSetPosition extends Command {
         this.angle = angle;
         this.intexer = intexer;
         this.swerveSubsystem = swerve;
+
+        rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+
         addRequirements(shooterSubsystem, swerve);
     }
 
@@ -56,19 +58,8 @@ public class AimBotSetPosition extends Command {
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
-        double offset;
-        if (Robot.getAlliance()) {
-            if (pose.getRotation().getRadians() > 0) {
-                offset = -Math.toRadians(180);
-            } else {
-                offset = Math.toRadians(180);
-            }
-        } else {
-            offset = 0;
-        }
-
         double rotationVal = rotationPID.calculate(
-                pose.getRotation().getRadians() + offset,
+                pose.getRotation().getRadians(),
                 FiringSolutionsV3.getAngleToMovingTarget(
                         pose.getX(),
                         pose.getY(),

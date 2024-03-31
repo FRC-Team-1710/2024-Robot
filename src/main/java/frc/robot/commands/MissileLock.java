@@ -33,7 +33,7 @@ public class MissileLock extends Command {
         if (target == "amp") {
             if (shooter.outsideAllianceWing) {
                 shooter.PointShoot(
-                        Math.toRadians(55),
+                        Math.toRadians(58),
                         FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
             } else {
                 shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);

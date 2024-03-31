@@ -310,7 +310,7 @@ public class SwerveSubsystem extends SubsystemBase {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
             Pose2d estPose = estimatedPose.estimatedPose.toPose2d();
 
-            if (Math.abs(estPose.getTranslation().getDistance(getPose().getTranslation())) < 1){
+            if (distBetweenPoses(estPose, getPose()) < 1){
                 swerveOdomEstimator.setVisionMeasurementStdDevs(
                         vision.getEstimationStdDevsFront(estPose));
 
@@ -321,10 +321,10 @@ public class SwerveSubsystem extends SubsystemBase {
         Optional<EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
         if (OptionalEstimatedPoseBack.isPresent()) {
 
-            final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseFront.get();
+            final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseBack.get();
             Pose2d estPose2 = estimatedPose2.estimatedPose.toPose2d();
 
-            if (Math.abs(estPose2.getTranslation().getDistance(getPose().getTranslation())) < 1){
+            if (distBetweenPoses(estPose2, getPose()) < 1){
                 swerveOdomEstimator.setVisionMeasurementStdDevs(
                         vision.getEstimationStdDevsFront(estPose2));
 
@@ -366,6 +366,10 @@ public class SwerveSubsystem extends SubsystemBase {
                         getChassisSpeeds().vxMetersPerSecond,
                         getChassisSpeeds().vyMetersPerSecond,
                         getPose().getRotation().getRadians())));
+    }
+
+    public static double distBetweenPoses (Pose2d pose1, Pose2d pose2) {
+        return Math.abs(pose1.getTranslation().getDistance(pose2.getTranslation()));
     }
 
     public void sysidroutine(SysIdRoutineLog log) {
@@ -426,15 +430,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Command pathToAmp() {
-        if (!Robot.getAlliance()) {
-            return AutoBuilder.pathfindToPose(
-                    new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(90)),
-                    Constants.Auto.PathfindingConstraints);
-        } else {
-            return AutoBuilder.pathfindToPoseFlipped(
-                    new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(90)),
-                    Constants.Auto.PathfindingConstraints);
-        }
+        return AutoBuilder.pathfindToPoseFlipped(
+            new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(270)),
+            Constants.Auto.PathfindingConstraints);
     }
 
     public Command pathToMidfieldChain() {

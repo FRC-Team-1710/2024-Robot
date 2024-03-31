@@ -25,6 +25,7 @@ public class AimBot extends Command {
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
     private double speed;
     private Timer timer = new Timer();
+    private Timer cryAboutIt = new Timer();
     private boolean shootAnyway;
 
     /** Creates a new AimBot. */
@@ -46,6 +47,8 @@ public class AimBot extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        cryAboutIt.reset();
+        cryAboutIt.start();
         shooter.setShooterVelocity(speed);
         shootAnyway = !intexer.shooterBreak();
     }
@@ -73,7 +76,7 @@ public class AimBot extends Command {
                 true,
                 false);
 
-        if ((shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .035)) {
+        if ((shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .01710) && cryAboutIt.get() > 0.1710) { // real^2
             timer.reset();
             timer.start();
             intexer.setShooterIntake(.9);

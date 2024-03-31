@@ -125,12 +125,13 @@ public class RobotContainer {
         // Named commands for PathPlanner autos
         NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem, m_ShooterSubsystem));
         NamedCommands.registerCommand("Shoot", new AimBot(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity())));
+        NamedCommands.registerCommand("Subwoofer Shoot", new AimBotSetPosition(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()), Math.toRadians(62)));
         NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()))));
         NamedCommands.registerCommand("Set Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
         NamedCommands.registerCommand("Stop Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
-        NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
-        NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
+        NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem).andThen(new ResetNoteInShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, FF)));
+        NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem).andThen(new ResetNoteInShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, FF)));
         NamedCommands.registerCommand("Fire Under Stage", new InstantCommand(() -> m_ShooterSubsystem.setWristByAngle(Math.toRadians(10))));
         NamedCommands.registerCommand("Force Shoot", new FIREEFORACERTAINAMOUNTOFTIME(m_ShooterSubsystem, m_IntexerSubsystem, .2));
         // spotless:on
@@ -214,6 +215,7 @@ public class RobotContainer {
 
         // Move to Center Stage
         driverUp.whileTrue(m_SwerveSubsystem.pathToMidfieldChain());
+        driverDown.whileTrue(m_SwerveSubsystem.pathToAmp());
 
         // Move to Source
         // driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
@@ -279,9 +281,9 @@ public class RobotContainer {
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.ampHeight));
 
         // Subwoofer Preset
-        /*shooterToSubwoofer
-                .onTrue(new RizzLevel(m_ShooterSubsystem, Math.toRadians(57)))
-                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));*/
+        shooterToSubwoofer
+                .onTrue(new RizzLevel(m_ShooterSubsystem, Math.toRadians(60)))
+                .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
 
         // Anti-Defense Preset
         shooterToAntiDefense.onTrue(new ElevatorSet(
@@ -334,7 +336,7 @@ public class RobotContainer {
     }
 
     public void zeroWristEncoders() {
-        m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetBottom);
+        m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetTop);
     }
 
     /**

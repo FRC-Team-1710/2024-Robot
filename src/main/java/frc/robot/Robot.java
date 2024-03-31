@@ -102,7 +102,7 @@ public class Robot extends TimedRobot {
             if (DriverStation.getMatchType() == MatchType.None){
                 DataLogManager.start("/media/sda1/logs/", DateTimeFormatter.ofPattern("yyyy-MM-dd__HH-mm-ss").format(LocalDateTime.now()) + ".wpilog");
             } else {
-                DataLogManager.start("/media/sda1/logs/", DriverStation.getEventName() + " " + DriverStation.getMatchType().toString() + " " + DriverStation.getMatchNumber());
+                DataLogManager.start("/media/sda1/logs/", DriverStation.getEventName() + " " + DriverStation.getMatchType().toString() + " " + DriverStation.getMatchNumber() + ".wpilog");
             }
 
             // Record both DS control and joystick data
