@@ -32,6 +32,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Reset Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -48,9 +54,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "GA pt3"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "GA pt3"
+                }
+              }
+            ]
           }
         },
         {
@@ -72,9 +91,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "GA pt5"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "GA pt5"
+                }
+              }
+            ]
           }
         },
         {

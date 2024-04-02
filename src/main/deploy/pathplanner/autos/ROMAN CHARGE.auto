@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "RC 2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RC 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              }
+            ]
           }
         },
         {
@@ -51,6 +64,12 @@
           "type": "named",
           "data": {
             "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Reset Note"
           }
         },
         {
@@ -87,6 +106,12 @@
           "type": "named",
           "data": {
             "name": "Note Sniffer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Reset Note"
           }
         }
       ]

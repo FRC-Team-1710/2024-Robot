@@ -30,7 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // Falcon stuff
     private final PositionDutyCycle lockPosition = new PositionDutyCycle(0);
-    private final PIDController elevatorPID = new PIDController(0, 0, 0);
+    private final PIDController elevatorPID = new PIDController(3, 1, 0);
 
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
@@ -65,10 +65,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorRight.getConfigurator().apply(elevatorConfigs);
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
 
-        // laser can pid shenanigans
-        elevatorPID.setP(3);
-        elevatorPID.setI(0.5);
-        elevatorPID.setD(0);
         elevatorPID.setTolerance(0.02);
 
         try {

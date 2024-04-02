@@ -159,6 +159,7 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Velo D", velocityD);
 
         SmartDashboard.putNumber("Top Bottom Offset", 400);
+        SmartDashboard.putBoolean("Wrist Coast", wristCoast);
     }
 
     @Override

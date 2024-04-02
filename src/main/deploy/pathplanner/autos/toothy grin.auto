@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "TG 2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TG 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              }
+            ]
           }
         },
         {
@@ -57,6 +70,12 @@
           "type": "named",
           "data": {
             "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Reset Note"
           }
         }
       ]

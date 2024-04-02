@@ -76,7 +76,7 @@ public class AimBot extends Command {
                 true,
                 false);
 
-        if ((shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .01710) && cryAboutIt.get() > 0.1710) { // real^2
+        if ((shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .01710) && cryAboutIt.get() > 0.5) { // real
             timer.reset();
             timer.start();
             intexer.setShooterIntake(.9);

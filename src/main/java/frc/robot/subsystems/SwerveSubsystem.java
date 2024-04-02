@@ -326,7 +326,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
             if (distBetweenPoses(estPose2, getPose()) < 1){
                 swerveOdomEstimator.setVisionMeasurementStdDevs(
-                        vision.getEstimationStdDevsFront(estPose2));
+                        vision.getEstimationStdDevsBack(estPose2));
 
                 swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
             }

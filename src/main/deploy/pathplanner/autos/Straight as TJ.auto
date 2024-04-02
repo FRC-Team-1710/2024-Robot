@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "TJ 2"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TJ 2"
+                }
+              }
+            ]
           }
         },
         {
@@ -54,9 +67,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "TJ 4"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TJ 4"
+                }
+              }
+            ]
           }
         },
         {

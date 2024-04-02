@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.0515367634060695,
-        "y": 2.4374395542140253
+        "x": 7.217282653092623,
+        "y": 4.07539893464585
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.667071096612504,
-        "y": 1.462463732528416
+        "x": 5.686570613046214,
+        "y": 4.02665014356157
       },
       "isLocked": false,
       "linkedName": "TJ Note 2"
     },
     {
       "anchor": {
-        "x": 2.527648950784839,
-        "y": 3.3344173101647874
+        "x": 5.004087537866289,
+        "y": 4.192396033248124
       },
       "prevControl": {
-        "x": 5.189332943986553,
-        "y": 1.6672086550823937
+        "x": 5.255369633445991,
+        "y": 4.002402253663471
+      },
+      "nextControl": {
+        "x": 4.6043474509751885,
+        "y": 4.494638537970663
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.590372596422153,
+        "y": 5.023075433324264
+      },
+      "prevControl": {
+        "x": 4.292355188035793,
+        "y": 5.030875239897749
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TJ Shoot pos"
+      "linkedName": "TJ Shoot"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +49,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -48,5 +64,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

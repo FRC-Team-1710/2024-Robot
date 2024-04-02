@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.802268146103989,
-        "y": 0.7702308991316326
+        "x": 7.05,
+        "y": 2.45
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.242306831407013,
-        "y": 1.3162173592755742
+        "x": 7.05,
+        "y": 3.929153359701849
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.527648950784839,
-        "y": 3.3344173101647874
+        "x": 3.590372596422153,
+        "y": 5.023075433324264
       },
       "prevControl": {
-        "x": 3.3368788827838953,
-        "y": 2.856679157538838
+        "x": 4.1363590565660955,
+        "y": 4.884628866644907
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TJ Shoot pos"
+      "linkedName": "TJ Shoot"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -60,5 +60,5 @@
     "rotation": 0.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

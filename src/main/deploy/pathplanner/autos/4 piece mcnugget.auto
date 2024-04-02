@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "3N Top Shoot 1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3N Top Shoot 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              }
+            ]
           }
         },
         {
@@ -48,9 +61,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "3N Top Shoot 2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3N Top Shoot 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              }
+            ]
           }
         },
         {
@@ -72,9 +98,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "3N Top Shoot 3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3N Top Shoot 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              }
+            ]
           }
         },
         {

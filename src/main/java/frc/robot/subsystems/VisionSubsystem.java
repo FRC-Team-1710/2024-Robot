@@ -55,6 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
     private double lastEstTimestampBack = 0;
 
     private final double maxAcceptableRange = 4;
+    private final double maxAcceptableAmbiguity = 0.6;
 
     public VisionSubsystem() {
         aprilTagCameraFront = new PhotonCamera(Constants.Vision.kAprilTagCameraFront);
@@ -138,7 +139,9 @@ public class VisionSubsystem extends SubsystemBase {
         var targets = getLatestResultATF().getTargets();
         int numTags = 0;
         double avgDist = 0;
+        double lowestAmbiguity = 1;
         for (var tgt : targets) {
+            if (tgt.getPoseAmbiguity() < lowestAmbiguity) lowestAmbiguity = tgt.getPoseAmbiguity();
             var tagPose = photonEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
             if (tagPose.isEmpty()) continue;
             numTags++;
@@ -148,12 +151,11 @@ public class VisionSubsystem extends SubsystemBase {
                     .getDistance(estimatedPose.getTranslation());
         }
         if (numTags == 0) return estStdDevs;
-        avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
         // if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (avgDist > maxAcceptableRange)
+        if (avgDist > maxAcceptableRange || lowestAmbiguity >= maxAcceptableAmbiguity)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
 
@@ -165,24 +167,38 @@ public class VisionSubsystem extends SubsystemBase {
         var targets = getLatestResultATB().getTargets();
         int numTags = 0;
         double avgDist = 0;
+        double lowestAmbiguity = 1;
+
         for (var tgt : targets) {
+            if (tgt.getPoseAmbiguity() < lowestAmbiguity) {
+                lowestAmbiguity = tgt.getPoseAmbiguity();
+            }
+
             var tagPose = photonEstimatorBack.getFieldTags().getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty()) continue;
+
+            if (tagPose.isEmpty()) {
+                continue;
+            }
+
             numTags++;
+
             avgDist += tagPose.get()
                     .toPose2d()
                     .getTranslation()
                     .getDistance(estimatedPose.getTranslation());
         }
-        if (numTags == 0) return estStdDevs;
-        avgDist /= numTags;
+        if (numTags == 0) {
+            return estStdDevs;
+        }
         // Decrease std devs if multiple targets are visible
         // if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (avgDist > maxAcceptableRange)
+        if (avgDist > maxAcceptableRange || lowestAmbiguity >= maxAcceptableAmbiguity) {
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+        } else {
+            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+        }
 
         return estStdDevs;
     }
