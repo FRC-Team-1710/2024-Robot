@@ -233,6 +233,14 @@ public class SwerveSubsystem extends SubsystemBase {
         return positions;
     }
 
+    public double[] getModulePositionsRadians() {
+        double[] positionsRad = new double[4];
+        for (SwerveModule mod : mSwerveMods) {
+            positionsRad[mod.moduleNumber] = mod.getPositionRadians();
+        }
+        return positionsRad;
+    }
+
     public Pose2d getPose() {
         return swerveOdomEstimator.getEstimatedPosition();
     }

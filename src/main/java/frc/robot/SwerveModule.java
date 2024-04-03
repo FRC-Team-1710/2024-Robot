@@ -96,6 +96,10 @@ public class SwerveModule {
                 Rotation2d.fromRotations(mAngleMotor.getPosition().getValue()));
     }
 
+    public double getPositionRadians() {
+      return (mDriveMotor.getPosition().getValue()) * 2 * Math.PI;
+    }
+
     /**
      * Drive robot based on provided voltage value
      * <p>
