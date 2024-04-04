@@ -18,6 +18,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -44,6 +47,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public boolean manualOverride = false;
     public boolean locked = false;
+
+    //Simulation
+    private final ElevatorSim m_elevatorSim = 
+        new ElevatorSim(null, revolutionCount, gearRatio, currentHeight, setHeight, setHeight, locked, setHeight, null);
+    private final EncoderSim m_elevatorEncoderSim = new EncoderSim(new Encoder(1, 1));
 
     public ElevatorSubsystem() {
         m_elevatorLeft = new TalonFX(20); // left leader

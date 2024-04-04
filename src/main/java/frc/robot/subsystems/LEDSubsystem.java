@@ -40,7 +40,7 @@ public class LEDSubsystem extends SubsystemBase {
         false, // At Speed -8 Magenta BLink (NoNote)
         false, // Note in Intake -9 Orange Blink
         false, // Note in Shooter -10 Orange Solid
-        false, // Alliance Color -11 Red Pulse
+        false, // Alliance Color -11 Red Pulse 
         false // Alliance Color -12 Blue Pulse
     };
 
