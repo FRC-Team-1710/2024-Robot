@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.nio.file.Path;
-
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,7 +19,8 @@ public class LEDSubsystem extends SubsystemBase {
     public DigitalOutput SkylerBright = new DigitalOutput(6); // Bit 4 (8)
 
     // Output bits to the LEDs
-    public DigitalOutput[] bits = {WalterLight, JesseBlinkman, GusBling, SkylerBright}; // Actual Outputs
+    public DigitalOutput[] bits = {WalterLight, JesseBlinkman, GusBling, SkylerBright
+    }; // Actual Outputs
     private boolean[] output = new boolean[4]; // Computed Outputs
 
     // Booleans used for Easy input
@@ -30,20 +29,23 @@ public class LEDSubsystem extends SubsystemBase {
     private Boolean atSpeed = false;
 
     public Boolean[] inputBooleans = {
-        false, // Disconnected -0 Loading Bounce 
+        false, // Disconnected -0 Loading Bounce
         false, // Pathfinding -1 Rainbow Pattern #1
         false, // Climb -2 Rainbow Pattern #2
         false, // Blank -3 None
         false, // Note Detected -4 White Solid
         false, // Charging -5 Green Pulse (HasNote)
         false, // At Speed -6 Green BLink (HasNote)
-        false, // Charging -7 Magenta Pulse (NoNote)  
+        false, // Charging -7 Magenta Pulse (NoNote)
         false, // At Speed -8 Magenta BLink (NoNote)
         false, // Note in Intake -9 Orange Blink
         false, // Note in Shooter -10 Orange Solid
         false, // Alliance Color -11 Red Pulse
-        false  // Alliance Color -12 Blue Pulse
+        false // Alliance Color -12 Blue Pulse
     };
+
+    public int[] priorities = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+    }; // 'priorities' values are the indexes of the list inputBooleans; Priority: Left to Right
 
     // Use subsystems
     VisionSubsystem vision;
@@ -52,7 +54,11 @@ public class LEDSubsystem extends SubsystemBase {
     SwerveSubsystem swerve;
 
     /** Creates a new LEDSubsystem. */
-    public LEDSubsystem(VisionSubsystem m_VisionSubsystem, ShooterSubsystem m_ShooterSubsystem, IntexerSubsystem m_IntexerSubsystem, SwerveSubsystem m_SwerveSubsystem) {
+    public LEDSubsystem(
+            VisionSubsystem m_VisionSubsystem,
+            ShooterSubsystem m_ShooterSubsystem,
+            IntexerSubsystem m_IntexerSubsystem,
+            SwerveSubsystem m_SwerveSubsystem) {
         this.vision = m_VisionSubsystem;
         this.shooter = m_ShooterSubsystem;
         this.intexer = m_IntexerSubsystem;
@@ -113,7 +119,8 @@ public class LEDSubsystem extends SubsystemBase {
             hasNote = false;
         }
 
-        // Charging or At Speed with Note or without Note !Boolean References See Above(inputBooleans)!
+        // Charging or At Speed with Note or without Note !Boolean References See
+        // Above(inputBooleans)!
         if (hasNote) { // Has Note
             if (shooter.isShooterAtSpeed()) { // At speed
                 inputBooleans[5] = false;
@@ -151,9 +158,11 @@ public class LEDSubsystem extends SubsystemBase {
 
         int trueIndex = 0; // Index of selected LED sequence
 
-        for (int i = 0; i < inputBooleans.length; i++) { // Picks the first true sequence based on priority
-            if (inputBooleans[i]) {
-                trueIndex = i;
+        for (int i = 0;
+                i < priorities.length;
+                i++) { // Picks the first true sequence based on priority
+            if (inputBooleans[priorities[i]]) {
+                trueIndex = priorities[i];
                 break;
             }
         }
@@ -229,7 +238,7 @@ public class LEDSubsystem extends SubsystemBase {
     public void BlueAlliance(boolean blueAlliance) {
         inputBooleans[12] = blueAlliance;
     }
-    
+
     public void RedAlliance(boolean redAlliance) {
         inputBooleans[13] = redAlliance;
     }
