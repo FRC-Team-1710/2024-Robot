@@ -82,7 +82,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private double interpolationOffset = -2.5;
 
-
     private Joystick controller;
 
     // Constants

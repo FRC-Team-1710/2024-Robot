@@ -67,6 +67,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDriveOdometry encoderOdometry;
     private SwerveModuleState[] swerveModuleStates;
     private SwerveModulePosition[] swerveModulePositions;
+    public static boolean visionFilterEnable = false;
 
     // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -310,10 +311,17 @@ public class SwerveSubsystem extends SubsystemBase {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
             Pose2d estPose = estimatedPose.estimatedPose.toPose2d();
 
-            if (distBetweenPoses(estPose, getPose()) < 1){
+            if (visionFilterEnable){
+                if (distBetweenPoses(estPose, getPose()) < 2){
+                    swerveOdomEstimator.setVisionMeasurementStdDevs(
+                            vision.getEstimationStdDevsFront(estPose));
+    
+                    swerveOdomEstimator.addVisionMeasurement(estPose, Timer.getFPGATimestamp());
+                }
+            } else {
                 swerveOdomEstimator.setVisionMeasurementStdDevs(
                         vision.getEstimationStdDevsFront(estPose));
-
+    
                 swerveOdomEstimator.addVisionMeasurement(estPose, Timer.getFPGATimestamp());
             }
         }
@@ -324,10 +332,17 @@ public class SwerveSubsystem extends SubsystemBase {
             final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseBack.get();
             Pose2d estPose2 = estimatedPose2.estimatedPose.toPose2d();
 
-            if (distBetweenPoses(estPose2, getPose()) < 1){
+            if (visionFilterEnable){
+                if (distBetweenPoses(estPose2, getPose()) < 2){
+                    swerveOdomEstimator.setVisionMeasurementStdDevs(
+                            vision.getEstimationStdDevsBack(estPose2));
+    
+                    swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
+                }
+            } else {
                 swerveOdomEstimator.setVisionMeasurementStdDevs(
                         vision.getEstimationStdDevsBack(estPose2));
-
+    
                 swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
             }
         }

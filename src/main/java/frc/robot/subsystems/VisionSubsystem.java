@@ -54,7 +54,8 @@ public class VisionSubsystem extends SubsystemBase {
     private double lastTimeStampFront = 0;
     private double lastEstTimestampBack = 0;
 
-    private final double maxAcceptableRange = 4;
+    private final double maxAcceptableRangeFront = 3.5;
+    private final double maxAcceptableRangeBack = 4.5;
     private final double maxAcceptableAmbiguity = 0.6;
 
     public VisionSubsystem() {
@@ -155,7 +156,7 @@ public class VisionSubsystem extends SubsystemBase {
         // if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (avgDist > maxAcceptableRange || lowestAmbiguity >= maxAcceptableAmbiguity)
+        if (avgDist > maxAcceptableRangeFront || lowestAmbiguity >= maxAcceptableAmbiguity)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
 
@@ -194,7 +195,7 @@ public class VisionSubsystem extends SubsystemBase {
         // if (numTags > 1)
         //    estStdDevs = Constants.Vision.kMultiTagStdDevs;
         // Increase std devs based on (average) distance
-        if (avgDist > maxAcceptableRange || lowestAmbiguity >= maxAcceptableAmbiguity) {
+        if (avgDist > maxAcceptableRangeBack || lowestAmbiguity >= maxAcceptableAmbiguity) {
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
             estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));

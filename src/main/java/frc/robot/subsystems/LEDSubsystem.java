@@ -94,6 +94,12 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[12] = true;
         }
 
+        if (DriverStation.getMatchTime() <= 30 && DriverStation.getMatchTime() > 27){
+            inputBooleans[4] = true;
+        } else {
+            inputBooleans[4] = false;
+        }
+
         // HasNote for ChargingOuttake and AtSpeed
         if (hasNote) { // Converts from simple inputs to boolean
             if (chargingOuttake) {

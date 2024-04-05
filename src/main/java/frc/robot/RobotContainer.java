@@ -125,7 +125,7 @@ public class RobotContainer {
         // Named commands for PathPlanner autos
         NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem, m_ShooterSubsystem));
         NamedCommands.registerCommand("Shoot", new AimBot(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity())));
-        NamedCommands.registerCommand("Subwoofer Shoot", new AimBotSetPosition(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()), Math.toRadians(62)));
+        NamedCommands.registerCommand("Subwoofer Shoot", new AimBotSetPosition(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()), Math.toRadians(60)));
         NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()))));
         NamedCommands.registerCommand("Set Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
