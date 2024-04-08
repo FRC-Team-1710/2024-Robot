@@ -26,6 +26,7 @@ public class AimBotSetPosition extends Command {
     private double speed;
     private double angle;
     private Timer timer = new Timer();
+    private Timer straightenTheTie = new Timer();
 
     /** Creates a new AimBot. */
     public AimBotSetPosition(
@@ -48,6 +49,8 @@ public class AimBotSetPosition extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        straightenTheTie.reset();
+        straightenTheTie.start();
         shooter.setShooterVelocity(speed);
         shooter.setWristByAngle(angle);
     }
@@ -78,7 +81,7 @@ public class AimBotSetPosition extends Command {
         if (shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .035) {
             timer.reset();
             timer.start();
-            intexer.setShooterIntake(.9);
+            intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
         }
     }
 
@@ -93,6 +96,6 @@ public class AimBotSetPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !intexer.shooterBreak() && timer.get() > .2;
+        return (!intexer.shooterBreak() && timer.get() > .2) || straightenTheTie.get() > 3;
     }
 }

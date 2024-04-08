@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-
+import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -28,7 +28,7 @@ public class FIREEE extends Command {
     @Override
     public void execute() {
         if (shooter.isShooterAtSpeed()) {
-            intexer.setShooterIntake(.9);
+            intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
         }
     }
 

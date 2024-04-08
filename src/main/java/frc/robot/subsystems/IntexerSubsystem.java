@@ -4,6 +4,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -19,6 +24,7 @@ public class IntexerSubsystem extends SubsystemBase {
     private CANSparkBase left;
     private CANSparkBase right;
     private CANSparkBase shooterIntake;
+    //private TalonFX shooterIntake;
     public boolean intakeThroughShooterPart2isReady = false;
     public boolean resetNoteInShooterPart2isReady = false;
 
@@ -31,6 +37,13 @@ public class IntexerSubsystem extends SubsystemBase {
         left = new CANSparkMax(30, MotorType.kBrushless);
         right = new CANSparkMax(31, MotorType.kBrushless);
         shooterIntake = new CANSparkMax(10, MotorType.kBrushless);
+
+        // Me when we switch to Falcon mid comp then switch back
+        //shooterIntake = new TalonFX(32);
+        //TalonFXConfiguration configs = new TalonFXConfiguration();
+        //configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        //configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        //shooterIntake.getConfigurator().apply(configs);
 
         beamKamen = new DigitalInput(1);
         breakingBeam = new DigitalInput(2);

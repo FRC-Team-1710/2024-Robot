@@ -79,7 +79,7 @@ public class AimBot extends Command {
         if ((shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .01710) && cryAboutIt.get() > 0.5) { // real
             timer.reset();
             timer.start();
-            intexer.setShooterIntake(.9);
+            intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
         }
 
         shooter.setWristByAngle(shooter.getCalculatedAngleToSpeaker());
@@ -96,6 +96,6 @@ public class AimBot extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !intexer.shooterBreak() && timer.get() > .2;
+        return (!intexer.shooterBreak() && timer.get() > .2) || cryAboutIt.get() > 3;
     }
 }

@@ -203,6 +203,7 @@ public final class Constants {
         public static final double angleOffsetBottom = Units.degreesToRadians(-9);
         public static final double angleOffsetTop = Units.degreesToRadians(64.8);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
+        public static final double shooterOutakeSpeed = 0.95;
     }
 
     public static final class Elevator {

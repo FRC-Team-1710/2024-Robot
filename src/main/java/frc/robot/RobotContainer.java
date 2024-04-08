@@ -211,7 +211,7 @@ public class RobotContainer {
 
         // Shooter intake
         forceShoot
-                .whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
+                .whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(Constants.Shooter.shooterOutakeSpeed)))
                 .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
         // Move to Center Stage

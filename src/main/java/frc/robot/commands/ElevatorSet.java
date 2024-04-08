@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -12,6 +13,7 @@ public class ElevatorSet extends Command {
     private ElevatorSubsystem m_elevator;
     double m_position;
     double setpoint;
+    Timer timer = new Timer();
 
     public ElevatorSet(ElevatorSubsystem elevator, double position) {
         addRequirements(elevator);
@@ -22,6 +24,8 @@ public class ElevatorSet extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        timer.reset();
+        timer.start();
         // m_elevator.setManualOverride(true);
     }
 
@@ -38,6 +42,6 @@ public class ElevatorSet extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return m_elevator.atHeight();
+        return m_elevator.atHeight() || timer.get() > 3;
     }
 }
