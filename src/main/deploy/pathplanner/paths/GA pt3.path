@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.527648950784839,
-        "y": 6.990576641485824
+        "x": 2.8880452759857747,
+        "y": 6.998613309676781
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2571145665495758,
-        "y": 6.419669800176037
+        "x": 2.509754657171758,
+        "y": 6.440927139672612
       },
       "isLocked": false,
       "linkedName": null
@@ -17,29 +17,29 @@
     {
       "anchor": {
         "x": 1.9134141831229043,
-        "y": 5.606110974692258
+        "y": 5.55
       },
       "prevControl": {
-        "x": 2.163516887667757,
-        "y": 6.220774732552172
+        "x": 2.3108595895478934,
+        "y": 6.107923031621642
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "GA pt3 stop"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 4.25,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
@@ -48,5 +48,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

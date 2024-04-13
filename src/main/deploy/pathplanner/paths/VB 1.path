@@ -3,37 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9134141831229043,
-        "y": 4.849529737064226
+        "x": 0.7613559981453162,
+        "y": 6.683123249839514
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9134141831229043,
-        "y": 4.599529737064226
+        "x": 1.3025411669427491,
+        "y": 8.347340367007131
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.9134141831229043,
-        "y": 4.124147725730131
+        "x": 6.749294258682874,
+        "y": 7.3903167283802045
       },
       "prevControl": {
-        "x": 1.9134141831229043,
-        "y": 4.374147725730131
+        "x": 5.705721901664482,
+        "y": 7.409813469089796
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "VB top note 1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.25,
-    "maxAcceleration": 4.5,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,10 +49,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Greedy Autos",
+  "folder": "(auto) von bismarck",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 60.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

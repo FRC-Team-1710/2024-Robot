@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -204,9 +204,9 @@ public class RobotContainer {
                                 : Constants.Vision.startingPoseBlue))));
 
         // Intexer
-        intex.or(intakeNoMove).whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
-        // .onFalse(new ResetNoteInShooterPart2(
-        //        m_ShooterSubsystem, m_IntexerSubsystem, driver));
+        intex.or(intakeNoMove).whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver))
+         .onFalse(new ResetNoteInShooterPart2(
+                m_ShooterSubsystem, m_IntexerSubsystem, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
 
         // Shooter intake
@@ -278,7 +278,7 @@ public class RobotContainer {
 
         // Amp Preset
         shooterToAmp
-                .onTrue(new RizzLevel(m_ShooterSubsystem, -0.48))
+                .onTrue(new RizzLevel(m_ShooterSubsystem, -0.47))
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.ampHeight));
 
         // Subwoofer Preset
@@ -321,12 +321,12 @@ public class RobotContainer {
 
         /* THIRD CONTROLLER */
         // Characterization tests
-        /*
+        
         dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
         quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
         quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
-        */
+        
     }
 
     public void stopAll() {

@@ -55,7 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
     private double lastEstTimestampBack = 0;
 
     private final double maxAcceptableRangeFront = 3.5;
-    private final double maxAcceptableRangeBack = 4.5;
+    private final double maxAcceptableRangeBack = 5;
     private final double maxAcceptableAmbiguity = 0.6;
 
     public VisionSubsystem() {

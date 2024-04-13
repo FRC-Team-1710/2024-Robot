@@ -137,10 +137,12 @@ public final class Constants {
         public static final double driveKS = 0.072013;
         public static final double driveKV = 2.3106;
         public static final double driveKA = 0.27696;
-
+// 0.084111;
+// 2.5;
+// 0.35;
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.25;
+        public static final double maxSpeed = 4.5;
         /** Radians per Second */
         public static final double maxAngularVelocity =
                 10.0; // TODO: This must be tuned to specific robot
@@ -203,7 +205,7 @@ public final class Constants {
         public static final double angleOffsetBottom = Units.degreesToRadians(-9);
         public static final double angleOffsetTop = Units.degreesToRadians(64.8);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
-        public static final double shooterOutakeSpeed = 0.95;
+        public static final double shooterOutakeSpeed = 0.9;
     }
 
     public static final class Elevator {

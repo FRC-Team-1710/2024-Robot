@@ -184,7 +184,7 @@ public class TeleopSwerve extends Command {
         // impeccable logic
         if (rotationSup.getAsDouble() > Constants.stickDeadband){
             noteInside = false;
-        }else if (intexerSubsystem.intakeBreak()){
+        } else if (intexerSubsystem.intakeBreak()){
             noteInside = true;
         } else if (intexerSubsystem.shooterBreak()) {
             noteInside = false;

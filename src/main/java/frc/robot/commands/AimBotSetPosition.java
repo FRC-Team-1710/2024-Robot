@@ -96,6 +96,6 @@ public class AimBotSetPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (!intexer.shooterBreak() && timer.get() > .2) || straightenTheTie.get() > 3;
+        return (!intexer.shooterBreak() && timer.get() > .2) || straightenTheTie.get() > 4;
     }
 }

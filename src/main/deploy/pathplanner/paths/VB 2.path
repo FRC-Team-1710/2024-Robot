@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9134141831229043,
-        "y": 4.849529737064226
+        "x": 6.749294258682874,
+        "y": 7.3903167283802045
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9134141831229043,
-        "y": 4.599529737064226
+        "x": 6.282777308958789,
+        "y": 7.2104224938418655
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "VB top note 1"
     },
     {
       "anchor": {
-        "x": 1.9134141831229043,
-        "y": 4.124147725730131
+        "x": 3.59,
+        "y": 6.2
       },
       "prevControl": {
-        "x": 1.9134141831229043,
-        "y": 4.374147725730131
+        "x": 4.053765537441665,
+        "y": 6.386873021812792
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "VB Shoot point"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.25,
-    "maxAcceleration": 4.5,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,10 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Greedy Autos",
+  "folder": "(auto) von bismarck",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

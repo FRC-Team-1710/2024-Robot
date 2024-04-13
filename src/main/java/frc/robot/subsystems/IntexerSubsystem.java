@@ -36,7 +36,7 @@ public class IntexerSubsystem extends SubsystemBase {
     public IntexerSubsystem() {
         left = new CANSparkMax(30, MotorType.kBrushless);
         right = new CANSparkMax(31, MotorType.kBrushless);
-        shooterIntake = new CANSparkMax(10, MotorType.kBrushless);
+        shooterIntake = new CANSparkMax(11, MotorType.kBrushless);
 
         // Me when we switch to Falcon mid comp then switch back
         //shooterIntake = new TalonFX(32);

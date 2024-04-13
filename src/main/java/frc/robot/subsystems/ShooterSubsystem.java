@@ -102,8 +102,8 @@ public class ShooterSubsystem extends SubsystemBase {
         this.controller = controller;
 
         m_Wrist = new CANSparkMax(13, MotorType.kBrushless);
-        shootaTop = new CANSparkMax(11, MotorType.kBrushless); // leader
-        shootaBot = new CANSparkMax(12, MotorType.kBrushless);
+        shootaTop = new CANSparkMax(12, MotorType.kBrushless); // leader
+        shootaBot = new CANSparkMax(10, MotorType.kBrushless);
 
         // Encoders
         m_VelocityEncoder = shootaTop.getEncoder();

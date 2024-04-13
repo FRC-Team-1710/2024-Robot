@@ -80,6 +80,8 @@ public class AimBot extends Command {
             timer.reset();
             timer.start();
             intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
+        } else if (cryAboutIt.get() >= 2) {
+            intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
         }
 
         shooter.setWristByAngle(shooter.getCalculatedAngleToSpeaker());
