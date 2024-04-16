@@ -78,7 +78,7 @@ public class AimBotSetPosition extends Command {
                 true,
                 false);
 
-        if (shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .035) {
+        if (shooter.isShooterAtSpeed()) {
             timer.reset();
             timer.start();
             intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
@@ -96,6 +96,6 @@ public class AimBotSetPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (!intexer.shooterBreak() && timer.get() > .2) || straightenTheTie.get() > 4;
+        return (!intexer.shooterBreak() && timer.get() > .2) || straightenTheTie.get() > 3;
     }
 }
