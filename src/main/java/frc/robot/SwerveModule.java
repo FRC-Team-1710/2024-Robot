@@ -11,7 +11,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
 
@@ -51,6 +51,14 @@ public class SwerveModule {
         mDriveMotor = new TalonFX(moduleConstants.driveMotorID, Constants.Swerve.canivore);
         mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
+    }
+
+    public TalonFX getAngleMotor(){
+        return mAngleMotor;
+    }
+
+    public TalonFX getDriveMotor(){
+        return mDriveMotor;
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {

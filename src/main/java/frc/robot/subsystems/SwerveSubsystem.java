@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -34,6 +35,7 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,6 +54,7 @@ import frc.robot.SwerveModule;
 
 import org.photonvision.EstimatedRobotPose;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
@@ -89,8 +92,23 @@ public class SwerveSubsystem extends SubsystemBase {
     private StructPublisher<Pose2d> posePublisher2;
     private StructArrayPublisher<SwerveModuleState> swervePublisher;
 
+    public Timer timer = new Timer();
+    
+    public Orchestra m_orchestra = new Orchestra();
+
     // Constructor
     public SwerveSubsystem(VisionSubsystem vision) {
+       
+
+        // Attempt to load the chrp
+        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory().toPath().resolve(
+        "orchestra" + File.separator + "dangerzone.chrp").toString());
+
+        if (!status.isOK()) {
+           //DataLogManager.log()
+        }
+
+
         // Gyro setup
         gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.canivore);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -103,6 +121,22 @@ public class SwerveSubsystem extends SubsystemBase {
             new SwerveModule(2, Constants.Swerve.Mod2.constants),
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
+
+         // Add a single device to the orchestra
+        m_orchestra.addInstrument(mSwerveMods[0].getAngleMotor(), 0);
+        m_orchestra.addInstrument(mSwerveMods[1].getAngleMotor(), 1);
+        m_orchestra.addInstrument(mSwerveMods[2].getAngleMotor(), 2);
+        m_orchestra.addInstrument(mSwerveMods[3].getAngleMotor(), 0);
+        m_orchestra.addInstrument(mSwerveMods[0].getDriveMotor(), 0);
+        m_orchestra.addInstrument(mSwerveMods[1].getDriveMotor(), 1);
+        m_orchestra.addInstrument(mSwerveMods[2].getDriveMotor(), 2);
+        m_orchestra.addInstrument(mSwerveMods[3].getDriveMotor(), 0);
+
+        
+        m_orchestra.play();
+        timer.reset();
+        timer.start();
+        
 
         swerveModuleStates = new SwerveModuleState[] {
             new SwerveModuleState(),
@@ -299,6 +333,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (timer.get() > 10){
+            if (m_orchestra.isPlaying()){
+                m_orchestra.stop();
+            }
+            m_orchestra.close();
+            timer.stop();
+            timer.reset();
+        }
+
         updateModuleStates();
         swerveModulePositions = getModulePositions();
         Rotation2d gyroYaw = getGyroYaw();

@@ -66,5 +66,8 @@ public final class CTREConfigs {
                 Constants.Swerve.closedLoopRamp;
         swerveDriveFXConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod =
                 Constants.Swerve.closedLoopRamp;
+
+        swerveAngleFXConfig.Audio.AllowMusicDurDisable = true;
+        swerveDriveFXConfig.Audio.AllowMusicDurDisable = true;
     }
 }

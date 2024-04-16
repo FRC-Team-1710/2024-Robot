@@ -278,7 +278,7 @@ public class RobotContainer {
 
         // Amp Preset
         shooterToAmp
-                .onTrue(new RizzLevel(m_ShooterSubsystem, -0.47))
+                .onTrue(new RizzLevel(m_ShooterSubsystem, -0.4))
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.ampHeight));
 
         // Subwoofer Preset
