@@ -160,7 +160,7 @@ public class RobotContainer {
                 () -> -mech.getRawAxis(rightVerticalAxis),
                 () -> shooterToSubwoofer.getAsBoolean()));
 
-        autoChooser = AutoBuilder.buildAutoChooser("4 piece mcnugget");
+        autoChooser = AutoBuilder.buildAutoChooser("Shelton Shuffles Back");
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
