@@ -93,21 +93,21 @@ public class SwerveSubsystem extends SubsystemBase {
     private StructArrayPublisher<SwerveModuleState> swervePublisher;
 
     public Timer timer = new Timer();
-    
+
     public Orchestra m_orchestra = new Orchestra();
 
     // Constructor
     public SwerveSubsystem(VisionSubsystem vision) {
-       
 
         // Attempt to load the chrp
-        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory().toPath().resolve(
-        "orchestra" + File.separator + "dangerzone.chrp").toString());
+        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory()
+                .toPath()
+                .resolve("orchestra" + File.separator + "dangerzone.chrp")
+                .toString());
 
         if (!status.isOK()) {
-           //DataLogManager.log()
+            // DataLogManager.log()
         }
-
 
         // Gyro setup
         gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.canivore);
@@ -122,7 +122,7 @@ public class SwerveSubsystem extends SubsystemBase {
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-         // Add a single device to the orchestra
+        // Add a single device to the orchestra
         m_orchestra.addInstrument(mSwerveMods[0].getAngleMotor(), 0);
         m_orchestra.addInstrument(mSwerveMods[1].getAngleMotor(), 1);
         m_orchestra.addInstrument(mSwerveMods[2].getAngleMotor(), 2);
@@ -132,11 +132,9 @@ public class SwerveSubsystem extends SubsystemBase {
         m_orchestra.addInstrument(mSwerveMods[2].getDriveMotor(), 2);
         m_orchestra.addInstrument(mSwerveMods[3].getDriveMotor(), 0);
 
-        
         m_orchestra.play();
         timer.reset();
         timer.start();
-        
 
         swerveModuleStates = new SwerveModuleState[] {
             new SwerveModuleState(),
@@ -333,8 +331,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (timer.get() > 10){
-            if (m_orchestra.isPlaying()){
+        if (timer.get() > 10) {
+            if (m_orchestra.isPlaying()) {
                 m_orchestra.stop();
             }
             m_orchestra.close();
@@ -354,17 +352,17 @@ public class SwerveSubsystem extends SubsystemBase {
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
             Pose2d estPose = estimatedPose.estimatedPose.toPose2d();
 
-            if (visionFilterEnable){
-                if (distBetweenPoses(estPose, getPose()) < 2){
+            if (visionFilterEnable) {
+                if (distBetweenPoses(estPose, getPose()) < 2) {
                     swerveOdomEstimator.setVisionMeasurementStdDevs(
                             vision.getEstimationStdDevsFront(estPose));
-    
+
                     swerveOdomEstimator.addVisionMeasurement(estPose, Timer.getFPGATimestamp());
                 }
             } else {
                 swerveOdomEstimator.setVisionMeasurementStdDevs(
                         vision.getEstimationStdDevsFront(estPose));
-    
+
                 swerveOdomEstimator.addVisionMeasurement(estPose, Timer.getFPGATimestamp());
             }
         }
@@ -375,17 +373,17 @@ public class SwerveSubsystem extends SubsystemBase {
             final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseBack.get();
             Pose2d estPose2 = estimatedPose2.estimatedPose.toPose2d();
 
-            if (visionFilterEnable){
-                if (distBetweenPoses(estPose2, getPose()) < 2){
+            if (visionFilterEnable) {
+                if (distBetweenPoses(estPose2, getPose()) < 2) {
                     swerveOdomEstimator.setVisionMeasurementStdDevs(
                             vision.getEstimationStdDevsBack(estPose2));
-    
+
                     swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
                 }
             } else {
                 swerveOdomEstimator.setVisionMeasurementStdDevs(
                         vision.getEstimationStdDevsBack(estPose2));
-    
+
                 swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
             }
         }
@@ -426,7 +424,7 @@ public class SwerveSubsystem extends SubsystemBase {
                         getPose().getRotation().getRadians())));
     }
 
-    public static double distBetweenPoses (Pose2d pose1, Pose2d pose2) {
+    public static double distBetweenPoses(Pose2d pose1, Pose2d pose2) {
         return Math.abs(pose1.getTranslation().getDistance(pose2.getTranslation()));
     }
 
@@ -489,8 +487,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public Command pathToAmp() {
         return AutoBuilder.pathfindToPoseFlipped(
-            new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(270)),
-            Constants.Auto.PathfindingConstraints);
+                new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(270)),
+                Constants.Auto.PathfindingConstraints);
     }
 
     public Command pathToMidfieldChain() {

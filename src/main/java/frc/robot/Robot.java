@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -18,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.lib.math.FiringSolutionsV3;
-import frc.robot.subsystems.SwerveSubsystem;
 
 import org.littletonrobotics.urcl.URCL;
 
@@ -72,15 +70,10 @@ public class Robot extends TimedRobot {
         // Output command scheduler to dashboard
         SmartDashboard.putData(CommandScheduler.getInstance());
 
-        // PortForwarder.add(5800, "10.17.10.11", 5800);
-
         SmartDashboard.putData(PDH);
         PDH.setSwitchableChannel(true);
 
         redAlliance = checkRedAlliance();
-
-        // idk if this is useful
-        // System.gc();
     }
 
     /**
@@ -99,17 +92,25 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
-        if (!logStarted && DriverStation.isDSAttached()){
-            if (DriverStation.getMatchType() == MatchType.None){
-                DataLogManager.start("/media/sda1/logs/", DateTimeFormatter.ofPattern("yyyy-MM-dd__HH-mm-ss").format(LocalDateTime.now()) + ".wpilog");
+        if (!logStarted && DriverStation.isDSAttached()) {
+            if (DriverStation.getMatchType() == MatchType.None) {
+                DataLogManager.start(
+                        "/media/sda1/logs/",
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd__HH-mm-ss")
+                                        .format(LocalDateTime.now())
+                                + ".wpilog");
             } else {
-                DataLogManager.start("/media/sda1/logs/", DriverStation.getEventName() + " " + DriverStation.getMatchType().toString() + " " + DriverStation.getMatchNumber() + ".wpilog");
+                DataLogManager.start(
+                        "/media/sda1/logs/",
+                        DriverStation.getEventName() + " "
+                                + DriverStation.getMatchType().toString() + " "
+                                + DriverStation.getMatchNumber() + ".wpilog");
             }
 
             // Record both DS control and joystick data
             DriverStation.startDataLog(DataLogManager.getLog());
             DataLogManager.log(
-                "\nF  I  R  S  T    R  O  B  O  T  I  C  S    T  E  A  M\n ______________   _  _____   _  _____   ______________\n\\_____________| / ||___  | / ||  _  | |_____________/\n \\_ _ _ _ _ _ | | |   / /  | || | | | | _ _ _ _ _ _/\n  \\ _ _ _ _ _ | | |  / /   | || |_| | | _ _ _ _ _ /\n   \\__________|_|_|_/_/___ |_||_____|_|__________/\n    \\____________________/ \\____________________/\n");
+                    "\nF  I  R  S  T    R  O  B  O  T  I  C  S    T  E  A  M\n ______________   _  _____   _  _____   ______________\n\\_____________| / ||___  | / ||  _  | |_____________/\n \\_ _ _ _ _ _ | | |   / /  | || | | | | _ _ _ _ _ _/\n  \\ _ _ _ _ _ | | |  / /   | || |_| | | _ _ _ _ _ /\n   \\__________|_|_|_/_/___ |_||_____|_|__________/\n    \\____________________/ \\____________________/\n");
             logStarted = true;
         }
     }

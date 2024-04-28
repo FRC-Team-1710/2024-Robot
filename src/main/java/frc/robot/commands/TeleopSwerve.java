@@ -100,7 +100,9 @@ public class TeleopSwerve extends Command {
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
-            if (shooterSubsystem.getDistanceTo(FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY) >= 4) {
+            if (shooterSubsystem.getDistanceTo(
+                            FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY)
+                    >= 4) {
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else {
                 controller.setRumble(RumbleType.kBothRumble, 0);
@@ -182,9 +184,9 @@ public class TeleopSwerve extends Command {
         }
 
         // impeccable logic
-        if (rotationSup.getAsDouble() > Constants.stickDeadband){
+        if (rotationSup.getAsDouble() > Constants.stickDeadband) {
             noteInside = false;
-        } else if (intexerSubsystem.intakeBreak()){
+        } else if (intexerSubsystem.intakeBreak()) {
             noteInside = true;
         } else if (intexerSubsystem.shooterBreak()) {
             noteInside = false;

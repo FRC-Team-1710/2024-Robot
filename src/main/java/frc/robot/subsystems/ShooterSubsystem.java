@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -39,6 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private RelativeEncoder m_VelocityEncoder2;
     /** NEO Encoder */
     private RelativeEncoder m_PositionEncoder;
+
     private CANcoder m_WristEncoder;
 
     // PID
@@ -176,8 +176,10 @@ public class ShooterSubsystem extends SubsystemBase {
             controller.setRumble(RumbleType.kBothRumble, 0);
         }
 
-        FiringSolutionsV3.slipPercent = SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
-        FiringSolutionsV3.speakerTargetZ = SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.speakerTargetZ);
+        FiringSolutionsV3.slipPercent =
+                SmartDashboard.getNumber("Set Slip Offset", FiringSolutionsV3.slipPercent);
+        FiringSolutionsV3.speakerTargetZ =
+                SmartDashboard.getNumber("Set Target Z", FiringSolutionsV3.speakerTargetZ);
 
         SmartDashboard.putNumber(
                 "Top - Bottom error",
@@ -201,7 +203,8 @@ public class ShooterSubsystem extends SubsystemBase {
          * }
          */
 
-        if (m_WristEncoder.getFault_Hardware().getValue() || m_WristEncoder.getFault_BadMagnet().getValue()){
+        if (m_WristEncoder.getFault_Hardware().getValue()
+                || m_WristEncoder.getFault_BadMagnet().getValue()) {
             ENCFAIL = true;
             CanEncoderHasFailed = true;
             isZeroed = false;
@@ -239,7 +242,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         if (SmartDashboard.getBoolean("Wrist Coast", wristCoast) != wristCoast) {
             wristCoast = SmartDashboard.getBoolean("Wrist Coast", wristCoast);
-            if (wristCoast){
+            if (wristCoast) {
                 setWristToCoast();
             } else {
                 setWristToBrake();
@@ -248,19 +251,19 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     private void tempPIDTuning() {
-        if (velocityP != SmartDashboard.getNumber("Velo P", velocityP)){
+        if (velocityP != SmartDashboard.getNumber("Velo P", velocityP)) {
             velocityP = SmartDashboard.getNumber("Velo P", velocityP);
             topPID.setP(velocityP, 0);
             botPID.setP(velocityP, 0);
         }
 
-        if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)){
+        if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)) {
             velocityI = SmartDashboard.getNumber("Velo I", velocityI);
             topPID.setI(velocityI, 0);
             botPID.setI(velocityI, 0);
         }
 
-        if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)){
+        if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)) {
             velocityD = SmartDashboard.getNumber("Velo D", velocityD);
             topPID.setD(velocityD, 0);
             botPID.setD(velocityD, 0);
@@ -317,7 +320,8 @@ public class ShooterSubsystem extends SubsystemBase {
     /** Get whether shooter is at target speed */
     public boolean isShooterAtSpeed() { // Copied from Hudson but made it better
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 150) {// TODO Adjust
+        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity))
+                < 150) { // TODO Adjust
             speedTimer.start();
         } else {
             speedTimer.reset();
@@ -479,10 +483,11 @@ public class ShooterSubsystem extends SubsystemBase {
         // shooterAngleToSpeaker = FiringSolutionsV3.getShooterAngleFromSpeakerR();
 
         if (elevatorSubsystem.getHeight() > 0.3) {
-            shooterAngleToSpeaker = Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(
-                    distanceToMovingSpeakerTarget)
-                    + interpolationOffset + 1.0
-                    );
+            shooterAngleToSpeaker =
+                    Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(
+                                    distanceToMovingSpeakerTarget)
+                            + interpolationOffset
+                            + 1.0);
         } else {
             shooterAngleToSpeaker = Math.toRadians(
                     interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget)
@@ -523,8 +528,21 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Distance to Moving Target", distanceToMovingSpeakerTarget);
         SmartDashboard.putNumber("robot vx", chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("robot vy", chassisSpeeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("dist to speaker", FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
-        SmartDashboard.putNumber("adjusted target distance", distanceToMovingSpeakerTarget - FiringSolutionsV3.getDistanceToTarget(pose.getX(), pose.getY(), FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY));
+        SmartDashboard.putNumber(
+                "dist to speaker",
+                FiringSolutionsV3.getDistanceToTarget(
+                        pose.getX(),
+                        pose.getY(),
+                        FiringSolutionsV3.speakerTargetX,
+                        FiringSolutionsV3.speakerTargetY));
+        SmartDashboard.putNumber(
+                "adjusted target distance",
+                distanceToMovingSpeakerTarget
+                        - FiringSolutionsV3.getDistanceToTarget(
+                                pose.getX(),
+                                pose.getY(),
+                                FiringSolutionsV3.speakerTargetX,
+                                FiringSolutionsV3.speakerTargetY));
 
         double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(
                 pose.getX(),

@@ -26,7 +26,7 @@ public class Interpolations {
                 shooterSpeeds.put(3.5, 32.0);
                 shooterSpeeds.put(4.0, 30.75);
                 shooterSpeeds.put(4.5, 29.75);
-        
+
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.25, 44.0);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.5, 39.5);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(1.75, 36.0);
@@ -84,7 +84,6 @@ public class Interpolations {
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.5, 28.0);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(3.75, 27.25);
         bozoDefenseBotDriversHonestReactionWhenElevatorGoUp_speeds.put(4.0, 26.5);
-
     }
 
     public double getShooterAngleFromInterpolation(double distanceToTarget) {

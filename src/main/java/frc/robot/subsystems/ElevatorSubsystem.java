@@ -8,6 +8,7 @@ import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -16,17 +17,14 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import java.io.File;
-
-import com.ctre.phoenix6.Orchestra;
-import com.ctre.phoenix6.configs.AudioConfigs;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.io.File;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -42,19 +40,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     // Constants IN METERS
     private final double spoolCircumference = 0.0508;
     private final double gearRatio = 17.33;
-    
+
     // Vars
     private double revolutionCount;
     private double currentHeight;
     private double setHeight;
     private LaserCan.Measurement measurement;
-    
+
     public boolean manualOverride = false;
     public boolean locked = false;
     public Timer timer = new Timer();
-    
+
     public Orchestra m_orchestra = new Orchestra();
-    
+
     public ElevatorSubsystem() {
         m_elevatorLeft = new TalonFX(21); // left leader
         m_elevatorRight = new TalonFX(20);
@@ -70,9 +68,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.25;
         elevatorConfigs.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.25;
         elevatorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.25;
-        
+
         elevatorConfigs.Audio.AllowMusicDurDisable = true;
-        
+
         m_elevatorLeft.getConfigurator().apply(elevatorConfigs);
         m_elevatorRight.getConfigurator().apply(elevatorConfigs);
         m_elevatorRight.setControl(new Follower(m_elevatorLeft.getDeviceID(), true));
@@ -90,25 +88,24 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         m_elevatorLeft.setPosition(0);
 
-
         // Add a single device to the orchestra
         m_orchestra.addInstrument(m_elevatorLeft, 1);
         m_orchestra.addInstrument(m_elevatorRight, 2);
-        
 
         // Attempt to load the chrp
-        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory().toPath().resolve(
-        "orchestra" + File.separator + "dangerzone.chrp").toString());
+        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory()
+                .toPath()
+                .resolve("orchestra" + File.separator + "dangerzone.chrp")
+                .toString());
 
         if (!status.isOK()) {
-           // log error
+            // log error
         }
 
-       // m_orchestra.play();
+        // m_orchestra.play();
         m_orchestra.close();
         timer.reset();
         timer.start();
-
     }
 
     @Override
@@ -230,5 +227,4 @@ public class ElevatorSubsystem extends SubsystemBase {
     public double getPosition() {
         return m_elevatorLeft.getPosition().getValueAsDouble();
     }
-
 }

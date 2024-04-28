@@ -137,9 +137,7 @@ public final class Constants {
         public static final double driveKS = 0.072013;
         public static final double driveKV = 2.3106;
         public static final double driveKA = 0.27696;
-// 0.084111;
-// 2.5;
-// 0.35;
+
         /* Swerve Profiling Values */
         /** Meters per Second */
         public static final double maxSpeed = 4.5;

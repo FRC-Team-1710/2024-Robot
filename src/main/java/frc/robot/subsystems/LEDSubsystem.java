@@ -94,7 +94,7 @@ public class LEDSubsystem extends SubsystemBase {
             inputBooleans[12] = true;
         }
 
-        if (DriverStation.getMatchTime() <= 30 && DriverStation.getMatchTime() > 27){
+        if (DriverStation.getMatchTime() <= 30 && DriverStation.getMatchTime() > 27) {
             inputBooleans[4] = true;
         } else {
             inputBooleans[4] = false;

@@ -40,8 +40,8 @@ public class ElevationManual extends Command {
         value = MathUtil.applyDeadband(value, Constants.stickDeadband);
         value = Math.pow(value, 3);
 
-        //if (Math.abs(value) > .1) { // Crime zone
-            m_elevatorSubsystem.ManSpin(value);
+        // if (Math.abs(value) > .1) { // Crime zone
+        m_elevatorSubsystem.ManSpin(value);
         /*} else {
             if (!m_elevatorSubsystem.locked) {
                 lastElevatorSetpoint = m_elevatorSubsystem.getPosition();
