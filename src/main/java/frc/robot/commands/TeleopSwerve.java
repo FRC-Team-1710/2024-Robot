@@ -64,7 +64,6 @@ public class TeleopSwerve extends Command {
         this.vision = vision;
         this.shooterSubsystem = shooter;
         this.intexerSubsystem = intexer;
-        addRequirements(swerve);
 
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
@@ -75,7 +74,12 @@ public class TeleopSwerve extends Command {
         this.intakeOverride = intake;
         this.intakeOverrideNoMove = intakeNoMove;
         this.controller = controller;
+
+        rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+
         SmartDashboard.putData("Lock On Rotation PID", rotationPID);
+
+        addRequirements(swerve);
     }
 
     @Override
@@ -91,27 +95,14 @@ public class TeleopSwerve extends Command {
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal;
 
-        double offset;
-        double ampLockOffset;
-
-        if (Robot.getAlliance()) {
-            ampLockOffset = 16.54 - 5;
-            if (pose.getRotation().getRadians() > 0) {
-                offset = -Math.toRadians(180);
-            } else {
-                offset = Math.toRadians(180);
-            }
-        } else {
-            ampLockOffset = 5;
-            offset = 0;
-        }
-
         /* Exponential Drive */
         translationVal = Math.copySign(Math.pow(translationVal, 2), translationVal);
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
-            if (shooterSubsystem.getDistanceToSpeakerWhileMoving() >= 3.5) {
+            if (shooterSubsystem.getDistanceTo(
+                            FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY)
+                    >= 4) {
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else {
                 controller.setRumble(RumbleType.kBothRumble, 0);
@@ -120,7 +111,7 @@ public class TeleopSwerve extends Command {
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
             rotationVal = rotationPID.calculate(
-                    pose.getRotation().getRadians() + offset,
+                    pose.getRotation().getRadians(),
                     FiringSolutionsV3.getAngleToMovingTarget(
                             pose.getX(),
                             pose.getY(),
@@ -139,7 +130,7 @@ public class TeleopSwerve extends Command {
                     ^ (!Robot.getAlliance() && pose.getX() > 5)) {
 
                 rotationVal = rotationPID.calculate(
-                        pose.getRotation().getRadians() + offset,
+                        pose.getRotation().getRadians(),
                         FiringSolutionsV3.getAngleToMovingTarget(
                                 pose.getX(),
                                 pose.getY(),
@@ -192,10 +183,18 @@ public class TeleopSwerve extends Command {
             strafeVal = -strafeVal;
         }
 
-        if (intexerSubsystem.intakeBreak() && intakeOverride.getAsBoolean()) {
+        // impeccable logic
+        if (rotationSup.getAsDouble() > Constants.stickDeadband) {
+            noteInside = false;
+        } else if (intexerSubsystem.intakeBreak()) {
+            noteInside = true;
+        } else if (intexerSubsystem.shooterBreak()) {
+            noteInside = false;
+        }
+
+        if ((noteInside || intexerSubsystem.shooterBreak()) && intakeOverride.getAsBoolean()) {
             translationVal = 0;
             rotationVal = 0;
-            noteInside = true;
         }
 
         /* Drive */

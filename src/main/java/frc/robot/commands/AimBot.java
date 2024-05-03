@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -26,6 +25,8 @@ public class AimBot extends Command {
     private PIDController rotationPID = new PIDController(0.65, 0.00001, 0.04);
     private double speed;
     private Timer timer = new Timer();
+    private Timer cryAboutIt = new Timer();
+    private boolean shootAnyway;
 
     /** Creates a new AimBot. */
     public AimBot(
@@ -37,13 +38,19 @@ public class AimBot extends Command {
         this.speed = speed;
         this.intexer = intexer;
         this.swerveSubsystem = swerve;
+
+        rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+
         addRequirements(shooterSubsystem, swerve);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        cryAboutIt.reset();
+        cryAboutIt.start();
         shooter.setShooterVelocity(speed);
+        shootAnyway = !intexer.shooterBreak();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -52,19 +59,8 @@ public class AimBot extends Command {
         Pose2d pose = swerveSubsystem.getPose();
         ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
 
-        double offset;
-        if (Robot.getAlliance()) {
-            if (pose.getRotation().getRadians() > 0) {
-                offset = -Math.toRadians(180);
-            } else {
-                offset = Math.toRadians(180);
-            }
-        } else {
-            offset = 0;
-        }
-
         double rotationVal = rotationPID.calculate(
-                pose.getRotation().getRadians() + offset,
+                pose.getRotation().getRadians(),
                 FiringSolutionsV3.getAngleToMovingTarget(
                         pose.getX(),
                         pose.getY(),
@@ -80,10 +76,13 @@ public class AimBot extends Command {
                 true,
                 false);
 
-        if (shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .035) {
+        if ((shooter.isShooterAtSpeed() && rotationPID.getPositionError() <= .01710) // real
+                && cryAboutIt.get() > 0.5) {
             timer.reset();
             timer.start();
-            intexer.setShooterIntake(.9);
+            intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
+        } else if (cryAboutIt.get() >= 2) {
+            intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
         }
 
         shooter.setWristByAngle(shooter.getCalculatedAngleToSpeaker());
@@ -100,6 +99,6 @@ public class AimBot extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !intexer.shooterBreak() && timer.get() > .2;
+        return (!intexer.shooterBreak() && timer.get() > .2) || cryAboutIt.get() > 3;
     }
 }

@@ -44,7 +44,7 @@ public class IntakeThroughShooter extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setShooterVelocity(-1000);
+        shooter.setShooterVelocity(-500);
         intexer.setALL(Constants.Intake.outakeSpeed);
     }
 

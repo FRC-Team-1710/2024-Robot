@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.55,
+        "x": 1.3092116807775172,
         "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6500000000000001,
+        "x": 1.4092116807775172,
         "y": 7.0
       },
       "isLocked": false,
@@ -39,7 +39,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -49,10 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "McNugget paths",
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
-  },
+  "folder": "4piece",
+  "previewStartingState": null,
   "useDefaultConstraints": true
 }

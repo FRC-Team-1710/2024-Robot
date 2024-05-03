@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.1571581385443066,
-        "y": 3.4709139252007724
+        "x": 2.4204016103994217,
+        "y": 5.547612425391122
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8926151011446923,
-        "y": 2.300942939178039
+        "x": 2.270401610399422,
+        "y": 5.547612425391122
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.768338999394455,
-        "y": 2.355489245691538
+        "x": 1.4454257887138118,
+        "y": 5.547612425391122
       },
       "prevControl": {
-        "x": 5.1405841529022736,
-        "y": 1.3259671174924308
+        "x": 1.5954257887138117,
+        "y": 5.547612425391122
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,9 +43,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Midfield Paths",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -50.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

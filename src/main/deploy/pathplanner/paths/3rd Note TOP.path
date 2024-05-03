@@ -128,7 +128,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -138,7 +138,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "McNugget paths",
+  "folder": "4piece",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

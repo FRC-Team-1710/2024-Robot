@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -15,7 +16,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -36,17 +36,24 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private RelativeEncoder m_VelocityEncoder;
     private RelativeEncoder m_VelocityEncoder2;
+    /** NEO Encoder */
     private RelativeEncoder m_PositionEncoder;
-    private DutyCycleEncoder m_WristEncoder;
+
+    private CANcoder m_WristEncoder;
 
     // PID
     private PIDController m_pidWrist;
     private SparkPIDController botPID;
     private SparkPIDController topPID;
 
-    // PID Constants
-    private double velocityP = 0.0001;
-    private double velocityI = 5.2e-7;
+    /* PID Constants
+    private double velocityP = 0.0006;
+    private double velocityI = 7e-7;
+    private double velocityD = 0; */
+
+    // Old PID Constants
+    private double velocityP = 0.0004;
+    private double velocityI = 5.6e-7;
     private double velocityD = 0;
 
     private double positionP = 1;
@@ -55,26 +62,25 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Vars
     /** In m/s */
-    private double shooterVelocity = 12.1;
-
-    private boolean revEncoderHasFailed = false;
+    private double shooterVelocity = 17.10; // real
 
     private double shooterAngleToSpeaker, shooterAngleToAmp;
+    private boolean CanEncoderHasFailed = false;
     private boolean ENCFAIL = false;
     public boolean isZeroed = false;
     public boolean wristIsLocked = false;
     /** IN RADIANS */
-    private double angleOffset = Constants.Shooter.angleOffsetManual;
+    private double angleOffset = Constants.Shooter.angleOffsetTop;
 
     private double distanceToMovingSpeakerTarget = .94;
     public double lastWristAngleSetpoint = 0.0;
     public boolean manualOverride = false;
     public double wristAngleUpperBound;
     public double wristAngleLowerBound;
-
-    private double interpolationOffset = 4;
-
     public boolean outsideAllianceWing = false;
+    private boolean wristCoast = false;
+
+    private double interpolationOffset = -2.5;
 
     private Joystick controller;
 
@@ -96,14 +102,17 @@ public class ShooterSubsystem extends SubsystemBase {
         this.controller = controller;
 
         m_Wrist = new CANSparkMax(13, MotorType.kBrushless);
-        shootaTop = new CANSparkMax(11, MotorType.kBrushless); // leader
-        shootaBot = new CANSparkMax(12, MotorType.kBrushless);
+        shootaTop = new CANSparkMax(12, MotorType.kBrushless); // leader
+        shootaBot = new CANSparkMax(10, MotorType.kBrushless);
 
         // Encoders
         m_VelocityEncoder = shootaTop.getEncoder();
         m_VelocityEncoder2 = shootaBot.getEncoder();
         m_PositionEncoder = m_Wrist.getEncoder();
-        m_WristEncoder = new DutyCycleEncoder(0);
+        m_WristEncoder = new CANcoder(54);
+
+        // CANcoderConfiguration configs = new CANcoderConfiguration();
+        // m_WristEncoder.getConfigurator().apply(configs);
 
         // Spark Max Setup
         shootaTop.restoreFactoryDefaults();
@@ -127,13 +136,14 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setI(velocityI, 0);
         topPID.setD(velocityD, 0);
 
+        m_VelocityEncoder.setMeasurementPeriod(16);
+        m_VelocityEncoder.setAverageDepth(2);
+
         m_Wrist.burnFlash();
         shootaBot.burnFlash();
         shootaTop.burnFlash();
 
         m_pidWrist = new PIDController(positionP, positionI, positionD);
-
-        m_VelocityEncoder.setMeasurementPeriod(20);
 
         SmartDashboard.putNumber("set velocity", shooterVelocity);
 
@@ -148,30 +158,15 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Velo D", velocityD);
 
         SmartDashboard.putNumber("Top Bottom Offset", 400);
+        SmartDashboard.putBoolean("Wrist Coast", wristCoast);
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        /*
-        if (velocityP != SmartDashboard.getNumber("Velo P", velocityP)){
-            velocityP = SmartDashboard.getNumber("Velo P", velocityP);
-            topPID.setP(velocityP, 0);
-            botPID.setP(velocityP, 0);
-        }
 
-        if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)){
-            velocityI = SmartDashboard.getNumber("Velo I", velocityI);
-            topPID.setI(velocityI, 0);
-            botPID.setI(velocityI, 0);
-        }
+        tempPIDTuning();
 
-        if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)){
-            velocityD = SmartDashboard.getNumber("Velo D", velocityD);
-            topPID.setD(velocityD, 0);
-            botPID.setD(velocityD, 0);
-        }
-        */
         shooterVelocity = SmartDashboard.getNumber("set velocity", shooterVelocity);
         boolean shooterAtSpeed = isShooterAtSpeed();
 
@@ -190,21 +185,33 @@ public class ShooterSubsystem extends SubsystemBase {
                 "Top - Bottom error",
                 m_VelocityEncoder.getVelocity() - m_VelocityEncoder2.getVelocity());
         SmartDashboard.putNumber("Current Angle Radians", getCurrentShooterAngle());
-        SmartDashboard.putNumber("REV Encoder Angle", revEncoderAngle());
+        SmartDashboard.putNumber("Can Encoder Angle", getCanCoderAngle());
         SmartDashboard.putNumber("Current Velocity", getVelocity());
         SmartDashboard.putBoolean("shooter at speed", shooterAtSpeed);
-        SmartDashboard.putBoolean("REV Encoder Has Failed", revEncoderHasFailed);
+        SmartDashboard.putBoolean("Can Encoder Has Failed", CanEncoderHasFailed);
         SmartDashboard.putNumber(
                 "Current Angle Degrees", Units.radiansToDegrees(getCurrentShooterAngle()));
 
         // check for encoder failure
-        if (m_WristEncoder.isConnected()) {
-            ENCFAIL = false;
-        } else {
-            isZeroed = false;
-            revEncoderHasFailed = true;
+        /*
+         * if (m_WristEncoder.isConnected()) {
+         * ENCFAIL = false;
+         * } else {
+         * isZeroed = false;
+         * revEncoderHasFailed = true;
+         * ENCFAIL = true;
+         * }
+         */
+
+        if (m_WristEncoder.getFault_Hardware().getValue()
+                || m_WristEncoder.getFault_BadMagnet().getValue()) {
             ENCFAIL = true;
+            CanEncoderHasFailed = true;
+            isZeroed = false;
+        } else {
+            ENCFAIL = false;
         }
+
         SmartDashboard.putBoolean("ODER FAILURE", ENCFAIL);
         SmartDashboard.putBoolean("Is Wrist Zeroed", isZeroed);
 
@@ -214,7 +221,7 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel Right Current", shootaBot.getOutputCurrent());
         SmartDashboard.putNumber("Wrist Current", m_Wrist.getOutputCurrent());
         SmartDashboard.putBoolean("is Wrist Stalled", isWristMotorStalled());
-        SmartDashboard.putNumber("Wrist Built-in Encoder", motorEncoderAngle());
+        SmartDashboard.putNumber("Wrist Built-in Encoder", getMotorEncoderAngle());
 
         if (isZeroed) {
             if (!manualOverride) {
@@ -232,22 +239,51 @@ public class ShooterSubsystem extends SubsystemBase {
              * }
              */
         }
+
+        if (SmartDashboard.getBoolean("Wrist Coast", wristCoast) != wristCoast) {
+            wristCoast = SmartDashboard.getBoolean("Wrist Coast", wristCoast);
+            if (wristCoast) {
+                setWristToCoast();
+            } else {
+                setWristToBrake();
+            }
+        }
+    }
+
+    private void tempPIDTuning() {
+        if (velocityP != SmartDashboard.getNumber("Velo P", velocityP)) {
+            velocityP = SmartDashboard.getNumber("Velo P", velocityP);
+            topPID.setP(velocityP, 0);
+            botPID.setP(velocityP, 0);
+        }
+
+        if (velocityI != SmartDashboard.getNumber("Velo I", velocityI)) {
+            velocityI = SmartDashboard.getNumber("Velo I", velocityI);
+            topPID.setI(velocityI, 0);
+            botPID.setI(velocityI, 0);
+        }
+
+        if (velocityD != SmartDashboard.getNumber("Velo D", velocityD)) {
+            velocityD = SmartDashboard.getNumber("Velo D", velocityD);
+            topPID.setD(velocityD, 0);
+            botPID.setD(velocityD, 0);
+        }
     }
 
     /** in RADIANs units MATTER */
     public double getCurrentShooterAngle() {
-        if (!ENCFAIL && !revEncoderHasFailed) {
-            return revEncoderAngle() + angleOffset;
+        if (!ENCFAIL && !CanEncoderHasFailed) {
+            return getCanCoderAngle() + angleOffset;
         } else {
-            return motorEncoderAngle() + angleOffset;
+            return getMotorEncoderAngle() + angleOffset;
         }
     }
 
-    public double revEncoderAngle() {
-        return ((m_WristEncoder.get() * 2 * Math.PI) / 4);
+    public double getCanCoderAngle() {
+        return ((m_WristEncoder.getPosition().getValueAsDouble() * 2 * Math.PI) / 4);
     }
 
-    public double motorEncoderAngle() {
+    public double getMotorEncoderAngle() {
         return ((m_PositionEncoder.getPosition() * 2 * Math.PI) / 100);
     }
 
@@ -284,7 +320,8 @@ public class ShooterSubsystem extends SubsystemBase {
     /** Get whether shooter is at target speed */
     public boolean isShooterAtSpeed() { // Copied from Hudson but made it better
         // if error less than certain amount start the timer
-        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity)) < 80) {
+        if (Math.abs(getVelocity() - FiringSolutionsV3.convertToRPM(shooterVelocity))
+                < 150) { // TODO Adjust
             speedTimer.start();
         } else {
             speedTimer.reset();
@@ -300,11 +337,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Check if wrist motor is exceeding stall current, used for zeroing */
     public boolean isWristMotorStalled() {
-        if (m_Wrist.getOutputCurrent() > m_WristCurrentMax) {
-            return true;
-        } else {
-            return false;
-        }
+        return m_Wrist.getOutputCurrent() > m_WristCurrentMax;
     }
 
     public void PointShoot(double PointAngle, double launchVelocity) {
@@ -313,17 +346,23 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setReference(launchVelocity, CANSparkMax.ControlType.kVelocity);
     }
 
+    /** The proper wrist encoder reset method. USE ONLY THIS ONE */
     public void resetWristEncoders(double newOffset) {
         angleOffset = newOffset;
-        m_WristEncoder.reset();
-        revEncoderHasFailed = false;
+        m_WristEncoder.setPosition(0);
+        CanEncoderHasFailed = false;
         m_PositionEncoder.setPosition(0);
         isZeroed = true;
+        lastWristAngleSetpoint = newOffset;
     }
 
-    /** Wrist Encoder Reset */
+    public void useBuiltInEncoder(boolean enable) {
+        CanEncoderHasFailed = enable;
+    }
+
+    /** Wrist Encoder Reset DO NOT USE */
     public void restartWristEncoders() {
-        m_WristEncoder.reset();
+        m_WristEncoder.setPosition(0);
         m_PositionEncoder.setPosition(0);
     }
 
@@ -357,9 +396,9 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    /** Reset wrist encoder to given value */
+    /** Reset wrist encoder to given value DO NOT USE */
     public void setWristEncoderOffset(double newPosition) {
-        m_WristEncoder.setPositionOffset(newPosition);
+        m_WristEncoder.setPosition(newPosition);
     }
 
     public void setWristAngleLowerBound(double wristAngleLowerBound) {
@@ -447,7 +486,8 @@ public class ShooterSubsystem extends SubsystemBase {
             shooterAngleToSpeaker =
                     Math.toRadians(interpolation.getShooterAngleFromInterpolationElevatorUp(
                                     distanceToMovingSpeakerTarget)
-                            + interpolationOffset);
+                            + interpolationOffset
+                            + 1.0);
         } else {
             shooterAngleToSpeaker = Math.toRadians(
                     interpolation.getShooterAngleFromInterpolation(distanceToMovingSpeakerTarget)
@@ -488,6 +528,21 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Distance to Moving Target", distanceToMovingSpeakerTarget);
         SmartDashboard.putNumber("robot vx", chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("robot vy", chassisSpeeds.vyMetersPerSecond);
+        SmartDashboard.putNumber(
+                "dist to speaker",
+                FiringSolutionsV3.getDistanceToTarget(
+                        pose.getX(),
+                        pose.getY(),
+                        FiringSolutionsV3.speakerTargetX,
+                        FiringSolutionsV3.speakerTargetY));
+        SmartDashboard.putNumber(
+                "adjusted target distance",
+                distanceToMovingSpeakerTarget
+                        - FiringSolutionsV3.getDistanceToTarget(
+                                pose.getX(),
+                                pose.getY(),
+                                FiringSolutionsV3.speakerTargetX,
+                                FiringSolutionsV3.speakerTargetY));
 
         double distanceToMovingAmpTarget = FiringSolutionsV3.getDistanceToMovingTarget(
                 pose.getX(),
@@ -499,7 +554,6 @@ public class ShooterSubsystem extends SubsystemBase {
                 pose.getRotation().getRadians());
 
         FiringSolutionsV3.updateAmpR(distanceToMovingAmpTarget);
-
         shooterAngleToAmp = FiringSolutionsV3.getShooterAngleFromAmpR();
     }
 }

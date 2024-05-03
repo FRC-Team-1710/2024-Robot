@@ -1,0 +1,58 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.6,
+        "y": 5.6
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.57509817632462,
+        "y": 6.610336071028438
+      },
+      "isLocked": false,
+      "linkedName": "VB Shoot point"
+    },
+    {
+      "anchor": {
+        "x": 6.768793775117243,
+        "y": 6.2
+      },
+      "prevControl": {
+        "x": 6.261806347840725,
+        "y": 6.27884429165533
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "VB top note 2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -18.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "(auto) von bismarck",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

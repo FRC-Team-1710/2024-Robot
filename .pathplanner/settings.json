@@ -1,17 +1,22 @@
 {
-  "robotWidth": 0.85,
-  "robotLength": 0.85,
+  "robotWidth": 0.863,
+  "robotLength": 0.939,
   "holonomicMode": true,
   "pathFolders": [
-    "McNugget paths",
-    "Midfield Paths",
-    "Close"
+    "4piece",
+    "Close",
+    "Greedy Autos",
+    "(auto) von bismarck",
+    "other",
+    "roman charge",
+    "straight as tj",
+    "toothy grin"
   ],
   "autoFolders": [
     "Testing"
   ],
   "defaultMaxVel": 4.0,
-  "defaultMaxAccel": 3.5,
+  "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.5

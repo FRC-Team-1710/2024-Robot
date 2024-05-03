@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.798043049767811,
-        "y": 2.378941004912889
+        "x": 7.344029509911752,
+        "y": 2.8859284321894068
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.364828591889964,
-        "y": 0.6922328333967845
+        "x": 6.661546434731825,
+        "y": 3.344167068381643
       },
       "isLocked": false,
-      "linkedName": "3 Note Top Alt"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6014219201835092,
-        "y": 4.124147725730131
+        "x": 6.027812150636178,
+        "y": 3.782906188140168
       },
       "prevControl": {
-        "x": 1.796417084520631,
-        "y": 3.1589216622613763
+        "x": 6.495800545045272,
+        "y": 3.412415375899636
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "i hope this works"
     }
   ],
   "rotationTargets": [],
@@ -33,17 +33,17 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -31.865977693603693,
+    "rotation": -29.430000000000007,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Midfield Paths",
+  "folder": "roman charge",
   "previewStartingState": null,
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

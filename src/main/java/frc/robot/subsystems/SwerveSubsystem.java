@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -34,6 +35,8 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -51,6 +54,7 @@ import frc.robot.SwerveModule;
 
 import org.photonvision.EstimatedRobotPose;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
@@ -65,7 +69,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDrivePoseEstimator swerveOdomEstimator;
     private final SwerveDriveOdometry encoderOdometry;
     private SwerveModuleState[] swerveModuleStates;
-    public static boolean followingPath = false;
+    private SwerveModulePosition[] swerveModulePositions;
+    public static boolean visionFilterEnable = false;
 
     // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -87,8 +92,23 @@ public class SwerveSubsystem extends SubsystemBase {
     private StructPublisher<Pose2d> posePublisher2;
     private StructArrayPublisher<SwerveModuleState> swervePublisher;
 
+    public Timer timer = new Timer();
+
+    public Orchestra m_orchestra = new Orchestra();
+
     // Constructor
     public SwerveSubsystem(VisionSubsystem vision) {
+
+        // Attempt to load the chrp
+        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory()
+                .toPath()
+                .resolve("orchestra" + File.separator + "dangerzone.chrp")
+                .toString());
+
+        if (!status.isOK()) {
+            // DataLogManager.log()
+        }
+
         // Gyro setup
         gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.canivore);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -101,6 +121,20 @@ public class SwerveSubsystem extends SubsystemBase {
             new SwerveModule(2, Constants.Swerve.Mod2.constants),
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
+
+        // Add a single device to the orchestra
+        m_orchestra.addInstrument(mSwerveMods[0].getAngleMotor(), 0);
+        m_orchestra.addInstrument(mSwerveMods[1].getAngleMotor(), 1);
+        m_orchestra.addInstrument(mSwerveMods[2].getAngleMotor(), 2);
+        m_orchestra.addInstrument(mSwerveMods[3].getAngleMotor(), 0);
+        m_orchestra.addInstrument(mSwerveMods[0].getDriveMotor(), 0);
+        m_orchestra.addInstrument(mSwerveMods[1].getDriveMotor(), 1);
+        m_orchestra.addInstrument(mSwerveMods[2].getDriveMotor(), 2);
+        m_orchestra.addInstrument(mSwerveMods[3].getDriveMotor(), 0);
+
+        m_orchestra.play();
+        timer.reset();
+        timer.start();
 
         swerveModuleStates = new SwerveModuleState[] {
             new SwerveModuleState(),
@@ -125,13 +159,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
                 ); // spotless:on
 
-        SwerveModulePosition[] modulePositions = getModulePositions();
+        swerveModulePositions = getModulePositions();
 
         // Swerve obodom
         swerveOdomEstimator = new SwerveDrivePoseEstimator(
                 Constants.Swerve.swerveKinematics,
                 getGyroYaw(),
-                modulePositions,
+                swerveModulePositions,
                 Robot.getAlliance()
                         ? Constants.Vision.startingPoseRed
                         : Constants.Vision.startingPoseBlue,
@@ -139,7 +173,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.Vision.kSingleTagStdDevs);
 
         encoderOdometry = new SwerveDriveOdometry(
-                Constants.Swerve.swerveKinematics, getGyroYaw(), modulePositions);
+                Constants.Swerve.swerveKinematics, getGyroYaw(), swerveModulePositions);
 
         // Logging
         posePublisher = NetworkTableInstance.getDefault()
@@ -238,9 +272,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setPose(Pose2d pose) {
-        SwerveModulePosition[] modPositions = getModulePositions();
-        swerveOdomEstimator.resetPosition(getGyroYaw(), modPositions, pose);
-        encoderOdometry.resetPosition(getGyroYaw(), modPositions, pose);
+        swerveOdomEstimator.resetPosition(getGyroYaw(), swerveModulePositions, pose);
+        encoderOdometry.resetPosition(getGyroYaw(), swerveModulePositions, pose);
     }
 
     public void setPoseToPodium() {
@@ -298,38 +331,66 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (timer.get() > 10) {
+            if (m_orchestra.isPlaying()) {
+                m_orchestra.stop();
+            }
+            m_orchestra.close();
+            timer.stop();
+            timer.reset();
+        }
+
         updateModuleStates();
-        SwerveModulePosition[] modulePositions = getModulePositions();
+        swerveModulePositions = getModulePositions();
         Rotation2d gyroYaw = getGyroYaw();
 
         // Correct pose estimate with multiple vision measurements
+        // https://www.chiefdelphi.com/t/odometry-not-working-only-during-matches/460307/4?u=andrewsk
         Optional<EstimatedRobotPose> OptionalEstimatedPoseFront = vision.getEstimatedPoseFront();
         if (OptionalEstimatedPoseFront.isPresent()) {
 
             final EstimatedRobotPose estimatedPose = OptionalEstimatedPoseFront.get();
+            Pose2d estPose = estimatedPose.estimatedPose.toPose2d();
 
-            swerveOdomEstimator.setVisionMeasurementStdDevs(
-                    vision.getEstimationStdDevsFront(estimatedPose.estimatedPose.toPose2d()));
+            if (visionFilterEnable) {
+                if (distBetweenPoses(estPose, getPose()) < 2) {
+                    swerveOdomEstimator.setVisionMeasurementStdDevs(
+                            vision.getEstimationStdDevsFront(estPose));
 
-            swerveOdomEstimator.addVisionMeasurement(
-                    estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+                    swerveOdomEstimator.addVisionMeasurement(estPose, Timer.getFPGATimestamp());
+                }
+            } else {
+                swerveOdomEstimator.setVisionMeasurementStdDevs(
+                        vision.getEstimationStdDevsFront(estPose));
+
+                swerveOdomEstimator.addVisionMeasurement(estPose, Timer.getFPGATimestamp());
+            }
         }
 
         Optional<EstimatedRobotPose> OptionalEstimatedPoseBack = vision.getEstimatedPoseBack();
         if (OptionalEstimatedPoseBack.isPresent()) {
 
             final EstimatedRobotPose estimatedPose2 = OptionalEstimatedPoseBack.get();
+            Pose2d estPose2 = estimatedPose2.estimatedPose.toPose2d();
 
-            swerveOdomEstimator.setVisionMeasurementStdDevs(
-                    vision.getEstimationStdDevsBack(estimatedPose2.estimatedPose.toPose2d()));
+            if (visionFilterEnable) {
+                if (distBetweenPoses(estPose2, getPose()) < 2) {
+                    swerveOdomEstimator.setVisionMeasurementStdDevs(
+                            vision.getEstimationStdDevsBack(estPose2));
 
-            swerveOdomEstimator.addVisionMeasurement(
-                    estimatedPose2.estimatedPose.toPose2d(), estimatedPose2.timestampSeconds);
+                    swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
+                }
+            } else {
+                swerveOdomEstimator.setVisionMeasurementStdDevs(
+                        vision.getEstimationStdDevsBack(estPose2));
+
+                swerveOdomEstimator.addVisionMeasurement(estPose2, Timer.getFPGATimestamp());
+            }
         }
 
         // Logging
-        swerveOdomEstimator.update(gyroYaw, modulePositions);
-        encoderOdometry.update(gyroYaw, modulePositions);
+        swerveOdomEstimator.update(gyroYaw, swerveModulePositions);
+        encoderOdometry.update(gyroYaw, swerveModulePositions);
 
         m_field.setRobotPose(getPose());
 
@@ -342,7 +403,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     "Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber(
                     "Mod " + mod.moduleNumber + " Angle",
-                    modulePositions[mod.moduleNumber].angle.getDegrees());
+                    swerveModulePositions[mod.moduleNumber].angle.getDegrees());
             SmartDashboard.putNumber(
                     "Mod " + mod.moduleNumber + " Velocity",
                     swerveModuleStates[mod.moduleNumber].speedMetersPerSecond);
@@ -361,6 +422,10 @@ public class SwerveSubsystem extends SubsystemBase {
                         getChassisSpeeds().vxMetersPerSecond,
                         getChassisSpeeds().vyMetersPerSecond,
                         getPose().getRotation().getRadians())));
+    }
+
+    public static double distBetweenPoses(Pose2d pose1, Pose2d pose2) {
+        return Math.abs(pose1.getTranslation().getDistance(pose2.getTranslation()));
     }
 
     public void sysidroutine(SysIdRoutineLog log) {
@@ -421,15 +486,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Command pathToAmp() {
-        if (!Robot.getAlliance()) {
-            return AutoBuilder.pathfindToPose(
-                    new Pose2d(1.84, 7.59, Rotation2d.fromDegrees(90.37)),
-                    Constants.Auto.PathfindingConstraints);
-        } else {
-            return AutoBuilder.pathfindToPose(
-                    new Pose2d(14.74, 7.52, Rotation2d.fromDegrees(90.37)),
-                    Constants.Auto.PathfindingConstraints);
-        }
+        return AutoBuilder.pathfindToPoseFlipped(
+                new Pose2d(1.84, 7.63, Rotation2d.fromDegrees(270)),
+                Constants.Auto.PathfindingConstraints);
     }
 
     public Command pathToMidfieldChain() {

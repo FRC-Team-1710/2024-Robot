@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.IntexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -35,7 +36,7 @@ public class FIREEFORACERTAINAMOUNTOFTIME extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        intexer.setShooterIntake(.9);
+        intexer.setShooterIntake(Constants.Shooter.shooterOutakeSpeed);
     }
 
     // Called once the command ends or is interrupted.

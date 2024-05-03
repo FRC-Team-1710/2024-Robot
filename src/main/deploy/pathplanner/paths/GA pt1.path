@@ -3,47 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.344029509911752,
-        "y": 2.8859284321894068
+        "x": 1.3771774811958186,
+        "y": 5.52811290895741
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.661546434731825,
-        "y": 3.344167068381643
+        "x": 1.780892824789981,
+        "y": 5.52811290895741
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.027812150636178,
-        "y": 3.782906188140168
+        "x": 1.9231639413397603,
+        "y": 5.52811290895741
       },
       "prevControl": {
-        "x": 6.495800545045272,
-        "y": 3.412415375899636
+        "x": 1.6130235347875594,
+        "y": 5.52811290895741
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "i hope this works"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 4.25,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -29.430000000000007,
+    "velocity": 0.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Midfield Paths",
-  "previewStartingState": null,
-  "useDefaultConstraints": true
+  "folder": "Greedy Autos",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
 }

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.commands.*;
@@ -125,12 +126,14 @@ public class RobotContainer {
         // Named commands for PathPlanner autos
         NamedCommands.registerCommand("Intake", new IntexForAutosByAutos(m_IntexerSubsystem, m_ShooterSubsystem));
         NamedCommands.registerCommand("Shoot", new AimBot(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity())));
+        NamedCommands.registerCommand("Subwoofer Shoot", new AimBotSetPosition(m_ShooterSubsystem, m_SwerveSubsystem, m_IntexerSubsystem, FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()), Math.toRadians(60)));
         NamedCommands.registerCommand("Idle Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
         NamedCommands.registerCommand("Target Speed", new InstantCommand(() -> m_ShooterSubsystem.setShooterVelocity(FiringSolutionsV3.convertToRPM(m_ShooterSubsystem.getCalculatedVelocity()))));
         NamedCommands.registerCommand("Set Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)));
         NamedCommands.registerCommand("Stop Shooter Intake", new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
         NamedCommands.registerCommand("Note Sniffer", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
         NamedCommands.registerCommand("Note Sniffer2", new NoteSniffer(m_SwerveSubsystem, m_VisionSubsystem, m_IntexerSubsystem, m_ShooterSubsystem));
+        NamedCommands.registerCommand("Reset Note", new ResetNoteInShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, FF));
         NamedCommands.registerCommand("Fire Under Stage", new InstantCommand(() -> m_ShooterSubsystem.setWristByAngle(Math.toRadians(10))));
         NamedCommands.registerCommand("Force Shoot", new FIREEFORACERTAINAMOUNTOFTIME(m_ShooterSubsystem, m_IntexerSubsystem, .2));
         // spotless:on
@@ -158,7 +161,7 @@ public class RobotContainer {
                 () -> -mech.getRawAxis(rightVerticalAxis),
                 () -> shooterToSubwoofer.getAsBoolean()));
 
-        autoChooser = AutoBuilder.buildAutoChooser("4 piece mcnugget");
+        autoChooser = AutoBuilder.buildAutoChooser("Shelton Shuffles Back");
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -202,18 +205,21 @@ public class RobotContainer {
                                 : Constants.Vision.startingPoseBlue))));
 
         // Intexer
-        intex.or(intakeNoMove).whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver));
-        // .onFalse(new ResetNoteInShooterPart2(
-        //        m_ShooterSubsystem, m_IntexerSubsystem, driver));
+        intex.or(intakeNoMove)
+                .whileTrue(new IntexBestHex(m_IntexerSubsystem, true, driver))
+                .onFalse(new ResetNoteInShooterPart2(
+                        m_ShooterSubsystem, m_IntexerSubsystem, driver));
         outex.whileTrue(new IntexBestHex(m_IntexerSubsystem, false, driver));
 
         // Shooter intake
         forceShoot
-                .whileTrue(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(.9)))
+                .whileTrue(new InstantCommand(() ->
+                        m_IntexerSubsystem.setShooterIntake(Constants.Shooter.shooterOutakeSpeed)))
                 .onFalse(new InstantCommand(() -> m_IntexerSubsystem.setShooterIntake(0)));
 
         // Move to Center Stage
         driverUp.whileTrue(m_SwerveSubsystem.pathToMidfieldChain());
+        driverDown.whileTrue(m_SwerveSubsystem.pathToAmp());
 
         // Move to Source
         // driverDown.whileTrue(m_SwerveSubsystem.pathToSourceChain());
@@ -235,7 +241,6 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(() ->
                         m_ShooterSubsystem.setShooterVelocity(Constants.Shooter.idleSpeedRPM)));
 
-        // Elevator
         // elevatorDown.onTrue(new ElevatorSet(m_ElevatorSubsystem,
         // Constants.Elevator.minHeightMeters)
         //        .alongWith(
@@ -244,6 +249,7 @@ public class RobotContainer {
         // Constants.Elevator.maxHeightMeters)
         //        .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
 
+        // Elevator
         mechLT.negate()
                 .and(elevatorDown)
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters)
@@ -255,6 +261,7 @@ public class RobotContainer {
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.maxHeightMeters)
                         .alongWith(new RizzLevel(m_ShooterSubsystem, 0.0)));
 
+        // Adjust offset
         mechLT.and(elevatorUp).onTrue(new InstantCommand(() -> m_ShooterSubsystem.offsetUP()));
         mechLT.and(elevatorDown).onTrue(new InstantCommand(() -> m_ShooterSubsystem.offsetDOWN()));
 
@@ -262,7 +269,7 @@ public class RobotContainer {
         mechLT.negate()
                 .and(zeroShooter)
                 .onTrue(new InstantCommand(() -> m_ShooterSubsystem.resetWristEncoders(
-                        Constants.Shooter.angleOffsetManual))); // Set encoder to zero
+                        Constants.Shooter.angleOffsetTop))); // Set encoder to zero
 
         // Reset Odom to Podium
         resetOdomToPodium.onTrue(new InstantCommand(() -> m_SwerveSubsystem.setPoseToPodium()));
@@ -274,12 +281,12 @@ public class RobotContainer {
 
         // Amp Preset
         shooterToAmp
-                .onTrue(new RizzLevel(m_ShooterSubsystem, -0.48))
+                .onTrue(new RizzLevel(m_ShooterSubsystem, -0.40))
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.ampHeight));
 
         // Subwoofer Preset
         shooterToSubwoofer
-                .onTrue(new RizzLevel(m_ShooterSubsystem, Math.toRadians(57)))
+                .onTrue(new RizzLevel(m_ShooterSubsystem, Math.toRadians(60)))
                 .onTrue(new ElevatorSet(m_ElevatorSubsystem, Constants.Elevator.minHeightMeters));
 
         // Anti-Defense Preset
@@ -310,18 +317,18 @@ public class RobotContainer {
         mechLT.and(mechLeftStick)
                 .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.setElevatorSpeedManual(0)));
 
+        // Reset wrist from bottom
         mechLT.and(zeroShooter)
                 .onTrue(new InstantCommand(() -> m_ShooterSubsystem.resetWristEncoders(
                         Constants.Shooter.angleOffsetBottom)));
 
         /* THIRD CONTROLLER */
         // Characterization tests
-        /*
+
         dynamicForward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kForward));
         dynamicBackward.whileTrue(m_SwerveSubsystem.sysIdDynamic(Direction.kReverse));
         quasistaticForward.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kForward));
         quasistaticBackwards.whileTrue(m_SwerveSubsystem.sysIdQuasistatic(Direction.kReverse));
-        */
     }
 
     public void stopAll() {
@@ -332,7 +339,7 @@ public class RobotContainer {
     }
 
     public void zeroWristEncoders() {
-        m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetBottom);
+        m_ShooterSubsystem.resetWristEncoders(Constants.Shooter.angleOffsetTop);
     }
 
     /**

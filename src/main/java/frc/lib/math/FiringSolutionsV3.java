@@ -16,10 +16,12 @@ public class FiringSolutionsV3 {
     private static final double noteFallAccel = 9.8;
 
     // Amp Values (used for targeting from afar)
-    private static final double ampTargetXRed = 15.91;
+    private static final double ampTargetXRed = 14.5;
     private static final double ampTargetXBlue = 16.54 - ampTargetXRed;
+    private static final double ampTargetYRed = 6.2;
+    private static final double ampTargetYBlue = 7.25;
     public static double ampTargetX;
-    public static final double ampTargetY = 7;
+    public static double ampTargetY;
     public static final double ampTargetZ = .125;
 
     // True Amp Values
@@ -47,10 +49,12 @@ public class FiringSolutionsV3 {
         if (redAlliance) {
             speakerTargetX = speakerTargetXRed;
             ampTargetX = ampTargetXRed;
+            ampTargetY = ampTargetYRed;
             trueAmpX = trueAmpXRed;
         } else {
             speakerTargetX = speakerTargetXBlue;
             ampTargetX = ampTargetXBlue;
+            ampTargetY = ampTargetYBlue;
             trueAmpX = trueAmpXBlue;
         }
     }
@@ -276,7 +280,7 @@ public class FiringSolutionsV3 {
     public static double getAngleToMovingTarget(double robotX, double robotY, double targetX, double targetY,
             double robotVelocityX,
             double robotVelocityY, double robotHeading) {
-        //if (robotX >= targetX) {
+        if (robotX >= targetX) {
             return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
                     getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
                             getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading),
@@ -289,7 +293,7 @@ public class FiringSolutionsV3 {
                             getRobotVelocityPerpendicularToTarget(robotX, targetX, robotVelocityX, robotVelocityY,
                                     getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
                             .get().getX() - robotX));
-        /*} else {
+        } else {
             if (robotY >= targetY) {
                 return Math.atan((movingTarget(robotX, robotY, targetX, targetY,
                         getRobotVelocityTowardsTarget(robotX, targetX, robotVelocityX, robotVelocityY,
@@ -317,7 +321,7 @@ public class FiringSolutionsV3 {
                                         getAngleToTarget(robotX, robotY, targetX, targetY), robotHeading))
                                 .get().getX() - robotX)) - Math.toRadians(180);
             }
-        }*/
+        }
 
     }
 
@@ -344,7 +348,7 @@ public class FiringSolutionsV3 {
 
     /** Convert meters per second to rotations per minute */
     public static double convertToRPM(double velocity) {
-        return (60 * velocity) / (slipPercent * Math.PI * .1016);
+        return (60 * velocity) / (2 * slipPercent * Math.PI * .1016);
     }
 // spotless:on
 }

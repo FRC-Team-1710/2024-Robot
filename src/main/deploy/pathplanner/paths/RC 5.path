@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.027812150636178,
+        "y": 3.782906188140168
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.4763010286115605,
+        "y": 3.9681515942604335
+      },
+      "isLocked": false,
+      "linkedName": "i hope this works"
+    },
+    {
+      "anchor": {
+        "x": 6.983288455888077,
+        "y": 4.1338974839469875
+      },
+      "prevControl": {
+        "x": 6.612789523297573,
+        "y": 4.0266781996568355
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "roman charge",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

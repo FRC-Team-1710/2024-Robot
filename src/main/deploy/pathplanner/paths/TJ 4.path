@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.027812150636178,
-        "y": 3.782906188140168
+        "x": 7.217282653092623,
+        "y": 4.07539893464585
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.4763010286115605,
-        "y": 3.9681515942604335
+        "x": 5.510436092097255,
+        "y": 4.186507290393498
       },
       "isLocked": false,
-      "linkedName": "i hope this works"
+      "linkedName": "TJ Note 2"
     },
     {
       "anchor": {
-        "x": 6.983288455888077,
-        "y": 4.1338974839469875
+        "x": 3.590372596422153,
+        "y": 5.023075433324264
       },
       "prevControl": {
-        "x": 6.612789523297573,
-        "y": 4.0266781996568355
+        "x": 4.7269277444537785,
+        "y": 4.747826703630615
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TJ Shoot"
     }
   ],
   "rotationTargets": [],
@@ -33,20 +33,20 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Midfield Paths",
+  "folder": "straight as tj",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

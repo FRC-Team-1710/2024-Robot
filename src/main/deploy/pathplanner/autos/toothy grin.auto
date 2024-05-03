@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.744692763774372,
-      "y": 4.446330676429759
+      "x": 0.7336934388833163,
+      "y": 4.406890714018958
     },
     "rotation": -61.949224233821454
   },
@@ -14,13 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Subwoofer Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "toMidSourceRightAlt"
+            "pathName": "TG 1"
           }
         },
         {
@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "backMidSourceRightAlt"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TG 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Reset Note"
+                }
+              }
+            ]
           }
         },
         {
@@ -44,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "toMidSourceLeftAlt"
+            "pathName": "TG 3"
           }
         },
         {
@@ -57,6 +70,12 @@
           "type": "named",
           "data": {
             "name": "Note Sniffer2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Reset Note"
           }
         }
       ]

@@ -53,6 +53,14 @@ public class SwerveModule {
         mDriveMotor.getConfigurator().setPosition(0.0);
     }
 
+    public TalonFX getAngleMotor() {
+        return mAngleMotor;
+    }
+
+    public TalonFX getDriveMotor() {
+        return mDriveMotor;
+    }
+
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
         mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));

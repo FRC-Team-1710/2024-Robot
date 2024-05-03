@@ -38,26 +38,25 @@ public final class Constants {
 
         public static final Transform3d kRobotToCamFront = new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(11.5),
+                        Units.inchesToMeters(28),
                         Units.inchesToMeters(-1.25),
                         Units.inchesToMeters(14.75)),
                 new Rotation3d(0, Units.degreesToRadians(15), 0));
 
         public static final Transform3d kRobotToCamBack = new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(-7),
+                        Units.inchesToMeters(-28), // -7
                         Units.inchesToMeters(11),
                         Units.inchesToMeters(14.5)),
-                new Rotation3d(0, Units.degreesToRadians(15), Math.PI));
+                new Rotation3d(0, Units.degreesToRadians(16.5), Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = getFieldLayout();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(8, 8, 40);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(4, 4, 20);
-        public static final Vector<N3> stateStdDevs =
-                VecBuilder.fill(.5, .5, .5); // Encoder Odometry
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1, 1, 999);
+        public static final Vector<N3> stateStdDevs = VecBuilder.fill(1, 1, .5);
 
         public static final Pose2d startingPoseBlue = new Pose2d(1.35, 5.55, new Rotation2d(0));
         public static final Pose2d startingPoseRed =
@@ -76,7 +75,7 @@ public final class Constants {
     }
 
     public static final class Swerve {
-        public static final String canivore = "rex";
+        public static final String canivore = "uno";
         public static final int pigeonID = 13;
 
         public static final COTSTalonFXSwerveConstants chosenModule =
@@ -113,8 +112,8 @@ public final class Constants {
         public static final double angleCurrentThresholdTime = 0.1;
         public static final boolean angleEnableCurrentLimit = true;
 
-        public static final int driveCurrentLimit = 35;
-        public static final int driveCurrentThreshold = 60;
+        public static final int driveCurrentLimit = 40;
+        public static final int driveCurrentThreshold = 80;
         public static final double driveCurrentThresholdTime = 0.1;
         public static final boolean driveEnableCurrentLimit = true;
 
@@ -193,26 +192,25 @@ public final class Constants {
     }
 
     public static final class Intake {
-        public static final double noteOutsideSpeed = 0.5;
+        public static final double noteOutsideSpeed = 0.65;
         public static final double noteInsideSpeed = 0.25;
         public static final double outakeSpeed = -0.5;
     }
 
     public static final class Shooter {
-        public static final double intakeAngleRadians = 0.56;
-        public static final double idleSpeedRPM = 1300;
-        public static final double angleOffsetBottom = Units.degreesToRadians(-1);
-        public static final double wristAngleMax = Units.degreesToRadians(62.7);
-        public static final double wristAngleMin = Units.degreesToRadians(-28.8);
-        public static final double angleOffsetManual = Units.degreesToRadians(67.6);
+        public static final double intakeAngleRadians = 0.733;
+        public static final double idleSpeedRPM = 1300; // TODO Adjust
+        public static final double angleOffsetBottom = Units.degreesToRadians(-9);
+        public static final double angleOffsetTop = Units.degreesToRadians(64.8);
         public static final double angleOffsetAuto = Units.degreesToRadians(75.5);
+        public static final double shooterOutakeSpeed = 0.9;
     }
 
     public static final class Elevator {
         public static final double maxHeightMeters = 0.61;
-        public static final double minHeightMeters = -0.01;
-        public static final double ampHeight = 0.513;
-        public static final double antiBozoSmileToasterAhhGoonBotShooterHeight = .5;
+        public static final double minHeightMeters = -0.015;
+        public static final double ampHeight = 0.555;
+        public static final double antiBozoSmileToasterAhhGoonBotShooterHeight = .522;
     }
 
     public static final class Auto {
