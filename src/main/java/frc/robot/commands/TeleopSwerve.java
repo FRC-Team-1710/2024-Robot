@@ -88,6 +88,7 @@ public class TeleopSwerve extends Command {
         boolean robotCentric = robotCentricSup.getAsBoolean();
         boolean openLoop = true;
         PhotonPipelineResult result = vision.getLatestResultN();
+        double speedLimit = !swerveSubsystem.demoMode ? 1.0 : Constants.Swerve.demoSpeed;
 
         /* Get Values, Deadband */
         double translationVal =
@@ -98,6 +99,10 @@ public class TeleopSwerve extends Command {
         /* Exponential Drive */
         translationVal = Math.copySign(Math.pow(translationVal, 2), translationVal);
         strafeVal = Math.copySign(Math.pow(strafeVal, 2), strafeVal);
+
+        /* Apply Speed Limit */
+        translationVal *= speedLimit;
+        strafeVal *= speedLimit;
 
         if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
             if (shooterSubsystem.getDistanceTo(
@@ -174,6 +179,7 @@ public class TeleopSwerve extends Command {
             rotationVal =
                     MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
             rotationVal = Math.copySign(Math.pow(rotationVal, 2), rotationVal);
+            rotationVal *= speedLimit;
             controller.setRumble(RumbleType.kBothRumble, 0);
             noteInside = false;
         }

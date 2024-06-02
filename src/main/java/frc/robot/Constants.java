@@ -77,6 +77,7 @@ public final class Constants {
     public static final class Swerve {
         public static final String canivore = "uno";
         public static final int pigeonID = 13;
+        public static final double demoSpeed = .5;
 
         public static final COTSTalonFXSwerveConstants chosenModule =
                 COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(
