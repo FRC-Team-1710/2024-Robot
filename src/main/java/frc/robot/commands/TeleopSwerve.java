@@ -198,7 +198,7 @@ public class TeleopSwerve extends Command {
             noteInside = false;
         }
 
-        if ((noteInside || intexerSubsystem.shooterBreak()) && intakeOverride.getAsBoolean()) {
+        if ((noteInside || intexerSubsystem.shooterBreak()) && intakeOverride.getAsBoolean()) { //TODO: this has to be causing problems right
             translationVal = 0;
             rotationVal = 0;
         }
