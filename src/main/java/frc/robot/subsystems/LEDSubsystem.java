@@ -41,7 +41,7 @@ public class LEDSubsystem extends SubsystemBase {
         false, // Note in Intake -9 Orange Blink
         false, // Note in Shooter -10 Orange Solid
         false, // Alliance Color -11 Red Pulse
-        false // Alliance Color -12 Blue Pulse
+        false, // Alliance Color -12 Blue Pulse
     };
 
     public int[] priorities = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
