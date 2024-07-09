@@ -72,6 +72,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private SwerveModulePosition[] swerveModulePositions;
     public static boolean visionFilterEnable = false;
     public static boolean demoMode = false;
+    public static boolean slowMode = false;
 
     // Characterization stuff
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -191,6 +192,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putData(this);
         SmartDashboard.putData("field", m_field);
         SmartDashboard.putBoolean("Demo Mode", demoMode);
+        SmartDashboard.putBoolean("Slow Mode", slowMode);
 
         PathPlannerLogging.setLogActivePathCallback((poses) -> {
             m_field.getObject("field").setPoses(poses);
@@ -344,7 +346,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         if (SmartDashboard.getBoolean("Demo Mode", demoMode) != demoMode){
             demoMode = SmartDashboard.getBoolean("Demo Mode", demoMode);
-            
+        }
+
+        if (SmartDashboard.getBoolean("Slow Mode", slowMode) != slowMode){
+            slowMode = SmartDashboard.getBoolean("Slow Mode", slowMode);
         }
 
         updateModuleStates();
@@ -431,6 +436,7 @@ public class SwerveSubsystem extends SubsystemBase {
                         getPose().getRotation().getRadians())));
 
         SmartDashboard.putBoolean("Demo Mode", demoMode);
+        SmartDashboard.putBoolean("Slow Mode", slowMode);
     }
 
     public static double distBetweenPoses(Pose2d pose1, Pose2d pose2) {

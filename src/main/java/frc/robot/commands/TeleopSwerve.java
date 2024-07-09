@@ -88,7 +88,7 @@ public class TeleopSwerve extends Command {
         boolean robotCentric = robotCentricSup.getAsBoolean();
         boolean openLoop = true;
         PhotonPipelineResult result = vision.getLatestResultN();
-        double speedLimit = !swerveSubsystem.demoMode ? 1.0 : Constants.Swerve.demoSpeed;
+        double speedLimit = !SwerveSubsystem.slowMode ? 1.0 : Constants.Swerve.slowSpeed;
 
         /* Get Values, Deadband */
         double translationVal =
@@ -104,7 +104,7 @@ public class TeleopSwerve extends Command {
         translationVal *= speedLimit;
         strafeVal *= speedLimit;
 
-        if (shooterOverrideSpeaker.getAsBoolean()) { // Lock robot angle to speaker
+        if (shooterOverrideSpeaker.getAsBoolean() && !SwerveSubsystem.demoMode) { // Lock robot angle to speaker
             if (shooterSubsystem.getDistanceTo(
                             FiringSolutionsV3.speakerTargetX, FiringSolutionsV3.speakerTargetY)
                     >= 4) {
@@ -127,7 +127,7 @@ public class TeleopSwerve extends Command {
                             pose.getRotation().getRadians()));
             openLoop = false;
 
-        } else if (shooterOverrideAmp.getAsBoolean()) { // Lock robot angle to amp
+        } else if (shooterOverrideAmp.getAsBoolean() && !SwerveSubsystem.demoMode) { // Lock robot angle to amp
             ChassisSpeeds currentSpeed = swerveSubsystem.getChassisSpeeds();
             openLoop = false;
 
@@ -184,7 +184,7 @@ public class TeleopSwerve extends Command {
             noteInside = false;
         }
 
-        if (Robot.getAlliance() && !robotCentric) { // Invert field oriented for always blue origin
+        if (Robot.getAlliance() && !robotCentric) { // Invert field oriented for always (blue origin)  <- BEZOS REFERENCE 😱
             translationVal = -translationVal;
             strafeVal = -strafeVal;
         }

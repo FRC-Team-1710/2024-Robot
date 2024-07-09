@@ -8,11 +8,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.lib.math.FiringSolutionsV3;
 import frc.robot.Constants;
+import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 
 public class MissileLock extends Command {
     private ShooterSubsystem shooter;
     private String target;
+    private double firingSpeed;
 
     /** Creates a new MissileLock. */
     public MissileLock(ShooterSubsystem shooterSub, String target) {
@@ -30,18 +33,24 @@ public class MissileLock extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        if (!SwerveSubsystem.demoMode){
+            firingSpeed = FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity());
+        } else {
+            firingSpeed = Constants.Shooter.idleSpeedRPM;
+        }
+
         if (target == "amp") {
-            if (shooter.outsideAllianceWing) {
+            if (shooter.outsideAllianceWing || SwerveSubsystem.demoMode) {
                 shooter.PointShoot(
                         Math.toRadians(58),
-                        FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+                        firingSpeed);
             } else {
                 shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
             }
         } else {
             shooter.PointShoot(
                     shooter.getCalculatedAngleToSpeaker(),
-                    FiringSolutionsV3.convertToRPM(shooter.getCalculatedVelocity()));
+                    firingSpeed);
         }
     }
 
@@ -49,7 +58,7 @@ public class MissileLock extends Command {
     @Override
     public void end(boolean interrupted) {
         // shooter.setShooterVelocity(Constants.Shooter.idleSpeedRPM);
-        if (target != "amp" || shooter.outsideAllianceWing) {
+        if (target != "amp" || (shooter.outsideAllianceWing || SwerveSubsystem.demoMode)) {
             shooter.setWristByAngle(Constants.Shooter.intakeAngleRadians);
         }
     }
