@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.FiringSolutionsV3;
 import frc.lib.math.Interpolations;
 import frc.robot.Constants;
@@ -93,6 +93,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private SwerveSubsystem swerveSubsystem;
     private ElevatorSubsystem elevatorSubsystem;
+
+    public Trigger shooterAtSpeed = new Trigger(() -> isShooterAtSpeed());
 
     public ShooterSubsystem(
             SwerveSubsystem swerve, ElevatorSubsystem elevator, Joystick controller) {

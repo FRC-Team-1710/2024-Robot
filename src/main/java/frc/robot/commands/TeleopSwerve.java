@@ -110,6 +110,9 @@ public class TeleopSwerve extends Command {
                     >= 4) {
                 controller.setRumble(RumbleType.kBothRumble, 0.5);
             } else {
+                if (shooterSubsystem.isShooterAtSpeed()){
+                    controller.setRumble(RumbleType.kBothRumble, 1);
+                }
                 controller.setRumble(RumbleType.kBothRumble, 0);
             }
 

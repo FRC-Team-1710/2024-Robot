@@ -180,6 +180,7 @@ public class RobotContainer {
 
         // Lock on to speaker
         targetSpeaker.whileTrue(new MissileLock(m_ShooterSubsystem, "speaker"));
+
         primeShooterSpeedSpeaker
                 .negate()
                 .and(targetSpeaker)
@@ -298,9 +299,19 @@ public class RobotContainer {
         resetR.onTrue(new InstantCommand(() -> FiringSolutionsV3.resetAllR()));
 
         // Reset Note in Shooter
-        resetNoteInShooter
+        targetSpeaker.negate().or(targetAmp.negate()).and(resetNoteInShooter)
                 .whileTrue(new ResetNoteInShooter(m_ShooterSubsystem, m_IntexerSubsystem, mech))
                 .onFalse(new ResetNoteInShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, mech));
+
+        targetSpeaker.and(resetNoteInShooter)
+                .whileTrue(new ResetNoteInShooter(m_ShooterSubsystem, m_IntexerSubsystem, mech))
+                .onFalse(new ResetNoteInShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, mech).andThen(new MissileLock(m_ShooterSubsystem, "speaker")));
+
+        targetAmp.and(resetNoteInShooter)
+                .whileTrue(new ResetNoteInShooter(m_ShooterSubsystem, m_IntexerSubsystem, mech))
+                .onFalse(new ResetNoteInShooterPart2(m_ShooterSubsystem, m_IntexerSubsystem, mech).andThen(new MissileLock(m_ShooterSubsystem, "amp")));
+
+
 
         // Kill Flywheels
         mechLT.negate()
