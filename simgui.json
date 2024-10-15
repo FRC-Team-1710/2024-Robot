@@ -1,0 +1,21 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Elevator PID": "PIDController",
+      "/SmartDashboard/ElevatorSubsystem": "Subsystem",
+      "/SmartDashboard/Gyro": "Gyro",
+      "/SmartDashboard/IntexerSubsystem": "Subsystem",
+      "/SmartDashboard/Lock On Rotation PID": "PIDController",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/ShooterSubsystem": "Subsystem",
+      "/SmartDashboard/SwerveSubsystem": "Subsystem",
+      "/SmartDashboard/Wrist PID": "PIDController",
+      "/SmartDashboard/field": "Field2d"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}
